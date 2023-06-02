@@ -5,7 +5,7 @@ class Sim {
         console.log('simulation constructed.');
     }
 
-    init(canvas) {
+    init(canvas: HTMLCanvasElement) {
         console.log('simulation initialized.');
     }
 

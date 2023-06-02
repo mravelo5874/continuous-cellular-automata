@@ -1,12 +1,18 @@
-import React from "react";
+import * as React from 'react';
+import { Sim } from '../sim/Sim';
 
-export { App };
+export { Canvas };
 
-class Canvas extends React.Component {
-    /**
-     * @param {sim} props.sim
-     */
-    constructor(props) {
+interface CanvasInterface {
+    sim: Sim
+}
+
+class Canvas extends React.Component<CanvasInterface, {}> {
+    
+    canvas_ref: React.RefObject<HTMLCanvasElement>;
+    sim_init: boolean;
+    
+    constructor(props: CanvasInterface) {
         super(props);
         this.canvas_ref = React.createRef();
         this.sim_init = false;
@@ -16,25 +22,16 @@ class Canvas extends React.Component {
         // only initialize simulation once
         if (!this.sim_init) {
             this.sim_init = true;
-            let canvas = this.canvas_ref.current;
+            let canvas = this.canvas_ref.current as HTMLCanvasElement;
             let sim = this.props.sim;
             sim.init(canvas);
             sim.start();
         }
     }
 
-    render = () => {
-        return (
+    render() {
+        return(
             <canvas ref={this.canvas_ref}></canvas>
         );
     }
-}
-
-function App({ sim }) {
-    return (
-        <>
-            <h1>continuous cellular automata</h1>
-            <Canvas sim={sim}></Canvas>
-        </>
-    );
 }
