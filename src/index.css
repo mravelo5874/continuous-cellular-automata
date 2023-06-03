@@ -1,3 +1,16 @@
-body {
+html, body {
+    margin: 0;
+    height: 100%;
+    width: 100%;
+    max-width: 100%;
+    min-width: 100%;
+    background-color: rgb(255, 255, 255);
+    overflow: hidden;
     font-family: "Monaco", monospace;
+  }
+
+canvas {
+    display: block;  /* prevents scrollbar */
+    width: 100vw;
+    height: 100vh;
 }
