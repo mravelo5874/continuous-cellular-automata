@@ -2,12 +2,13 @@ export { CanvasResize };
 
 class CanvasResize {
 
-    public update_canvas = false;
+    static update_canvas = false;
     canvas: HTMLCanvasElement;
     resize_observer: ResizeObserver
     static canvas_to_disp_size: Map<HTMLCanvasElement, number[]>
     
     constructor(_canvas: HTMLCanvasElement) {
+
         this.canvas = _canvas;
         CanvasResize.canvas_to_disp_size = new Map([[this.canvas, [512, 512]]])
         this.resize_observer = new ResizeObserver(this.on_resize)
@@ -15,6 +16,7 @@ class CanvasResize {
     }
 
     on_resize(entries: any) {
+
         for (const entry of entries) {
             let width;
             let height;
@@ -30,14 +32,14 @@ class CanvasResize {
             else if (entry.contentBoxSize) {
                 if (entry.contentBoxSize[0]) 
                 {
-                width = entry.contentBoxSize[0].inlineSize;
-                height = entry.contentBoxSize[0].blockSize;
+                    width = entry.contentBoxSize[0].inlineSize;
+                    height = entry.contentBoxSize[0].blockSize;
                 } 
                 else 
                 {
-                // legacy
-                width = entry.contentBoxSize.inlineSize;
-                height = entry.contentBoxSize.blockSize;
+                    // legacy
+                    width = entry.contentBoxSize.inlineSize;
+                    height = entry.contentBoxSize.blockSize;
                 }
             } 
             else {
@@ -47,12 +49,14 @@ class CanvasResize {
             }
             const displayWidth = Math.round(width * dpr);
             const displayHeight = Math.round(height * dpr);
+
             CanvasResize.canvas_to_disp_size.set(entry.target, [displayWidth, displayHeight]);
-            this.update_canvas = true;
+            CanvasResize.update_canvas = true;
         }
     }
     
     resize_canvas_to_display_size() {
+
         // Get the size the browser is displaying the canvas in device pixels.
         const [displayWidth, displayHeight] = CanvasResize.canvas_to_disp_size.get(this.canvas) as number[];
         // TODO: this.info_ui.res_node.nodeValue = displayWidth + ' x ' + displayHeight

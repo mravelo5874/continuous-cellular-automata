@@ -2,11 +2,15 @@ import { webgl_util } from "./WebGL-Util";
 import { CanvasResize } from "./CanvasResize";
 import { Sim2D } from "./2D/Sim2D";
 import { Vec4 } from "../lib/TSM";
+import { delay } from "./Gen-Util"; 
 
 export { Sim }
 
+enum SimType { Sim2D, Sim3D }
+
 class Sim {
 
+    type: SimType;
     canvas: HTMLCanvasElement | null;
     context: WebGL2RenderingContext | null;
     sim2D: Sim2D | null;
@@ -26,6 +30,7 @@ class Sim {
     constructor() {
     
         // initialize all variables
+        this.type = SimType.Sim2D;
         this.canvas = null;
         this.context = null;
         this.sim2D = null;
@@ -59,14 +64,22 @@ class Sim {
     }
 
     render_loop() {
-
+        
         // update canvas size
-        let resize = this.resize as CanvasResize;
-        if (resize.update_canvas)
-        {
+        if (CanvasResize.update_canvas) {
             console.log('update canvas!');
-            resize.update_canvas = false;
-            resize.resize_canvas_to_display_size();
+            CanvasResize.update_canvas = false;
+            this.resize?.resize_canvas_to_display_size();
+
+            // reset current sim
+            switch (this.type) {
+                case SimType.Sim2D:
+                    (async () => { 
+                        await delay(1)
+                        this.sim2D?.reset()
+                    })();
+                    break;
+            }
         }
 
         let sim2D = this.sim2D as Sim2D;

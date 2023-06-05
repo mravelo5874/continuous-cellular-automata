@@ -15,7 +15,6 @@ class App extends React.Component<AppInterface, {}> {
     render() {
         return (
             <>
-                <h1>continuous cellular automata</h1>
                 <Canvas sim={this.props.sim}></Canvas>
             </>
         );
