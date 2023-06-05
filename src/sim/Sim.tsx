@@ -27,6 +27,10 @@ class Sim {
     private prev_fps_time: number;
     private frame_count: number = 0;
 
+    // ui nodes
+    public fps_node: Text | null;
+    public res_node: Text | null;
+
     constructor() {
     
         // initialize all variables
@@ -35,6 +39,8 @@ class Sim {
         this.context = null;
         this.sim2D = null;
         this.resize = null;
+        this.fps_node = null;
+        this.res_node = null;
 
         this.fps = 0;
         this.start_time = 0;
@@ -54,6 +60,18 @@ class Sim {
         this.sim2D = new Sim2D(this);
         this.resize = new CanvasResize(this.canvas);
 
+        // add fps text element to screen
+        const fps_element = document.querySelector('#fps')
+        this.fps_node = document.createTextNode('')
+        fps_element?.appendChild(this.fps_node)
+        this.fps_node.nodeValue = ''
+
+        // add res text element to screen
+        const res_element = document.querySelector('#res')
+        this.res_node = document.createTextNode('')
+        res_element?.appendChild(this.res_node)
+        this.res_node.nodeValue = ''
+
         console.log('simulation initialized.');
     }
 
@@ -69,7 +87,7 @@ class Sim {
         if (CanvasResize.update_canvas) {
             console.log('update canvas!');
             CanvasResize.update_canvas = false;
-            this.resize?.resize_canvas_to_display_size();
+            this.resize?.resize_canvas_to_display_size(this.res_node);
 
             // reset current sim
             switch (this.type) {
@@ -101,7 +119,8 @@ class Sim {
             this.fps = this.frame_count;
             this.frame_count = 0;
             this.prev_fps_time = Date.now();
-            //TODO this.info_ui.fps_node.nodeValue = this.fps.toFixed(0)
+
+            if (this.fps_node) this.fps_node.nodeValue = this.fps.toFixed(0)
         }
 
         // request next frame to be drawn

@@ -46,6 +46,14 @@ h1, h2, h3, h4 {
   align-items: center;
 }
 
+.alt_color_1 {
+  color: rgb(255, 0, 234);
+}
+
+.alt_color_2 {
+  color: rgb(0, 183, 255);
+}
+
 /*
 // ###################
 // CUSTOM HTML ELEMETS
@@ -62,10 +70,10 @@ h1, h2, h3, h4 {
   text-align: left;
 
   /* padding */
-  padding-top: 2em;
-  padding-left: 2em;
-  padding-right: 2em;
-  padding-bottom: 2em;
+  padding-top: 1em;
+  padding-left: 1em;
+  padding-right: 1em;
+  padding-bottom: 1em;
 
   /* border */
   border: 2px;
@@ -76,10 +84,15 @@ h1, h2, h3, h4 {
 
 #control_window {
   scale: 100%; /* start open */
+  min-width: 256px;
 
   /* position */
   position: absolute;
   top:0px;
   bottom:0px;
   left:0px;
+}
+
+.ui_info {
+  text-align: right;
 }

@@ -57,11 +57,11 @@ class CanvasResize {
         }
     }
     
-    resize_canvas_to_display_size() {
+    resize_canvas_to_display_size(res_node: Text | null) {
 
         // Get the size the browser is displaying the canvas in device pixels.
         const [displayWidth, displayHeight] = CanvasResize.canvas_to_disp_size.get(this.canvas) as number[];
-        // TODO: this.info_ui.res_node.nodeValue = displayWidth + ' x ' + displayHeight
+        if (res_node) res_node.nodeValue = displayWidth + ' x ' + displayHeight
     
         // Check if the canvas is not the same size.
         const needResize = this.canvas.width  !== displayWidth || this.canvas.height !== displayHeight;
