@@ -1,3 +1,5 @@
+import { Sim2D } from "./2D/Sim2D";
+
 export { CanvasResize };
 
 class CanvasResize {
@@ -47,8 +49,8 @@ class CanvasResize {
                 width = entry.contentRect.width;
                 height = entry.contentRect.height;
             }
-            const displayWidth = Math.round(width * dpr);
-            const displayHeight = Math.round(height * dpr);
+            const displayWidth = Math.round(width * dpr) / Sim2D.zoom;
+            const displayHeight = Math.round(height * dpr) / Sim2D.zoom;
 
             CanvasResize.canvas_to_disp_size.set(entry.target, [displayWidth, displayHeight]);
             CanvasResize.update_canvas = true;

@@ -82,8 +82,13 @@ class Sim {
             }
         }
 
-        let sim2D = this.sim2D as Sim2D;
-        sim2D.render();
+        // render current simulation
+        switch (this.type) {
+            case SimType.Sim2D:
+            let sim2D = this.sim2D as Sim2D;
+            sim2D.render();
+            break;
+        }
 
         // calculate current delta time
         this.frame_count++;

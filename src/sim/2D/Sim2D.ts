@@ -19,6 +19,7 @@ class Sim2D {
     activation: string;
     shader: Shader2D;
     automata: Automata2D;
+    static zoom: number
 
     // render variables
     program: WebGLProgram | null;
@@ -33,6 +34,7 @@ class Sim2D {
         this.activation = activations_2d.worms_activation();
         this.shader = Shader2D.rgb;
         this.automata = Automata2D.worms;
+        Sim2D.zoom = 4
 
         this.program = null;
         this.buffer = null;

@@ -1,16 +1,85 @@
+/*
+// ##################
+// BASE HTML ELEMENTS
+// ##################
+*/
+
 html, body {
-    margin: 0;
-    height: 100%;
-    width: 100%;
-    max-width: 100%;
-    min-width: 100%;
-    background-color: rgb(255, 255, 255);
-    overflow: hidden;
-    font-family: "Monaco", monospace;
-  }
+  margin: 0;
+  height: 100%;
+  width: 100%;
+  max-width: 100%;
+  min-width: 100%;
+  background-color: rgb(255, 255, 255);
+  overflow: hidden;
+  font-family: "Monaco", monospace;
+}
 
 canvas {
-    display: block;  /* prevents scrollbar */
-    width: 100vw;
-    height: 100vh;
+  display: block;  /* prevents scrollbar */
+  width: 100vw;
+  height: 100vh;
+}
+
+h1, h2, h3, h4 {
+  margin: 0px;
+}
+
+/*
+// ###################
+// GUI BUILDING BLOCKS
+// ###################
+*/
+
+.ui_row {
+  /* flex */
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+.ui_column {
+  /* flex */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+/*
+// ###################
+// CUSTOM HTML ELEMETS
+// ###################
+*/
+
+.ui_window {
+  background-color: rgba(0, 0, 0, 0.85);
+
+  /* text */
+  color: white;
+  font-family: monospace;
+  font-size: 16px;
+  text-align: left;
+
+  /* padding */
+  padding-top: 2em;
+  padding-left: 2em;
+  padding-right: 2em;
+  padding-bottom: 2em;
+
+  /* border */
+  border: 2px;
+  border-style: solid;
+  border-color: white;
+  border-radius:0%;
+}
+
+#control_window {
+  scale: 100%; /* start open */
+
+  /* position */
+  position: absolute;
+  top:0px;
+  bottom:0px;
+  left:0px;
 }
