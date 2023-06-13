@@ -1,6 +1,6 @@
 import { webgl_util } from "./WebGL-Util";
 import { CanvasResize } from "./CanvasResize";
-import { Sim2D } from "./2D/Sim2D";
+import { Sim2D, Automata2D, Shader2D } from "./2D/Sim2D";
 import { Vec4 } from "../lib/TSM";
 import { delay } from "./Gen-Util"; 
 
@@ -76,6 +76,7 @@ class Sim {
     }
 
     start() {
+        // start 2D simulation and begin render loop
         this.sim2D?.start();
         window.requestAnimationFrame(() => this.render_loop())
         console.log('simulation started.');
@@ -125,6 +126,68 @@ class Sim {
 
         // request next frame to be drawn
         window.requestAnimationFrame(() => this.render_loop());
+    }
+
+    load_automata(value: string) {
+        // load 2D simulation based on string value
+        switch(value) {
+            default: return;
+            case 'worms':
+                this.sim2D?.load_automata(Automata2D.worms);
+                break;
+            case 'drops':
+                this.sim2D?.load_automata(Automata2D.drops);
+                break;
+            case 'waves':
+                this.sim2D?.load_automata(Automata2D.waves);
+                break;
+            case 'paths':
+                this.sim2D?.load_automata(Automata2D.paths);
+                break;
+            case 'stars':
+                this.sim2D?.load_automata(Automata2D.stars);
+                break;
+            case 'cells':
+                this.sim2D?.load_automata(Automata2D.cells);
+                break;
+            case 'slime':
+                this.sim2D?.load_automata(Automata2D.slime);
+                break;
+            case 'lands':
+                this.sim2D?.load_automata(Automata2D.lands);
+                break;
+            case 'cgol':
+                this.sim2D?.load_automata(Automata2D.cgol);
+                break;
+        }
+    }
+
+    load_shader(value: string) {
+        // load 2D shader based on string value
+        switch(value) {
+            default: return;
+            case 'bnw':
+                this.sim2D?.load_shader(Shader2D.bnw);
+                break;
+            case 'alpha':
+                this.sim2D?.load_shader(Shader2D.alpha);
+                break;
+            case 'rgb':
+                this.sim2D?.load_shader(Shader2D.rgb);
+                break;
+            case 'acid':
+                this.sim2D?.load_shader(Shader2D.acid);
+                break;
+        }
+    }
+
+    get_kernel() {
+        // return the 2D 3x3 kernel
+        return this.sim2D?.kernel;
+    }
+
+    get_activation() {
+        return this.sim2D?.activation;
     }
 
     public get_delta_time(): number { return this.curr_delta_time; }

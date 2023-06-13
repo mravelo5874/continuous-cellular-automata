@@ -35,7 +35,7 @@ h1, h2, h3, h4 {
   /* flex */
   display: flex;
   flex-direction: row;
-  justify-content: center;
+  justify-content: left;
   align-items: center;
 }
 .ui_column {
@@ -94,5 +94,24 @@ h1, h2, h3, h4 {
 }
 
 .ui_info {
-  text-align: right;
+  text-align: left;
+}
+
+.dropdown_input {
+  font-family: monospace;
+  font-size: 16px;
+  padding: 0.5em;
+}
+
+.kernel_input {
+  width: 5em;
+  padding-top: 0.5em;
+  padding-bottom: 0.5em;
+  padding-left: 0.5em;
+}
+
+.activation_input {
+  resize: none;
+  width: 24em;
+  height: 4em;
 }

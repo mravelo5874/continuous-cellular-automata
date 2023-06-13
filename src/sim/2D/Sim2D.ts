@@ -4,9 +4,9 @@ import { activations_2d } from "./Activations2D";
 import { generate_random_rgb_state } from './Util2D';
 import { 
     default_vert,
-    rgb_frag } from "./Shaders2D";
+    rgb_frag, bnw_frag, alpha_frag, acid_frag } from "./Shaders2D";
 
-export { Sim2D };
+export { Sim2D, Automata2D, Shader2D };
 
 enum Shader2D { rgb, alpha, bnw, acid, END }
 enum Automata2D { custom, worms, drops, waves, paths, stars, cells, slime, lands, cgol, END }
@@ -32,7 +32,7 @@ class Sim2D {
         this.sim = _sim;
         this.kernel = kernels_2d.worms_kernel();
         this.activation = activations_2d.worms_activation();
-        this.shader = Shader2D.rgb;
+        this.shader = Shader2D.bnw;
         this.automata = Automata2D.worms;
         Sim2D.zoom = 1
 
@@ -108,6 +108,11 @@ class Sim2D {
         this.reset();
     }
 
+    public load_shader(shade: Shader2D) {
+        this.shader = shade;
+        this.reset();
+    }
+
     public reset() {
         // prepare render context
         let gl = this.sim.context as WebGL2RenderingContext;
@@ -117,8 +122,23 @@ class Sim2D {
         gl.bindFramebuffer(gl.FRAMEBUFFER, null)
 
         // set 2D shader
-        let frag = rgb_frag
         let vert = default_vert
+        let frag = rgb_frag
+        switch(this.shader) {
+            case Shader2D.bnw:
+                frag = bnw_frag;
+                break;
+            case Shader2D.alpha:
+                frag = alpha_frag;
+                break;
+            case Shader2D.rgb:
+                frag = rgb_frag;
+                break;
+            case Shader2D.acid:
+                frag = acid_frag;
+                break;
+        }
+        
 
         // set activation function
         frag = frag.replace('[AF]', this.activation);

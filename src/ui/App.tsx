@@ -10,14 +10,16 @@ interface AppInterface {
 }
 
 class App extends React.Component<AppInterface, {}> {
+
     constructor (props: AppInterface){
-    super(props);
+        super(props);
     }
+
     render() {
         return (
             <>
-                <Canvas sim={this.props.sim}></Canvas>
-                <ControlWindow/>
+                <ControlWindow sim={this.props.sim}/>
+                <Canvas sim={this.props.sim}/>
             </>
         );
     }

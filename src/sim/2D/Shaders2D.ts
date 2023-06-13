@@ -7,7 +7,7 @@ void main()
 {
     gl_Position = vec4(a_pos, 0.0, 1.0);
     v_pos = a_pos;
-}
+} 
 `
 export const acid_frag =
 `
