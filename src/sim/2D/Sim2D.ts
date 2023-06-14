@@ -5,6 +5,7 @@ import { generate_random_rgb_state } from './Util2D';
 import { 
     default_vert,
     rgb_frag, bnw_frag, alpha_frag, acid_frag } from "./Shaders2D";
+import Rand from "src/lib/rand-seed";
 
 export { Sim2D, Automata2D, Shader2D };
 
@@ -28,6 +29,12 @@ class Sim2D {
     textures: WebGLTexture[];
     framebuffers: WebGLFramebuffer[];
 
+    // brush stuff
+    brush_size: number = 100;
+    brush_1: Uint8Array;
+    brush_0: Uint8Array;
+  
+
     constructor(_sim: Sim) {
         this.sim = _sim;
         this.kernel = kernels_2d.worms_kernel();
@@ -50,6 +57,10 @@ class Sim2D {
             -1.0, 1.0,
             1.0, 1.0
         ]);
+
+		let arr_size = this.brush_size*this.brush_size*4;
+		this.brush_1 = new Uint8Array(arr_size);
+		this.brush_0 = new Uint8Array(arr_size);
     }
 
     public start() {
@@ -361,5 +372,62 @@ class Sim2D {
     public set_activation(_activation: string) {
         this.activation = _activation;
         this.reset();
+    }
+
+    public set_brush(size: number): void {  
+		this.brush_size = size;
+		let arr_size = size*size*4;
+		this.brush_1 = new Uint8Array(arr_size);
+		this.brush_0 = new Uint8Array(arr_size);
+        let rng = new Rand();
+		for (let i=0; i < arr_size; i++) {
+			this.brush_1[i] = rng.next() * 255;
+			this.brush_0[i] = 0;
+		}
+	}
+
+    private randomize_brush() {
+        let arr_size = this.brush_size*this.brush_size*4;
+        this.brush_1 = new Uint8Array(arr_size)
+        let rng = new Rand();
+        for (let i=0; i < arr_size; i++) {
+            this.brush_1[i] = rng.next() * 255;
+            this.brush_0[i] = 0;
+        }
+    }
+  
+    public mouse_draw(rel_x: number, rel_y: number) {
+        let gl = this.sim.context as WebGL2RenderingContext;
+        let canvas = this.sim.canvas as HTMLCanvasElement;
+        let w = canvas.width;
+        let h = canvas.height;
+        rel_y = 1.0 - rel_y;
+    
+        let x = Math.floor(w * rel_x);
+        let y = Math.floor(h * rel_y);
+        x = x - Math.floor(this.brush_size / 2); // center brush
+        y = y - Math.floor(this.brush_size / 2);
+    
+        this.randomize_brush();
+        let brush_arr = this.brush_1;
+        gl.texSubImage2D(gl.TEXTURE_2D, 0, x, y, this.brush_size, this.brush_size, gl.RGBA, gl.UNSIGNED_BYTE, brush_arr);
+        this.draw_to_canvas(gl);
+    }
+
+    public mouse_erase(rel_x: number, rel_y: number) {
+        let gl = this.sim.context as WebGL2RenderingContext;
+        let canvas = this.sim.canvas as HTMLCanvasElement;
+        let w = canvas.width;
+        let h = canvas.height;
+        rel_y = 1.0 - rel_y;
+    
+        let x = Math.floor(w * rel_x);
+        let y = Math.floor(h * rel_y);
+        x = x - Math.floor(this.brush_size / 2); // center brush
+        y = y - Math.floor(this.brush_size / 2);
+            
+        let brush_arr = this.brush_0;
+        gl.texSubImage2D(gl.TEXTURE_2D, 0, x, y, this.brush_size, this.brush_size, gl.RGBA, gl.UNSIGNED_BYTE, brush_arr);
+        this.draw_to_canvas(gl);
     }
 }

@@ -197,6 +197,14 @@ class Sim {
         this.sim2D?.set_activation(_activation);
     }
 
+    mouse_draw(x: number, y: number) {
+        this.sim2D?.mouse_draw(x, y);
+    }
+
+    mouse_erase(x: number, y: number) {
+        this.sim2D?.mouse_erase(x, y);
+    }
+
     public get_delta_time(): number { return this.curr_delta_time; }
     public get_elapsed_time(): number { return Date.now() - this.start_time; }
 }

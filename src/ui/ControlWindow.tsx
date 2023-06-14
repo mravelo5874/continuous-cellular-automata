@@ -9,17 +9,41 @@ interface ControlPanelInterface {
 
 class ControlWindow extends React.Component<ControlPanelInterface, {}> {
 
+    ui_init: boolean;
+
     constructor(props: ControlPanelInterface) {
         super(props);
-
-        // bind 'this' for class functions\
+        this.ui_init = false;
+        // bind 'this' for class functions
         this.update_sim_kernel = this.update_sim_kernel.bind(this);
         this.update_sim_activation = this.update_sim_activation.bind(this);
         this.load_automata = this.load_automata.bind(this);
         this.load_shader = this.load_shader.bind(this);
+    }
 
-        // load init values
-        //this.load_automata()
+    componentDidMount = () => {
+        // only initialize simulation once
+        if (!this.ui_init) {
+            this.ui_init = true;
+            let sim = this.props.sim;
+
+            this.set_kernel(sim.get_kernel() as Float32Array);
+            this.set_activation(sim.get_activation() as string);
+        }
+    }
+
+    update_sim_brush() {
+        // update text with correct value
+        var brush_slider = document.getElementById('brush_slider') as HTMLInputElement;
+        var brush_text = document.getElementById('brush_text') as HTMLElement;
+        brush_text.innerHTML = brush_slider.value;
+    }
+
+    update_sim_zoom() {
+        // update text with correct value
+        var zoom_slider = document.getElementById('zoom_slider') as HTMLInputElement;
+        var zoom_text = document.getElementById('zoom_text') as HTMLElement;
+        zoom_text.innerHTML = zoom_slider.value;
     }
 
     update_sim_kernel() {
@@ -163,6 +187,26 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
                 <h2>activation function</h2>
                 <div>
                     <textarea id='af' className='activation_input' onChange={this.update_sim_activation}/>
+                </div>
+
+                <br/>
+
+                <h2>brush size</h2>
+                <div className='ui_row'>
+                    <div className='slider_container'>
+                        <input type='range' min='1' max='256' defaultValue='100' className='slider' id='brush_slider' onInput={this.update_sim_brush}/>
+                    </div>
+                    <h4 style={{width:'24px', paddingLeft:'12px', textAlign:'center'}} id='brush_text'>100</h4>
+                </div>
+                
+                <br/>
+
+                <h2>zoom level</h2>
+                <div className='ui_row'>
+                    <div className='slider_container'>
+                        <input type='range' min='1' max='24' defaultValue='1' className='slider' id='zoom_slider' onInput={this.update_sim_zoom}/>
+                    </div>
+                    <h4 style={{width:'24px', paddingLeft:'12px', textAlign:'center'}} id='zoom_text'>1</h4>
                 </div>
 
                 <br/>

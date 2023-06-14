@@ -18,8 +18,8 @@ class App extends React.Component<AppInterface, {}> {
     render() {
         return (
             <>
-                <ControlWindow sim={this.props.sim}/>
                 <Canvas sim={this.props.sim}/>
+                <ControlWindow sim={this.props.sim}/>
             </>
         );
     }
