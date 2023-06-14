@@ -138,7 +138,6 @@ class Sim2D {
                 frag = acid_frag;
                 break;
         }
-        
 
         // set activation function
         frag = frag.replace('[AF]', this.activation);
@@ -349,5 +348,18 @@ class Sim2D {
       gl.bindFramebuffer(gl.FRAMEBUFFER, fbo)
       // Tell WebGL how to convert from clip space to pixels
       gl.viewport(0, 0, width, height)
+    }
+
+    public set_kernel(_kernel: Float32Array) {
+        this.kernel = _kernel;
+        let gl = this.sim.context as WebGL2RenderingContext;
+        let program = this.program as WebGLProgram;
+        const kernel_loc = gl.getUniformLocation(program, 'u_kernel[0]')
+        gl.uniform1fv(kernel_loc, this.kernel)
+    }
+
+    public set_activation(_activation: string) {
+        this.activation = _activation;
+        this.reset();
     }
 }

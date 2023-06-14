@@ -182,12 +182,19 @@ class Sim {
     }
 
     get_kernel() {
-        // return the 2D 3x3 kernel
         return this.sim2D?.kernel;
     }
 
     get_activation() {
         return this.sim2D?.activation;
+    }
+
+    update_kernel(_kernel: Float32Array) {
+        this.sim2D?.set_kernel(_kernel);
+    }
+
+    update_activation(_activation: string) {
+        this.sim2D?.set_activation(_activation);
     }
 
     public get_delta_time(): number { return this.curr_delta_time; }
