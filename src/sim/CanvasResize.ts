@@ -5,20 +5,25 @@ export { CanvasResize };
 class CanvasResize {
 
     static update_canvas = false;
+    static canvas_to_disp_size: Map<HTMLCanvasElement, number[]>
+
     canvas: HTMLCanvasElement;
     resize_observer: ResizeObserver
-    static canvas_to_disp_size: Map<HTMLCanvasElement, number[]>
+    phys_width: number;
+    phys_height: number;
+    
     
     constructor(_canvas: HTMLCanvasElement) {
 
         this.canvas = _canvas;
-        CanvasResize.canvas_to_disp_size = new Map([[this.canvas, [512, 512]]])
+        this.phys_width = _canvas.width;
+        this.phys_height = _canvas.height;
+        CanvasResize.canvas_to_disp_size = new Map([[this.canvas, [this.phys_width, this.phys_height]]])
         this.resize_observer = new ResizeObserver(this.on_resize)
         this.resize_observer.observe(this.canvas, { box: 'content-box' })
     }
 
     on_resize(entries: any) {
-
         for (const entry of entries) {
             let width;
             let height;
@@ -50,31 +55,21 @@ class CanvasResize {
                 height = entry.contentRect.height;
             }
 
-            const displayWidth = Math.round(width * dpr) / Sim2D.zoom;
-            const displayHeight = Math.round(height * dpr) / Sim2D.zoom;
+            this.phys_width = Math.round(width * dpr);
+            this.phys_height = Math.round(height * dpr);
 
-            CanvasResize.canvas_to_disp_size.set(entry.target, [displayWidth, displayHeight]);
+            CanvasResize.canvas_to_disp_size.set(entry.target, [this.phys_width, this.phys_height]);
             CanvasResize.update_canvas = true;
         }
     }
-
-    force_resize(_canvas: HTMLCanvasElement) {
-
-        let dpr = window.devicePixelRatio;
-        let w = _canvas.width;
-        let h = _canvas.height;
-
-        const displayWidth = Math.round(w * dpr) / Sim2D.zoom;
-        const displayHeight = Math.round(h * dpr) / Sim2D.zoom;
-
-        CanvasResize.canvas_to_disp_size.set(_canvas, [displayWidth, displayHeight]);
-        CanvasResize.update_canvas = true;
-    }
     
     resize_canvas_to_display_size(res_node: Text | null) {
-
         // Get the size the browser is displaying the canvas in device pixels.
-        const [displayWidth, displayHeight] = CanvasResize.canvas_to_disp_size.get(this.canvas) as number[];
+        let [displayWidth, displayHeight] = CanvasResize.canvas_to_disp_size.get(this.canvas) as number[];
+
+        displayWidth /= Sim2D.zoom;
+        displayHeight /= Sim2D.zoom;
+
         if (res_node) res_node.nodeValue = displayWidth.toFixed(0) + ' x ' + displayHeight.toFixed(0)
     
         // Check if the canvas is not the same size.

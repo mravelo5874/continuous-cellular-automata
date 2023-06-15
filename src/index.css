@@ -46,6 +46,32 @@ h1, h2, h3, h4 {
   align-items: center;
 }
 
+.ui_button {
+  background-color: rgba(0, 0, 0, 0.85);
+
+  /* text */
+  color: white;
+  font-family: monospace;
+  font-size:16px;
+  text-align:center;
+
+  /* padding */
+  padding-top: 0.5em;
+  padding-left: 0.7em;
+  padding-right: 0.7em;
+  padding-bottom: 0.5em;
+
+  /* border */
+  border: 2px;
+  border-style: solid;
+  border-color: white;
+  border-radius:0%;
+}
+.ui_button:hover {
+  background-color: rgba(0, 119, 255, 0.85);
+  color: white;
+}
+
 .alt_color_1 {
   color: rgb(255, 0, 234);
 }
@@ -82,13 +108,24 @@ h1, h2, h3, h4 {
   border-radius:0%;
 }
 
-#control_window {
+#ctrl_window {
   scale: 100%; /* start open */
   min-width: 256px;
 
   /* position */
   position: absolute;
   top:0px;
+  bottom:0px;
+  left:0px;
+}
+
+#ctrl_button {
+  /* margin */
+  margin-left: 0em;
+  margin-top: 0em;
+
+  /* position */
+  position: absolute;
   bottom:0px;
   left:0px;
 }

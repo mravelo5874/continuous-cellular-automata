@@ -86,7 +86,7 @@ class Canvas extends React.Component<CanvasInterface, {}> {
             this.sim_init = true;
             let canvas = this.canvas_ref.current as HTMLCanvasElement;
 
-            // prevent right-click
+            // prevent right-click menu
             canvas.addEventListener("contextmenu", (event: any) => event.preventDefault())
 
             // setup mouse input

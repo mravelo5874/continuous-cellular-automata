@@ -1,11 +1,15 @@
 import { Sim } from "../Sim";
 import { kernels_2d } from "./Kernels2D";
 import { activations_2d } from "./Activations2D";
-import { generate_random_rgb_state } from './Util2D';
 import { CanvasResize } from "../CanvasResize";
 import { 
     default_vert,
     rgb_frag, bnw_frag, alpha_frag, acid_frag } from "./Shaders2D";
+import { 
+    generate_random_rgb_state,
+    generate_random_alpha_state,
+    generate_random_binary_state,
+    generate_empty_state } from './Util2D';
 import Rand from "src/lib/rand-seed";
 
 export { Sim2D, Automata2D, Shader2D };
@@ -124,6 +128,11 @@ class Sim2D {
         this.reset();
     }
 
+    public custom_kernel() {
+        this.automata = Automata2D.custom;
+        this.reset();
+    }
+
     public reset() {
         // prepare render context
         let gl = this.sim.context as WebGL2RenderingContext;
@@ -184,7 +193,22 @@ class Sim2D {
 
         // generate state based on automata
         let pixels: Uint8Array = new Uint8Array(0)
-        pixels = generate_random_rgb_state(w, h, this.sim.get_elapsed_time().toString())
+        if (this.automata == Automata2D.cgol) {
+            pixels = generate_empty_state(w, h);
+        }
+        else {
+            switch (this.shader) {
+                default:
+                case Shader2D.alpha:
+                    pixels = generate_random_alpha_state(w, h, this.sim.get_elapsed_time().toString());
+                    break
+                case Shader2D.rgb:
+                case Shader2D.bnw:
+                case Shader2D.acid:
+                    pixels = generate_random_rgb_state(w, h, this.sim.get_elapsed_time().toString());
+                    break
+            }
+        }
         
         // create 2 textures and attach them to framebuffers
         this.textures = []
@@ -376,8 +400,7 @@ class Sim2D {
 
     public set_zoom(_zoom: number) {
         Sim2D.zoom = _zoom;
-        this.sim.resize?.force_resize(this.sim.canvas as HTMLCanvasElement);
-        this.reset();
+        CanvasResize.update_canvas = true;
     }
 
     public set_brush(size: number): void {  
@@ -387,7 +410,9 @@ class Sim2D {
 		this.brush_0 = new Uint8Array(arr_size);
         let rng = new Rand();
 		for (let i=0; i < arr_size; i++) {
-			this.brush_1[i] = rng.next() * 255;
+            if (this.automata == Automata2D.cgol)
+			    this.brush_1[i] = 255;
+            else this.brush_1[i] = rng.next() * 255;
 			this.brush_0[i] = 0;
 		}
 	}
@@ -397,7 +422,13 @@ class Sim2D {
         this.brush_1 = new Uint8Array(arr_size)
         let rng = new Rand();
         for (let i=0; i < arr_size; i++) {
-            this.brush_1[i] = rng.next() * 255;
+            var value = rng.next();
+            if (this.automata == Automata2D.cgol) {
+                if (value > 0.5) this.brush_1[i] = 255;
+            }
+            else {
+                this.brush_1[i] = 255 * value;
+            }
             this.brush_0[i] = 0;
         }
     }

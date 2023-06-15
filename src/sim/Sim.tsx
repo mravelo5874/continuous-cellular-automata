@@ -181,6 +181,10 @@ class Sim {
         }
     }
 
+    custom_kernel() {
+        this.sim2D?.custom_kernel();
+    }
+
     get_kernel() {
         return this.sim2D?.kernel;
     }
