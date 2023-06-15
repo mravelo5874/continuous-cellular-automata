@@ -197,6 +197,14 @@ class Sim {
         this.sim2D?.set_activation(_activation);
     }
 
+    update_brush(_brush: number) {
+        this.sim2D?.set_brush(_brush);
+    }
+
+    update_zoom(_zoom: number) {
+        this.sim2D?.set_zoom(_zoom);
+    }
+
     mouse_draw(x: number, y: number) {
         this.sim2D?.mouse_draw(x, y);
     }

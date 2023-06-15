@@ -2,6 +2,7 @@ import { Sim } from "../Sim";
 import { kernels_2d } from "./Kernels2D";
 import { activations_2d } from "./Activations2D";
 import { generate_random_rgb_state } from './Util2D';
+import { CanvasResize } from "../CanvasResize";
 import { 
     default_vert,
     rgb_frag, bnw_frag, alpha_frag, acid_frag } from "./Shaders2D";
@@ -20,7 +21,7 @@ class Sim2D {
     activation: string;
     shader: Shader2D;
     automata: Automata2D;
-    static zoom: number
+    static zoom: number = 1.0;
 
     // render variables
     program: WebGLProgram | null;
@@ -41,7 +42,6 @@ class Sim2D {
         this.activation = activations_2d.worms_activation();
         this.shader = Shader2D.bnw;
         this.automata = Automata2D.worms;
-        Sim2D.zoom = 1
 
         this.program = null;
         this.buffer = null;
@@ -371,6 +371,12 @@ class Sim2D {
 
     public set_activation(_activation: string) {
         this.activation = _activation;
+        this.reset();
+    }
+
+    public set_zoom(_zoom: number) {
+        Sim2D.zoom = _zoom;
+        this.sim.resize?.force_resize(this.sim.canvas as HTMLCanvasElement);
         this.reset();
     }
 

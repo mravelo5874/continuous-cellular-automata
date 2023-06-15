@@ -17,6 +17,8 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
         // bind 'this' for class functions
         this.update_sim_kernel = this.update_sim_kernel.bind(this);
         this.update_sim_activation = this.update_sim_activation.bind(this);
+        this.update_sim_brush = this.update_sim_brush.bind(this);
+        this.update_sim_zoom = this.update_sim_zoom.bind(this);
         this.load_automata = this.load_automata.bind(this);
         this.load_shader = this.load_shader.bind(this);
     }
@@ -37,6 +39,9 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
         var brush_slider = document.getElementById('brush_slider') as HTMLInputElement;
         var brush_text = document.getElementById('brush_text') as HTMLElement;
         brush_text.innerHTML = brush_slider.value;
+
+        let sim = this.props.sim;
+        sim.update_brush(brush_slider.valueAsNumber);
     }
 
     update_sim_zoom() {
@@ -44,6 +49,9 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
         var zoom_slider = document.getElementById('zoom_slider') as HTMLInputElement;
         var zoom_text = document.getElementById('zoom_text') as HTMLElement;
         zoom_text.innerHTML = zoom_slider.value;
+
+        let sim = this.props.sim;
+        sim.update_zoom(zoom_slider.valueAsNumber);
     }
 
     update_sim_kernel() {
@@ -137,15 +145,15 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
                 <h2>load automata</h2>
                 <div>
                     <select className='dropdown_input' name='automata' id='load_automata' onChange={this.load_automata}>
-                        <option value='worms'>worms</option>
-                        <option value='drops'>drops</option>
-                        <option value='waves'>waves</option>
-                        <option value='paths'>paths</option>
-                        <option value='stars'>stars</option>
-                        <option value='cells'>cells</option>
-                        <option value='slime'>slime</option>
-                        <option value='lands'>lands</option>
-                        <option value='cgol'>game of life</option>
+                        <option value='worms'>worms 🐍</option>
+                        <option value='drops'>drops 💧</option>
+                        <option value='waves'>waves 🌊</option>
+                        <option value='paths'>paths 🚪</option>
+                        <option value='stars'>stars ⭐</option>
+                        <option value='cells'>cells 🦠</option>
+                        <option value='slime'>slime 🧫</option>
+                        <option value='lands'>lands 🗺️</option>
+                        <option value='cgol'>game of life ♟️</option>
                     </select>
                 </div>
 
@@ -204,7 +212,7 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
                 <h2>zoom level</h2>
                 <div className='ui_row'>
                     <div className='slider_container'>
-                        <input type='range' min='1' max='24' defaultValue='1' className='slider' id='zoom_slider' onInput={this.update_sim_zoom}/>
+                        <input type='range' min='1' max='8' defaultValue='1' className='slider' id='zoom_slider' onInput={this.update_sim_zoom}/>
                     </div>
                     <h4 style={{width:'24px', paddingLeft:'12px', textAlign:'center'}} id='zoom_text'>1</h4>
                 </div>
