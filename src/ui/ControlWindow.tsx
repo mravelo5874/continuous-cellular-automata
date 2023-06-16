@@ -129,17 +129,15 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
         var f_sym = document.getElementById('f_sym') as HTMLInputElement;
         
         let rng = new Rand();
-        let k0 = rng.next();
-        let k1 = rng.next();
-        let k2 = rng.next();
-
-        let k3 = rng.next();
-        let k4 = rng.next();
-        let k5 = rng.next();
-
-        let k6 = rng.next();
-        let k7 = rng.next();
-        let k8 = rng.next();
+        let k0 = rng.next()*2-1;
+        let k1 = rng.next()*2-1;
+        let k2 = rng.next()*2-1;
+        let k3 = rng.next()*2-1;
+        let k4 = rng.next()*2-1;
+        let k5 = rng.next()*2-1;
+        let k6 = rng.next()*2-1;
+        let k7 = rng.next()*2-1;
+        let k8 = rng.next()*2-1;
 
         if (h_sym.checked) {
             k6 = k0;
@@ -225,6 +223,18 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
                 break;
             case 'sin':
                 act = 'return sin(x);';
+                break;
+            case 'pow':
+                act = 'return pow(x,2.0);';
+                break;
+            case 'abs':
+                act = 'return abs(x);';
+                break;
+            case 'tanh':
+                act = 'return (exp(2.0*x)-1.0)/(exp(2.0*x)+1.0);';
+                break;
+            case 'inv_gaus':
+                act = 'return -1.0/pow(2.0,(pow(x,2.0)))+1.0;';
                 break;
         }
 
@@ -331,10 +341,11 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
                         <select className='dropdown_input' name='automata' id='load_activation' onChange={this.load_activation}>
                             <option value='id'>identity</option>
                             <option value='sin'>sin</option>
-                            <option value='abs'>absolute</option>
+                            <option value='pow'>power</option>
+                            <option value='abs'>absolute value</option>
                             <option value='tanh'>tanh</option>
                             <option value='inv_gaus'>inverse gaussian</option>
-                            <option value='custom' disabled>custom</option>
+                            <option value='custom' disabled>custom 🛠️</option>
                         </select>
                     </div>
 
