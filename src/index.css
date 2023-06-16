@@ -96,10 +96,10 @@ h1, h2, h3, h4 {
   text-align: left;
 
   /* padding */
-  padding-top: 1em;
+  /* padding-top: 1em;
   padding-left: 1em;
   padding-right: 1em;
-  padding-bottom: 1em;
+  padding-bottom: 1em; */
 
   /* border */
   border: 2px;
@@ -111,12 +111,21 @@ h1, h2, h3, h4 {
 #ctrl_window {
   scale: 100%; /* start open */
   min-width: 256px;
+  overflow-y: auto;
+
+  padding-top: 0.5em;
+  padding-bottom: 0.5em;
 
   /* position */
   position: absolute;
   top:0px;
   bottom:0px;
   left:0px;
+  direction: rtl;
+}
+
+#ctrl_window_inside {
+  direction: ltr;
 }
 
 #ctrl_button {
@@ -128,6 +137,13 @@ h1, h2, h3, h4 {
   position: absolute;
   bottom:0px;
   left:0px;
+}
+
+#ctrl_module {
+  padding-left: 1em;
+  padding-right: 1em;
+  padding-top: 0.5em;
+  padding-bottom: 0.5em;
 }
 
 .ui_info {
@@ -154,8 +170,14 @@ h1, h2, h3, h4 {
   font-size: 16px;
   padding: 0.5em;
   width: 15em;
-  height: 4em;
+  height: 3em;
 }
+
+/*
+// ###################
+// CUSTOM SLIDER
+// ###################
+*/
 
 .slider_container {
   width: 100%; /* Width of the outside container */
@@ -185,13 +207,39 @@ h1, h2, h3, h4 {
   appearance: none;
   width: 25px; /* Set a specific slider handle width */
   height: 25px; /* Slider handle height */
-  background: #8adaff; /* Green background */
+  background: rgba(0, 119, 255, 0.85); /* Green background */
   cursor: pointer; /* Cursor on hover */
 }
 
 .slider::-moz-range-thumb {
   width: 25px; /* Set a specific slider handle width */
   height: 25px; /* Slider handle height */
-  background: #04AA6D; /* Green background */
+  background: rgba(0, 119, 255, 0.85); /* Green background */
   cursor: pointer; /* Cursor on hover */
+}
+
+/*
+// ###################
+// CUSTOM SCROLL BAR
+// ###################
+*/
+
+/* width */
+::-webkit-scrollbar {
+  width: 12px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #ffffff62;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #ffffff00;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 119, 255, 0.85);
 }

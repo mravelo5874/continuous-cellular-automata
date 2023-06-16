@@ -15,7 +15,7 @@ import Rand from "src/lib/rand-seed";
 export { Sim2D, Automata2D, Shader2D };
 
 enum Shader2D { rgb, alpha, bnw, acid, END }
-enum Automata2D { custom, worms, drops, waves, paths, stars, cells, slime, lands, cgol, END }
+enum Automata2D { custom, worms, drops, waves, paths, stars, cells, slime, lands, circuit, cgol, END }
 
 class Sim2D {
 
@@ -117,6 +117,10 @@ class Sim2D {
             case Automata2D.worms:
                 this.kernel = kernels_2d.worms_kernel();
                 this.activation = activations_2d.worms_activation();
+                break;
+            case Automata2D.circuit:
+                this.kernel = kernels_2d.circuit_kernel();
+                this.activation = activations_2d.circuit_activation();
                 break;
         }
         this.automata = auto;

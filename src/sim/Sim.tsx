@@ -156,6 +156,9 @@ class Sim {
             case 'lands':
                 this.sim2D?.load_automata(Automata2D.lands);
                 break;
+            case 'circuit':
+                this.sim2D?.load_automata(Automata2D.circuit);
+                break;
             case 'cgol':
                 this.sim2D?.load_automata(Automata2D.cgol);
                 break;
@@ -179,6 +182,10 @@ class Sim {
                 this.sim2D?.load_shader(Shader2D.acid);
                 break;
         }
+    }
+
+    reset_2d() {
+        this.sim2D?.reset();
     }
 
     custom_kernel() {

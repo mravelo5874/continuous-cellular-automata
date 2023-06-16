@@ -23,11 +23,13 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
         this.update_sim_activation = this.update_sim_activation.bind(this);
         this.update_sim_brush = this.update_sim_brush.bind(this);
         this.update_sim_zoom = this.update_sim_zoom.bind(this);
+        this.update_kernel_toggles = this.update_kernel_toggles.bind(this);
         this.load_automata = this.load_automata.bind(this);
         this.load_shader = this.load_shader.bind(this);
         this.load_activation = this.load_activation.bind(this);
         this.toggle_window = this.toggle_window.bind(this);
         this.randomize_kernel = this.randomize_kernel.bind(this);
+        this.reset_automata = this.reset_automata.bind(this);
     }
 
     componentDidMount = () => {
@@ -47,9 +49,9 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
     private on_key_down(key: KeyboardEvent) {
         switch(key.key) {
             default: return;
-            case 'Control':
-                this.toggle_window();
-                break;
+            // case 'Control':
+            //     this.toggle_window();
+            //     break;
         }
     }
 
@@ -169,6 +171,17 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
         menu.value = 'custom';
     }
 
+    update_kernel_toggles() {
+        var v_sym = document.getElementById('v_sym') as HTMLInputElement;
+        var h_sym = document.getElementById('h_sym') as HTMLInputElement;
+        var f_sym = document.getElementById('f_sym') as HTMLInputElement;
+
+        if (f_sym.checked) {
+            h_sym.checked = true;
+            v_sym.checked = true;
+        }
+    }
+
     update_sim_activation() {
         let af = document.getElementById('af') as HTMLTextAreaElement;
         this.set_activation(af.value, true);
@@ -261,121 +274,151 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
         sim.load_shader(value);
     }
 
+    reset_automata() {
+        let sim = this.props.sim;
+        sim.reset_2d();
+    }
+
     render() {
         return(
             <>
                 <div id='ctrl_window' className='ui_window'>
-                    <h2>load automata</h2>
-                    <div>
-                        <select className='dropdown_input' name='automata' id='load_automata' onChange={this.load_automata}>
-                            <option value='worms'>worms 🐍</option>
-                            <option value='drops'>drops 💧</option>
-                            <option value='waves'>waves 🌊</option>
-                            <option value='paths'>paths 🚪</option>
-                            <option value='stars'>stars ⭐</option>
-                            <option value='cells'>cells 🦠</option>
-                            <option value='slime'>slime 🧫</option>
-                            <option value='lands'>lands 🗺️</option>
-                            <option value='cgol'>game of life ♟️</option>
-                            <option value='custom' disabled>custom 🛠️</option>
-                        </select>
-                    </div>
+                    <div id='ctrl_window_inside'>
+                        <div id='ctrl_module'>
+                            <div className='ui_info'>
+                                <h4>fps: <span id='fps' className='alt_color_1'/></h4>
+                                <h4>canvas: <span id='res' className='alt_color_2'/></h4>
+                            </div>
+                        </div>
 
-                    <br/>
+                        <hr/>
 
-                    <h2>shader</h2>
-                    <div>
-                        <select className='dropdown_input' name='shader' id='load_shader' onChange={this.load_shader}>
-                            <option value='bnw'>black and white</option>
-                            <option value='alpha'>alpha channel</option>
-                            <option value='rgb'>red green blue channels</option>
-                            <option value='acid'>acid</option>
-                        </select>
-                    </div>
+                        <div id='ctrl_module'>
+                            <h2>load automata</h2>
+                            <div>
+                                <select className='dropdown_input' name='automata' id='load_automata' onChange={this.load_automata}>
+                                    <option value='worms'>worms 🐍</option>
+                                    <option value='drops'>drops 💧</option>
+                                    <option value='waves'>waves 🌊</option>
+                                    <option value='paths'>paths 🚪</option>
+                                    <option value='stars'>stars ⭐</option>
+                                    <option value='cells'>cells 🦠</option>
+                                    <option value='slime'>slime 🧫</option>
+                                    <option value='lands'>lands 🗺️</option>
+                                    <option value='circuit'>circuit 💻</option>
+                                    <option value='cgol'>game of life ♟️</option>
+                                    <option value='custom' disabled>custom 🛠️</option>
+                                </select>
+                            </div>
+                            <br/>
+                            <button id='reset_button' className='ui_button' onClick={this.reset_automata} style={{padding:'0.5em', width:'100%'}}>reset</button>
 
-                    <br/>
+                            <div style={{paddingTop:'0.5em'}}>
+                                <button id='export_button' className='ui_button' style={{width:'50%'}}>export</button>
+                                <button id='import_button' className='ui_button' style={{width:'50%'}}>import</button>
+                            </div>
+                        </div>
+
+                        <hr/>
+
+                        <div id='ctrl_module'>
+                            <h2>shader</h2>
+                            <div>
+                                <select className='dropdown_input' name='shader' id='load_shader' onChange={this.load_shader}>
+                                    <option value='bnw'>black and white</option>
+                                    <option value='alpha'>alpha channel</option>
+                                    <option value='rgb'>red green blue channels</option>
+                                    <option value='acid'>acid</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <hr/>
+                        
+                        <div id='ctrl_module'>
+                            <h2>kernel</h2>
+                            <div className='ui_row'>
+                                <div className='ui_column'>
+                                    <input id='k0' type='number'step='0.001' className='kernel_input' onChange={this.update_sim_kernel}/>
+                                    <input id='k1' type='number'step='0.001' className='kernel_input' onChange={this.update_sim_kernel}/>
+                                    <input id='k2' type='number'step='0.001' className='kernel_input' onChange={this.update_sim_kernel}/>
+                                </div>
+                                <div className='ui_column'>
+                                    <input id='k3' type='number'step='0.001' className='kernel_input' onChange={this.update_sim_kernel}/>
+                                    <input id='k4' type='number'step='0.001' className='kernel_input' onChange={this.update_sim_kernel}/>
+                                    <input id='k5' type='number'step='0.001' className='kernel_input' onChange={this.update_sim_kernel}/>
+                                </div>
+                                <div className='ui_column'>
+                                    <input id='k6' type='number'step='0.001' className='kernel_input' onChange={this.update_sim_kernel}/>
+                                    <input id='k7' type='number'step='0.001' className='kernel_input' onChange={this.update_sim_kernel}/>
+                                    <input id='k8' type='number'step='0.001' className='kernel_input' onChange={this.update_sim_kernel}/>
+                                </div>
+                            </div>
+
+                            <div style={{padding:'0.5em'}}>
+                                <div>
+                                    <input type='checkbox' id='v_sym' className='ui_button' onClick={this.update_kernel_toggles}/>
+                                    <label>vertical symmetry</label>
+                                </div>
+                                <div>
+                                    <input type='checkbox' id='h_sym' className='ui_button' onClick={this.update_kernel_toggles}/>
+                                    <label>horizontal symmetry</label>
+                                </div>
+                                <div style={{paddingBottom:'0.5em'}}>
+                                    <input type='checkbox' id='f_sym' className='ui_button' onClick={this.update_kernel_toggles}/>
+                                    <label>full symmetry</label>
+                                </div>
+                                <button className='ui_button' onClick={this.randomize_kernel} style={{padding:'0.5em', width:'100%'}}>randomize kernel</button>
+                            </div>
+                        </div>
                     
-                    <h2>kernel</h2>
-                    <div className='ui_row'>
-                        <div className='ui_column'>
-                            <input id='k0' type='number'step='0.001' className='kernel_input' onChange={this.update_sim_kernel}/>
-                            <input id='k1' type='number'step='0.001' className='kernel_input' onChange={this.update_sim_kernel}/>
-                            <input id='k2' type='number'step='0.001' className='kernel_input' onChange={this.update_sim_kernel}/>
-                        </div>
-                        <div className='ui_column'>
-                            <input id='k3' type='number'step='0.001' className='kernel_input' onChange={this.update_sim_kernel}/>
-                            <input id='k4' type='number'step='0.001' className='kernel_input' onChange={this.update_sim_kernel}/>
-                            <input id='k5' type='number'step='0.001' className='kernel_input' onChange={this.update_sim_kernel}/>
-                        </div>
-                        <div className='ui_column'>
-                            <input id='k6' type='number'step='0.001' className='kernel_input' onChange={this.update_sim_kernel}/>
-                            <input id='k7' type='number'step='0.001' className='kernel_input' onChange={this.update_sim_kernel}/>
-                            <input id='k8' type='number'step='0.001' className='kernel_input' onChange={this.update_sim_kernel}/>
-                        </div>
-                    </div>
+                        <hr/>
 
-                    <div style={{padding:'0.5em'}}>
-                        <div>
-                            <input type='checkbox' id='v_sym' className='ui_button'/>
-                            <label>vertical symmetry</label>
+                        <div id='ctrl_module'>
+                            <h2>activation function</h2>
+                            <div>
+                                <textarea id='af' className='activation_input' onChange={this.update_sim_activation}/>
+                            </div>
+                            <h4>load activation function</h4>
+                            <div>
+                                <select className='dropdown_input' name='automata' id='load_activation' onChange={this.load_activation}>
+                                    <option value='id'>identity</option>
+                                    <option value='sin'>sin</option>
+                                    <option value='pow'>power</option>
+                                    <option value='abs'>absolute value</option>
+                                    <option value='tanh'>tanh</option>
+                                    <option value='inv_gaus'>inverse gaussian</option>
+                                    <option value='custom' disabled>custom 🛠️</option>
+                                </select>
+                            </div>
                         </div>
-                        <div>
-                            <input type='checkbox' id='h_sym' className='ui_button'/>
-                            <label>horizontal symmetry</label>
-                        </div>
-                        <div style={{paddingBottom:'0.5em'}}>
-                            <input type='checkbox' id='f_sym' className='ui_button'/>
-                            <label>full symmetry</label>
-                        </div>
-                        <button id='random_kernel_button' className='ui_button' onClick={this.randomize_kernel}>randomize kernel</button>
-                    </div>
 
-                    <br/>
+                        <hr/>
 
-                    <h2>activation function</h2>
-                    <div>
-                        <textarea id='af' className='activation_input' onChange={this.update_sim_activation}/>
-                    </div>
-                    <label>load activation function</label>
-                    <div>
-                        <select className='dropdown_input' name='automata' id='load_activation' onChange={this.load_activation}>
-                            <option value='id'>identity</option>
-                            <option value='sin'>sin</option>
-                            <option value='pow'>power</option>
-                            <option value='abs'>absolute value</option>
-                            <option value='tanh'>tanh</option>
-                            <option value='inv_gaus'>inverse gaussian</option>
-                            <option value='custom' disabled>custom 🛠️</option>
-                        </select>
-                    </div>
+                        <div id='ctrl_module'>
+                            <h4>brush size</h4>
+                            <div className='ui_row'>
+                                <div className='slider_container'>
+                                    <input type='range' min='1' max='256' defaultValue='100' className='slider' id='brush_slider' onChange={this.update_sim_brush}/>
+                                </div>
+                                <h4 style={{width:'24px', paddingLeft:'12px', textAlign:'center'}} id='brush_text'>100</h4>
+                            </div>
 
-                    <br/>
-
-                    <h2>brush size</h2>
-                    <div className='ui_row'>
-                        <div className='slider_container'>
-                            <input type='range' min='1' max='256' defaultValue='100' className='slider' id='brush_slider' onChange={this.update_sim_brush}/>
-                        </div>
-                        <h4 style={{width:'24px', paddingLeft:'12px', textAlign:'center'}} id='brush_text'>100</h4>
-                    </div>
+                            <h4>zoom level</h4>
+                            <div className='ui_row'>
+                                <div className='slider_container'>
+                                    <input type='range' min='0.6' max='16.0' defaultValue='1.0' step='0.2' className='slider' id='zoom_slider' onChange={this.update_zoom_text} onMouseUp={this.update_sim_zoom}/>
+                                </div>
+                                <h4 style={{width:'24px', paddingLeft:'12px', textAlign:'center'}} id='zoom_text'>1</h4>
+                            </div>
+                        </div>                        
                     
-                    <br/>
 
-                    <h2>zoom level</h2>
-                    <div className='ui_row'>
-                        <div className='slider_container'>
-                            <input type='range' min='0.6' max='16.0' defaultValue='1.0' step='0.2' className='slider' id='zoom_slider' onChange={this.update_zoom_text} onMouseUp={this.update_sim_zoom}/>
-                        </div>
-                        <h4 style={{width:'24px', paddingLeft:'12px', textAlign:'center'}} id='zoom_text'>1</h4>
-                    </div>
-
-                    <br/>
-
-                    <div className='ui_info'>
-                        <h4>fps: <span id='fps' className='alt_color_1'/></h4>
-                        <h4>canvas: <span id='res' className='alt_color_2'/></h4>
+                        {/* extra padding at the bottom of the window */}
+                        <div style={{height:'4em'}}/>
                     </div>
                 </div>
+
                 <div>
                     <button id='ctrl_button' className='ui_button' onClick={this.toggle_window}>close</button>
                 </div>

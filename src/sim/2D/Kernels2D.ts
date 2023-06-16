@@ -130,17 +130,35 @@ export class kernels_2d
     {
         let kernel = new Float32Array(9)
         // 0 1 2
-        kernel[0] = -0.764
-        kernel[1] =  0.683
-        kernel[2] = -0.764
+        kernel[0] =  0.079
+        kernel[1] = -0.765
+        kernel[2] =  0.079
         // 3 4 5
-        kernel[3] =  0.683
-        kernel[4] = -0.558
-        kernel[5] =  0.683
+        kernel[3] = -0.765
+        kernel[4] =  0.765
+        kernel[5] = -0.765
         // 6 7 8
-        kernel[6] = -0.764
-        kernel[7] =  0.683
-        kernel[8] = -0.764
+        kernel[6] =  0.079
+        kernel[7] = -0.765
+        kernel[8] =  0.079
+        return kernel
+    }
+
+    public static circuit_kernel(): Float32Array
+    {
+        let kernel = new Float32Array(9)
+        // 0 1 2
+        kernel[0] = -0.979
+        kernel[1] =  0.158
+        kernel[2] = -0.979
+        // 3 4 5
+        kernel[3] =  0.158
+        kernel[4] =  0.871
+        kernel[5] =  0.158
+        // 6 7 8
+        kernel[6] = -0.979
+        kernel[7] =  0.158
+        kernel[8] = -0.979
         return kernel
     }
 

@@ -40,6 +40,11 @@ export class activations_2d
         return 'return -1.0/pow(2.0, (pow(x, 2.0)))+1.0;'
     }
 
+    public static circuit_activation(): string
+    {
+        return 'return (exp(2.0*x)-1.0)/(exp(2.0*x)+1.0);'
+    }
+
     public static lands_activation(): string
     {
         return 'return (exp(2.0*x)-1.0)/(exp(2.0*x)+1.0);'

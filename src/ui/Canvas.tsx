@@ -103,7 +103,7 @@ class Canvas extends React.Component<CanvasInterface, {}> {
 
     render() {
         return(
-            <canvas ref={this.canvas_ref}></canvas>
+            <canvas ref={this.canvas_ref} style={{imageRendering:'pixelated'}}></canvas>
         );
     }
 }
