@@ -23,7 +23,6 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
         this.update_sim_activation = this.update_sim_activation.bind(this);
         this.update_sim_brush = this.update_sim_brush.bind(this);
         this.update_sim_zoom = this.update_sim_zoom.bind(this);
-        this.update_kernel_toggles = this.update_kernel_toggles.bind(this);
         this.load_automata = this.load_automata.bind(this);
         this.load_shader = this.load_shader.bind(this);
         this.load_activation = this.load_activation.bind(this);
@@ -40,6 +39,13 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
 
             this.set_kernel(sim.get_kernel() as Float32Array);
             this.set_activation(sim.get_activation() as string, true);
+            
+            // update kernel ui
+            let v_sym = document.getElementById('v_sym') as HTMLInputElement;
+            let h_sym = document.getElementById('h_sym') as HTMLInputElement;
+            v_sym.checked = true;
+            h_sym.checked = true;
+            this.update_kernel_symmetry();
 
             // keyboard input
             window.addEventListener('keydown', (key: KeyboardEvent) => this.on_key_down(key))
@@ -109,6 +115,28 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
         let k7 = document.getElementById('k7') as HTMLInputElement;
         let k8 = document.getElementById('k8') as HTMLInputElement;
 
+        var v_sym = document.getElementById('v_sym') as HTMLInputElement;
+        var h_sym = document.getElementById('h_sym') as HTMLInputElement;
+
+        if (v_sym.checked && !h_sym.checked) {
+            k2.value = k0.value;
+            k5.value = k3.value;
+            k8.value = k6.value;
+        }
+        else if (h_sym.checked && !v_sym.checked) {
+            k6.value = k0.value;
+            k7.value = k1.value;
+            k8.value = k2.value;
+        }
+        else if (v_sym.checked && h_sym.checked) {
+            k2.value = k0.value;
+            k6.value = k0.value;
+            k8.value = k0.value;
+            k1.value = k3.value;
+            k5.value = k3.value;
+            k7.value = k3.value;
+        }
+
         let kernel = new Float32Array([
             k0.valueAsNumber,
             k1.valueAsNumber,
@@ -128,7 +156,6 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
     randomize_kernel() {
         var v_sym = document.getElementById('v_sym') as HTMLInputElement;
         var h_sym = document.getElementById('h_sym') as HTMLInputElement;
-        var f_sym = document.getElementById('f_sym') as HTMLInputElement;
         
         let rng = new Rand();
         let k0 = rng.next()*2-1;
@@ -151,14 +178,6 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
             k5 = k3;
             k8 = k6;
         }
-        if (f_sym.checked) {
-            k2 = k0;
-            k6 = k0;
-            k8 = k0;
-            k3 = k1;
-            k5 = k1;
-            k7 = k1;
-        }
 
         let kernel = new Float32Array([k0, k1, k2, k3, k4, k5, k6, k7, k8]);
         let sim = this.props.sim;
@@ -171,17 +190,6 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
         menu.value = 'custom';
     }
 
-    update_kernel_toggles() {
-        var v_sym = document.getElementById('v_sym') as HTMLInputElement;
-        var h_sym = document.getElementById('h_sym') as HTMLInputElement;
-        var f_sym = document.getElementById('f_sym') as HTMLInputElement;
-
-        if (f_sym.checked) {
-            h_sym.checked = true;
-            v_sym.checked = true;
-        }
-    }
-
     update_sim_activation() {
         let af = document.getElementById('af') as HTMLTextAreaElement;
         this.set_activation(af.value, true);
@@ -192,8 +200,81 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
         sim.update_activation(af.value);
     }
 
-    set_kernel(_kernel: Float32Array) {
+    update_kernel_symmetry() {
+        let v_sym = document.getElementById('v_sym') as HTMLInputElement;
+        let h_sym = document.getElementById('h_sym') as HTMLInputElement;
 
+        let k0 = document.getElementById('k0') as HTMLInputElement;
+        let k1 = document.getElementById('k1') as HTMLInputElement;
+        let k2 = document.getElementById('k2') as HTMLInputElement;
+
+        let k3 = document.getElementById('k3') as HTMLInputElement;
+        let k4 = document.getElementById('k4') as HTMLInputElement;
+        let k5 = document.getElementById('k5') as HTMLInputElement;
+
+        let k6 = document.getElementById('k6') as HTMLInputElement;
+        let k7 = document.getElementById('k7') as HTMLInputElement;
+        let k8 = document.getElementById('k8') as HTMLInputElement;
+
+        // reset all kernel styles
+        k0.style.background = 'white';
+        k1.style.background = 'white';
+        k2.style.background = 'white';
+        k3.style.background = 'white';
+        k5.style.background = 'white';
+        k6.style.background = 'white';
+        k7.style.background = 'white';
+        k8.style.background = 'white';
+        k0.disabled = false;
+        k1.disabled = false;
+        k2.disabled = false;
+        k3.disabled = false;
+        k5.disabled = false;
+        k6.disabled = false;
+        k7.disabled = false;
+        k8.disabled = false;
+
+        if (v_sym.checked && !h_sym.checked) {
+            k0.style.background = '#e0a455';
+            k3.style.background = '#e0a455';
+            k6.style.background = '#e0a455';
+            k2.style.background = '#e0a455';
+            k5.style.background = '#e0a455';
+            k8.style.background = '#e0a455';
+            k2.disabled = true;
+            k5.disabled = true;
+            k8.disabled = true;
+        }   
+        else if (h_sym.checked && !v_sym.checked) {
+            k0.style.background = '#95da46';
+            k1.style.background = '#95da46';
+            k2.style.background = '#95da46';
+            k6.style.background = '#95da46';
+            k7.style.background = '#95da46';
+            k8.style.background = '#95da46';
+            k6.disabled = true;
+            k7.disabled = true;
+            k8.disabled = true;
+        }
+        else if (v_sym.checked && h_sym.checked) {
+            k0.style.background = '#bf72f3';
+            k2.style.background = '#bf72f3';
+            k6.style.background = '#bf72f3';
+            k8.style.background = '#bf72f3';
+            k1.style.background = '#29d6a2';
+            k3.style.background = '#29d6a2';
+            k5.style.background = '#29d6a2';
+            k7.style.background = '#29d6a2';
+            k1.disabled = true;
+            k2.disabled = true;
+            k5.disabled = true;
+            k6.disabled = true;
+            k7.disabled = true;
+            k8.disabled = true;
+        }
+    }
+
+    set_kernel(_kernel: Float32Array) {
         let k0 = document.getElementById('k0') as HTMLInputElement;
         let k1 = document.getElementById('k1') as HTMLInputElement;
         let k2 = document.getElementById('k2') as HTMLInputElement;
@@ -263,6 +344,11 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
         sim.load_automata(value);
 
         // update ui
+        let v_sym = document.getElementById('v_sym') as HTMLInputElement;
+        let h_sym = document.getElementById('h_sym') as HTMLInputElement;
+        v_sym.checked = true;
+        h_sym.checked = true;
+        this.update_kernel_symmetry();
         this.set_kernel(sim.get_kernel() as Float32Array);
         this.set_activation(sim.get_activation() as string, true);
     }
@@ -284,6 +370,9 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
             <>
                 <div id='ctrl_window' className='ui_window'>
                     <div id='ctrl_window_inside'>
+                        {/* extra padding at the top of the window */}
+                        <div style={{height:'0em'}}/>
+
                         <div id='ctrl_module'>
                             <div className='ui_info'>
                                 <h4>fps: <span id='fps' className='alt_color_1'/></h4>
@@ -313,6 +402,7 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
                             <br/>
                             <button id='reset_button' className='ui_button' onClick={this.reset_automata} style={{padding:'0.5em', width:'100%'}}>reset</button>
 
+                            {/* TODO export import automata using .json files */}
                             <div style={{paddingTop:'0.5em'}}>
                                 <button id='export_button' className='ui_button' style={{width:'50%'}}>export</button>
                                 <button id='import_button' className='ui_button' style={{width:'50%'}}>import</button>
@@ -357,16 +447,12 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
 
                             <div style={{padding:'0.5em'}}>
                                 <div>
-                                    <input type='checkbox' id='v_sym' className='ui_button' onClick={this.update_kernel_toggles}/>
+                                    <input type='checkbox' id='v_sym' className='ui_button' onClick={this.update_kernel_symmetry}/>
                                     <label>vertical symmetry</label>
                                 </div>
-                                <div>
-                                    <input type='checkbox' id='h_sym' className='ui_button' onClick={this.update_kernel_toggles}/>
-                                    <label>horizontal symmetry</label>
-                                </div>
                                 <div style={{paddingBottom:'0.5em'}}>
-                                    <input type='checkbox' id='f_sym' className='ui_button' onClick={this.update_kernel_toggles}/>
-                                    <label>full symmetry</label>
+                                    <input type='checkbox' id='h_sym' className='ui_button' onClick={this.update_kernel_symmetry}/>
+                                    <label>horizontal symmetry</label>
                                 </div>
                                 <button className='ui_button' onClick={this.randomize_kernel} style={{padding:'0.5em', width:'100%'}}>randomize kernel</button>
                             </div>
@@ -415,7 +501,7 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
                     
 
                         {/* extra padding at the bottom of the window */}
-                        <div style={{height:'4em'}}/>
+                        <div style={{height:'2em'}}/>
                     </div>
                 </div>
 

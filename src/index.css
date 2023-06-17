@@ -80,6 +80,10 @@ h1, h2, h3, h4 {
   color: rgb(0, 183, 255);
 }
 
+.alt_color_3 {
+  color: #95da46;
+}
+
 /*
 // ###################
 // CUSTOM HTML ELEMETS
@@ -129,10 +133,6 @@ h1, h2, h3, h4 {
 }
 
 #ctrl_button {
-  /* margin */
-  margin-left: 0em;
-  margin-top: 0em;
-
   /* position */
   position: absolute;
   bottom:0px;
