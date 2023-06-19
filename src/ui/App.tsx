@@ -20,6 +20,10 @@ class App extends React.Component<AppInterface, {}> {
             <>
                 <Canvas sim={this.props.sim}/>
                 <ControlWindow sim={this.props.sim}/>
+                <div>
+                    {/* TODO: swap between 2D and 3D modes */}
+                    <button id='swap_button' className='ui_button'>swap 3D</button>
+                </div>
             </>
         );
     }

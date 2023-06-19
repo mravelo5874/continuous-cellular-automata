@@ -3,6 +3,7 @@ import { CanvasResize } from "./CanvasResize";
 import { Sim2D, Automata2D, Shader2D } from "./2D/Sim2D";
 import { Vec4 } from "../lib/TSM";
 import { delay } from "./Gen-Util"; 
+import Rand from "src/lib/rand-seed";
 
 export { Sim }
 
@@ -184,8 +185,8 @@ class Sim {
         }
     }
 
-    reset_2d() {
-        this.sim2D?.reset();
+    reset_2d(_seed: string) {
+        this.sim2D?.reset(_seed);
     }
 
     custom_kernel() {
@@ -226,4 +227,14 @@ class Sim {
 
     public get_delta_time(): number { return this.curr_delta_time; }
     public get_elapsed_time(): number { return Date.now() - this.start_time; }
+
+
+    generate_seed(_length: number): string {
+        let seed = '';
+        let rng = new Rand();
+        for (let i = 0; i < _length; i++) {
+            seed += (rng.next() * 9).toFixed(0).toString();
+        }   
+        return seed;
+    }
 }

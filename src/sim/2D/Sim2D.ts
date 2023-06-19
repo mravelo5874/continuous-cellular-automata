@@ -137,7 +137,7 @@ class Sim2D {
         this.reset();
     }
 
-    public reset() {
+    public reset(_seed?: string) {
         // prepare render context
         let gl = this.sim.context as WebGL2RenderingContext;
         let canvas = this.sim.canvas as HTMLCanvasElement;
@@ -196,6 +196,10 @@ class Sim2D {
         const h = canvas.height
 
         // generate state based on automata
+        let seed = this.sim.get_elapsed_time().toString();
+        if (_seed) {
+            seed = _seed;
+        }
         let pixels: Uint8Array = new Uint8Array(0)
         if (this.automata == Automata2D.cgol) {
             pixels = generate_empty_state(w, h);
@@ -204,12 +208,12 @@ class Sim2D {
             switch (this.shader) {
                 default:
                 case Shader2D.alpha:
-                    pixels = generate_random_alpha_state(w, h, this.sim.get_elapsed_time().toString());
+                    pixels = generate_random_alpha_state(w, h, seed);
                     break
                 case Shader2D.rgb:
                 case Shader2D.bnw:
                 case Shader2D.acid:
-                    pixels = generate_random_rgb_state(w, h, this.sim.get_elapsed_time().toString());
+                    pixels = generate_random_rgb_state(w, h, seed);
                     break
             }
         }

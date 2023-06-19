@@ -13,12 +13,15 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
     ui_init: boolean;
     ui_open: boolean;
     anti_alias: boolean;
+    seed: string;
+    static SEED_LEN: number = 25;
 
     constructor(props: ControlPanelInterface) {
         super(props);
         this.ui_init = false;
         this.ui_open = true;
         this.anti_alias = false;
+        this.seed = 'seed';
 
         // bind 'this' for class functions
         this.update_sim_kernel = this.update_sim_kernel.bind(this);
@@ -31,6 +34,7 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
         this.toggle_window = this.toggle_window.bind(this);
         this.toggle_aa = this.toggle_aa.bind(this);
         this.randomize_kernel = this.randomize_kernel.bind(this);
+        this.randomize_seed = this.randomize_seed.bind(this);
         this.reset_automata = this.reset_automata.bind(this);
         this.pause_sim = this.pause_sim.bind(this);
     }
@@ -41,8 +45,14 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
             this.ui_init = true;
             let sim = this.props.sim;
 
+            // set kernel and activation function 
             this.set_kernel(sim.get_kernel() as Float32Array);
             this.set_activation(sim.get_activation() as string, true);
+
+            // set seed
+            let seed_field = document.getElementById('seed_field') as HTMLInputElement;
+            this.seed = sim.generate_seed(ControlWindow.SEED_LEN);
+            seed_field.value = this.seed.toString();
             
             // update kernel ui
             let v_sym = document.getElementById('v_sym') as HTMLInputElement;
@@ -175,6 +185,14 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
 
         let sim = this.props.sim;
         sim.update_kernel(kernel);
+    }
+
+    randomize_seed() {
+        // set seed
+        let sim = this.props.sim;
+        let seed_field = document.getElementById('seed_field') as HTMLInputElement;
+        this.seed = sim.generate_seed(ControlWindow.SEED_LEN);
+        seed_field.value = this.seed.toString();
     }
 
     randomize_kernel() {
@@ -385,8 +403,9 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
     }
 
     reset_automata() {
+        let seed_field = document.getElementById('seed_field') as HTMLInputElement;
         let sim = this.props.sim;
-        sim.reset_2d();
+        sim.reset_2d(seed_field.value);
     }
 
     render() {
@@ -399,16 +418,17 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
 
                         <div id='ctrl_module'>
                             <div className='ui_info'>
-                                <h4>fps: <span id='fps' className='alt_color_1'/></h4>
-                                <h4>res: <span id='res' className='alt_color_2'/></h4>
+                                <h4 className='ctrl_module_sub_title'>fps: <span id='fps' className='alt_color_1'/></h4>
+                                <h4 className='ctrl_module_sub_title'>res: <span id='res' className='alt_color_2'/></h4>
                             </div>
                         </div>
 
                         <hr/>
 
                         <div id='ctrl_module'>
-                            <h2>load automata</h2>
-                            <div>
+                            <h1 className='ctrl_module_title'>automata</h1>
+                            <div style={{paddingBottom:'0.5em'}}>
+                                <h4 className='ctrl_module_sub_title'>load preset</h4>
                                 <select className='dropdown_input' name='automata' id='load_automata' onChange={this.load_automata}>
                                     <option value='worms'>worms 🐍</option>
                                     <option value='drops'>drops 💧</option>
@@ -423,8 +443,16 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
                                     <option value='custom' disabled>custom 🛠️</option>
                                 </select>
                             </div>
-                            <br/>
-                            <button id='reset_button' className='ui_button' onClick={this.reset_automata} style={{padding:'0.5em', width:'100%'}}>reset</button>
+    
+                            <div style={{paddingBottom:'1em'}}>
+                                <h4 className='ctrl_module_sub_title'>seed</h4>
+                                <div className='ui_row'>
+                                    <input id='seed_field' className='ui_text_field' maxLength={ControlWindow.SEED_LEN}></input>
+                                    <button id='randomize_seed' className='ui_button' style={{width:'35%'}} onClick={this.randomize_seed}>new seed</button>
+                                </div>
+                            </div>
+
+                            <button id='reset_button' className='ui_button' onClick={this.reset_automata} style={{padding:'0.5em', width:'100%'}}>reset automata</button>
 
                             {/* TODO export import automata using .json files */}
                             <div style={{paddingTop:'0.5em'}}>
@@ -436,7 +464,7 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
                         <hr/>
 
                         <div id='ctrl_module'>
-                            <h2>shader</h2>
+                            <h1 className='ctrl_module_title'>shader</h1>
                             <div>
                                 <select className='dropdown_input' name='shader' id='load_shader' onChange={this.load_shader}>
                                     <option value='bnw'>black and white</option>
@@ -450,7 +478,7 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
                         <hr/>
                         
                         <div id='ctrl_module'>
-                            <h2>kernel</h2>
+                            <h1 className='ctrl_module_title'>kernel</h1>
                             <div className='ui_row'>
                                 <div className='ui_column'>
                                     <input id='k0' type='number'step='0.001' className='kernel_input' onChange={this.update_sim_kernel}/>
@@ -470,13 +498,13 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
                             </div>
 
                             <div style={{padding:'0.5em'}}>
-                                <div>
+                                <div className='ui_row'>
                                     <input type='checkbox' id='v_sym' className='ui_button' onClick={this.update_kernel_symmetry}/>
-                                    <label>vertical symmetry</label>
+                                    <h4 className='ctrl_module_sub_title'>vertical symmetry</h4>
                                 </div>
-                                <div style={{paddingBottom:'0.5em'}}>
+                                <div className='ui_row' style={{paddingBottom:'0.5em'}}>
                                     <input type='checkbox' id='h_sym' className='ui_button' onClick={this.update_kernel_symmetry}/>
-                                    <label>horizontal symmetry</label>
+                                    <h4 className='ctrl_module_sub_title'>horizontal symmetry</h4>
                                 </div>
                                 <button className='ui_button' onClick={this.randomize_kernel} style={{padding:'0.5em', width:'100%'}}>randomize kernel</button>
                             </div>
@@ -485,11 +513,11 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
                         <hr/>
 
                         <div id='ctrl_module'>
-                            <h2>activation function</h2>
+                            <h1 className='ctrl_module_title'>activation function</h1>
                             <div>
                                 <textarea id='af' className='activation_input' onChange={this.update_sim_activation}/>
                             </div>
-                            <h4>load activation function</h4>
+                            <h4 className='ctrl_module_sub_title'>load activation function</h4>
                             <div>
                                 <select className='dropdown_input' name='automata' id='load_activation' onChange={this.load_activation}>
                                     <option value='id'>identity</option>
@@ -506,8 +534,8 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
                         <hr/>
 
                         <div id='ctrl_module'>
-                            <h2 style={{paddingBottom:'0.5em'}}>options</h2>
-                            <h4>brush size</h4>
+                            <h1 className='ctrl_module_title'>options</h1>
+                            <h4 className='ctrl_module_sub_title'>brush size</h4>
                             <div className='ui_row'>
                                 <div className='slider_container'>
                                     <input type='range' min='1' max='256' defaultValue='100' className='slider' id='brush_slider' onChange={this.update_sim_brush}/>
@@ -515,22 +543,22 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
                                 <h4 style={{width:'24px', paddingLeft:'12px', textAlign:'center'}} id='brush_text'>100</h4>
                             </div>
 
-                            <h4>zoom level</h4>
-                            <div className='ui_row'>
+                            <h4 className='ctrl_module_sub_title'>zoom level</h4>
+                            <div className='ui_row' style={{paddingBottom:'0.5em'}}>
                                 <div className='slider_container'>
                                     <input type='range' min='0.6' max='16.0' defaultValue='1.0' step='0.2' className='slider' id='zoom_slider' onChange={this.update_zoom_text} onMouseUp={this.update_sim_zoom}/>
                                 </div>
                                 <h4 style={{width:'24px', paddingLeft:'12px', textAlign:'center'}} id='zoom_text'>1</h4>
                             </div>
 
-                            <div style={{paddingBottom:'0.5em', paddingTop:'0.5em'}}>
+                            <div className='ui_row'>
                                 <input type='checkbox' id='aa' className='ui_button' onClick={this.toggle_aa}/>
-                                <label>anti-aliasing</label>
+                                <h4 className='ctrl_module_sub_title'>anti-aliasing</h4>
                             </div>
 
-                            <div style={{paddingBottom:'0.5em'}}>
+                            <div className='ui_row'>
                                 <input type='checkbox' id='aa' className='ui_button' onClick={this.pause_sim}/>
-                                <label>paused</label>
+                                <h4 className='ctrl_module_sub_title'>paused</h4>
                             </div>
                         </div>                        
                     
