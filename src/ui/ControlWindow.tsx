@@ -12,11 +12,13 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
 
     ui_init: boolean;
     ui_open: boolean;
+    anti_alias: boolean;
 
     constructor(props: ControlPanelInterface) {
         super(props);
         this.ui_init = false;
         this.ui_open = true;
+        this.anti_alias = false;
 
         // bind 'this' for class functions
         this.update_sim_kernel = this.update_sim_kernel.bind(this);
@@ -27,8 +29,10 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
         this.load_shader = this.load_shader.bind(this);
         this.load_activation = this.load_activation.bind(this);
         this.toggle_window = this.toggle_window.bind(this);
+        this.toggle_aa = this.toggle_aa.bind(this);
         this.randomize_kernel = this.randomize_kernel.bind(this);
         this.reset_automata = this.reset_automata.bind(this);
+        this.pause_sim = this.pause_sim.bind(this);
     }
 
     componentDidMount = () => {
@@ -58,6 +62,26 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
             // case 'Control':
             //     this.toggle_window();
             //     break;
+        }
+    }
+
+    pause_sim() {
+        let sim = this.props.sim;
+        sim.paused = !sim.paused
+    }
+
+    toggle_aa() {
+        var aa_toggle = document.getElementById('aa') as HTMLInputElement;
+        this.anti_alias = aa_toggle.checked;
+
+        let sim = this.props.sim;
+        let canvas = sim.canvas as HTMLCanvasElement;
+
+        if (this.anti_alias) {
+            canvas.style.imageRendering = 'auto';
+        }
+        else {
+            canvas.style.imageRendering = 'pixelated';
         }
     }
 
@@ -235,36 +259,36 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
         k8.disabled = false;
 
         if (v_sym.checked && !h_sym.checked) {
-            k0.style.background = '#e0a455';
-            k3.style.background = '#e0a455';
-            k6.style.background = '#e0a455';
-            k2.style.background = '#e0a455';
-            k5.style.background = '#e0a455';
-            k8.style.background = '#e0a455';
+            k0.style.background = '#6ed3fc';
+            k3.style.background = '#6ed3fc';
+            k6.style.background = '#6ed3fc';
+            k2.style.background = '#6ed3fc';
+            k5.style.background = '#6ed3fc';
+            k8.style.background = '#6ed3fc';
             k2.disabled = true;
             k5.disabled = true;
             k8.disabled = true;
         }   
         else if (h_sym.checked && !v_sym.checked) {
-            k0.style.background = '#95da46';
-            k1.style.background = '#95da46';
-            k2.style.background = '#95da46';
-            k6.style.background = '#95da46';
-            k7.style.background = '#95da46';
-            k8.style.background = '#95da46';
+            k0.style.background = '#6ed3fc';
+            k1.style.background = '#6ed3fc';
+            k2.style.background = '#6ed3fc';
+            k6.style.background = '#6ed3fc';
+            k7.style.background = '#6ed3fc';
+            k8.style.background = '#6ed3fc';
             k6.disabled = true;
             k7.disabled = true;
             k8.disabled = true;
         }
         else if (v_sym.checked && h_sym.checked) {
-            k0.style.background = '#bf72f3';
-            k2.style.background = '#bf72f3';
-            k6.style.background = '#bf72f3';
-            k8.style.background = '#bf72f3';
-            k1.style.background = '#29d6a2';
-            k3.style.background = '#29d6a2';
-            k5.style.background = '#29d6a2';
-            k7.style.background = '#29d6a2';
+            k0.style.background = '#2694c0';
+            k2.style.background = '#2694c0';
+            k6.style.background = '#2694c0';
+            k8.style.background = '#2694c0';
+            k1.style.background = '#6ed3fc';
+            k3.style.background = '#6ed3fc';
+            k5.style.background = '#6ed3fc';
+            k7.style.background = '#6ed3fc';
             k1.disabled = true;
             k2.disabled = true;
             k5.disabled = true;
@@ -376,7 +400,7 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
                         <div id='ctrl_module'>
                             <div className='ui_info'>
                                 <h4>fps: <span id='fps' className='alt_color_1'/></h4>
-                                <h4>canvas: <span id='res' className='alt_color_2'/></h4>
+                                <h4>res: <span id='res' className='alt_color_2'/></h4>
                             </div>
                         </div>
 
@@ -482,6 +506,7 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
                         <hr/>
 
                         <div id='ctrl_module'>
+                            <h2 style={{paddingBottom:'0.5em'}}>options</h2>
                             <h4>brush size</h4>
                             <div className='ui_row'>
                                 <div className='slider_container'>
@@ -497,11 +522,21 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
                                 </div>
                                 <h4 style={{width:'24px', paddingLeft:'12px', textAlign:'center'}} id='zoom_text'>1</h4>
                             </div>
+
+                            <div style={{paddingBottom:'0.5em', paddingTop:'0.5em'}}>
+                                <input type='checkbox' id='aa' className='ui_button' onClick={this.toggle_aa}/>
+                                <label>anti-aliasing</label>
+                            </div>
+
+                            <div style={{paddingBottom:'0.5em'}}>
+                                <input type='checkbox' id='aa' className='ui_button' onClick={this.pause_sim}/>
+                                <label>paused</label>
+                            </div>
                         </div>                        
                     
 
                         {/* extra padding at the bottom of the window */}
-                        <div style={{height:'2em'}}/>
+                        <div style={{height:'12em'}}/>
                     </div>
                 </div>
 

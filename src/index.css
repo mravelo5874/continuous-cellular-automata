@@ -81,7 +81,7 @@ h1, h2, h3, h4 {
 }
 
 .alt_color_3 {
-  color: #95da46;
+  color: #2694c0;
 }
 
 /*
@@ -114,7 +114,7 @@ h1, h2, h3, h4 {
 
 #ctrl_window {
   scale: 100%; /* start open */
-  min-width: 256px;
+  max-width: 400px;
   overflow-y: auto;
 
   padding-top: 0.5em;
@@ -151,17 +151,27 @@ h1, h2, h3, h4 {
 }
 
 .dropdown_input {
-  width: 16em;
+  width: 100%;
   font-family: monospace;
   font-size: 16px;
   padding: 0.5em;
 }
 
 .kernel_input {
-  width: 5.5em;
+  width: 90%;
   padding-top: 0.5em;
   padding-bottom: 0.5em;
-  padding-left: 0.5em;
+  /* border */
+  border-width: 0.4em;
+  border-color: rgb(255, 255, 255);
+}
+
+.kernel_input:disabled {
+  opacity: 40%;
+  color: white;
+  /* border */
+  border-width: 0.4em;
+  border-color: rgba(0, 0, 0, 0);
 }
 
 .activation_input {
@@ -169,8 +179,8 @@ h1, h2, h3, h4 {
   font-family: monospace;
   font-size: 16px;
   padding: 0.5em;
-  width: 15em;
-  height: 3em;
+  width: 95%;
+  height: 4em;
 }
 
 /*
