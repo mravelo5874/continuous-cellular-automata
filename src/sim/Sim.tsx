@@ -1,20 +1,22 @@
 import { webgl_util } from "./WebGL-Util";
 import { CanvasResize } from "./CanvasResize";
 import { Sim2D, Automata2D, Shader2D } from "./2D/Sim2D";
+import { Sim3D } from "./3D/Sim3D";
 import { Vec4 } from "../lib/TSM";
 import { delay } from "./Gen-Util"; 
 import Rand from "src/lib/rand-seed";
 
-export { Sim }
+export { Sim, SimMode }
 
-enum SimType { Sim2D, Sim3D }
+enum SimMode { Sim2D, Sim3D }
 
 class Sim {
 
-    type: SimType;
+    mode: SimMode;
     canvas: HTMLCanvasElement | null;
     context: WebGL2RenderingContext | null;
     sim2D: Sim2D | null;
+    sim3D: Sim3D | null;
     resize: CanvasResize | null;
 
     public paused: boolean;
@@ -35,10 +37,11 @@ class Sim {
     constructor() {
     
         // initialize all variables
-        this.type = SimType.Sim2D;
+        this.mode = SimMode.Sim2D;
         this.canvas = null;
         this.context = null;
         this.sim2D = null;
+        this.sim3D = null;
         this.resize = null;
         this.fps_node = null;
         this.res_node = null;
@@ -92,19 +95,21 @@ class Sim {
             this.resize?.resize_canvas_to_display_size(this.res_node);
 
             // reset current sim
-            switch (this.type) {
-                case SimType.Sim2D:
+            switch (this.mode) {
+                case SimMode.Sim2D:
                     (async () => { 
                         await delay(1)
                         this.sim2D?.reset()
                     })();
                     break;
+                case SimMode.Sim3D:
+                    break;
             }
         }
 
         // render current simulation
-        switch (this.type) {
-            case SimType.Sim2D:
+        switch (this.mode) {
+            case SimMode.Sim2D:
             let sim2D = this.sim2D as Sim2D;
             sim2D.render();
             break;
@@ -182,6 +187,15 @@ class Sim {
             case 'acid':
                 this.sim2D?.load_shader(Shader2D.acid);
                 break;
+        }
+    }
+
+    swap_mode() {
+        if (this.mode === SimMode.Sim2D) {
+            this.mode = SimMode.Sim3D;
+        }
+        else if (this.mode === SimMode.Sim3D) {
+            this.mode = SimMode.Sim2D;
         }
     }
 

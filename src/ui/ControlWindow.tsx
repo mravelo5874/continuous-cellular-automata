@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Sim } from '../sim/Sim';
+import { Sim, SimMode } from '../sim/Sim';
 import Rand from 'src/lib/rand-seed';
 
 export { ControlWindow };
@@ -12,6 +12,9 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
 
     ui_init: boolean;
     ui_open: boolean;
+
+
+
     anti_alias: boolean;
     seed: string;
     static SEED_LEN: number = 25;
@@ -37,6 +40,7 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
         this.randomize_seed = this.randomize_seed.bind(this);
         this.reset_automata = this.reset_automata.bind(this);
         this.pause_sim = this.pause_sim.bind(this);
+        this.swap_sim = this.swap_sim.bind(this);
     }
 
     componentDidMount = () => {
@@ -80,6 +84,21 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
         sim.paused = !sim.paused
     }
 
+    swap_sim() {
+        let ctrl_button = document.getElementById('ctrl_button') as HTMLButtonElement;
+        let swap_button = document.getElementById('swap_button') as HTMLButtonElement;
+
+        let sim = this.props.sim;
+        sim.swap_mode();
+
+        switch(sim.mode) {
+            case SimMode.Sim2D:
+                break;
+            case SimMode.Sim3D:
+                break;
+        }
+    }
+
     toggle_aa() {
         var aa_toggle = document.getElementById('aa') as HTMLInputElement;
         this.anti_alias = aa_toggle.checked;
@@ -97,16 +116,14 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
 
     toggle_window() {
         this.ui_open = !this.ui_open;
-        var ui_window = document.getElementById('ctrl_window') as HTMLDivElement;
+        var ui_window = document.getElementById('ctrl_window_2d') as HTMLDivElement;
         var ui_button = document.getElementById('ctrl_button') as HTMLButtonElement;
         if (this.ui_open) {
-            console.log('open!');
             ui_window.style.cssText='scale:100%;';
             ui_button.style.cssText='background-color:white;color:rgba(0, 0, 0, 0.85);';
             ui_button.innerHTML = 'close';
         }
         else {
-            console.log('closed!');
             ui_window.style.cssText='scale:0%;';
             ui_button.style.cssText='';
             ui_button.innerHTML = 'open';
@@ -411,8 +428,8 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
     render() {
         return(
             <>
-                <div id='ctrl_window' className='ui_window'>
-                    <div id='ctrl_window_inside'>
+                <div id='ctrl_window_2d' className='ui_window'>
+                    <div id='ctrl_window_2d_inside'>
                         {/* extra padding at the top of the window */}
                         <div style={{height:'0em'}}/>
 
@@ -570,6 +587,11 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
 
                 <div>
                     <button id='ctrl_button' className='ui_button' onClick={this.toggle_window}>close</button>
+                </div>
+
+                <div>
+                    {/* TODO: swap between 2D and 3D modes */}
+                    <button id='swap_button' className='ui_button' onClick={this.swap_sim}>swap 3D</button>
                 </div>
             </>
         );

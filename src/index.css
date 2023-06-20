@@ -133,7 +133,7 @@ h1, h2, h3, h4 {
   border-radius:0%;
 }
 
-#ctrl_window {
+#ctrl_window_2d {
   scale: 100%; /* start open */
   max-width: 400px;
   overflow-y: auto;
@@ -149,7 +149,7 @@ h1, h2, h3, h4 {
   direction: rtl;
 }
 
-#ctrl_window_inside {
+#ctrl_window_2d_inside {
   direction: ltr;
 }
 
