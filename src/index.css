@@ -98,18 +98,94 @@ h1, h2, h3, h4 {
 }
 
 /*
-// ###################
-// CUSTOM HTML ELEMETS
-// ###################
+// #####################
+// CONTROL WINDOWS 2D/3D
+// #####################
 */
 
-#swap_button {
+#ctrl_window_2d {
+  scale: 100%; /* start open */
+  width: 388px;
+  overflow-y: auto;
+
+  padding-top: 0.5em;
+  padding-bottom: 0.5em;
+
+  /* position */
+  position: absolute;
+  top:0px;
+  bottom:0px;
+  left:0px;
+  direction: rtl;
+}
+
+#ctrl_window_2d_inside {
+  direction: ltr;
+}
+
+#ctrl_window_3d {
+  scale: 0%; /* start closed */
+  width: 388px;
+  overflow-y: auto;
+
+  padding-top: 0.5em;
+  padding-bottom: 0.5em;
+
+  /* position */
+  position: absolute;
+  top:0px;
+  bottom:0px;
+  right:0px;
+  direction: ltr;
+}
+
+#ctrl_window_3d_inside {
+  direction: ltr;
+}
+
+/*
+// #####################
+// CONTROL BUTTONS 2D/3D
+// #####################
+*/
+
+#ctrl_button_2d {
+  scale:100%;
+  /* position */
+  position: absolute;
+  bottom:0px;
+  left:0px;
+}
+
+#ctrl_button_3d {
+  scale:0%;
+  /* position */
+  position: absolute;
+  bottom:0px;
+  right:0px;
+}
+
+#goto_3d_button {
   scale: 100%;
   /* position */
   position: absolute;
   bottom:0px;
   right:0px;
 }
+
+#goto_2d_button {
+  scale: 0%;
+  /* position */
+  position: absolute;
+  bottom:0px;
+  left:0px;
+}
+
+/*
+// ###################
+// CUSTOM HTML ELEMETS
+// ###################
+*/
 
 .ui_window {
   background-color: rgba(0, 0, 0, 0.85);
@@ -131,33 +207,6 @@ h1, h2, h3, h4 {
   border-style: solid;
   border-color: white;
   border-radius:0%;
-}
-
-#ctrl_window_2d {
-  scale: 100%; /* start open */
-  max-width: 400px;
-  overflow-y: auto;
-
-  padding-top: 0.5em;
-  padding-bottom: 0.5em;
-
-  /* position */
-  position: absolute;
-  top:0px;
-  bottom:0px;
-  left:0px;
-  direction: rtl;
-}
-
-#ctrl_window_2d_inside {
-  direction: ltr;
-}
-
-#ctrl_button {
-  /* position */
-  position: absolute;
-  bottom:0px;
-  left:0px;
 }
 
 #ctrl_module {
@@ -190,7 +239,7 @@ h1, h2, h3, h4 {
 }
 
 .kernel_input {
-  width: 90%;
+  width: 88%;
   padding-top: 0.5em;
   padding-bottom: 0.5em;
   /* border */
@@ -199,7 +248,7 @@ h1, h2, h3, h4 {
 }
 
 .kernel_input:disabled {
-  opacity: 40%;
+  opacity: 50%;
   color: white;
   /* border */
   border-width: 0.4em;
@@ -216,9 +265,9 @@ h1, h2, h3, h4 {
 }
 
 /*
-// ###################
+// #############
 // CUSTOM SLIDER
-// ###################
+// #############
 */
 
 .slider_container {
@@ -261,9 +310,9 @@ h1, h2, h3, h4 {
 }
 
 /*
-// ###################
+// #################
 // CUSTOM SCROLL BAR
-// ###################
+// #################
 */
 
 /* width */

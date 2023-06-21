@@ -34,13 +34,15 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
         this.load_automata = this.load_automata.bind(this);
         this.load_shader = this.load_shader.bind(this);
         this.load_activation = this.load_activation.bind(this);
-        this.toggle_window = this.toggle_window.bind(this);
+        this.toggle_window_2d = this.toggle_window_2d.bind(this);
+        this.toggle_window_3d = this.toggle_window_3d.bind(this);
         this.toggle_aa = this.toggle_aa.bind(this);
         this.randomize_kernel = this.randomize_kernel.bind(this);
         this.randomize_seed = this.randomize_seed.bind(this);
         this.reset_automata = this.reset_automata.bind(this);
         this.pause_sim = this.pause_sim.bind(this);
-        this.swap_sim = this.swap_sim.bind(this);
+        this.goto_2d_sim = this.goto_2d_sim.bind(this);
+        this.goto_3d_sim = this.goto_3d_sim.bind(this);
     }
 
     componentDidMount = () => {
@@ -84,19 +86,48 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
         sim.paused = !sim.paused
     }
 
-    swap_sim() {
-        let ctrl_button = document.getElementById('ctrl_button') as HTMLButtonElement;
-        let swap_button = document.getElementById('swap_button') as HTMLButtonElement;
+    goto_3d_sim() {
+        let ctrl_2d = document.getElementById('ctrl_button_2d') as HTMLButtonElement;
+        let ctrl_3d = document.getElementById('ctrl_button_3d') as HTMLButtonElement;
+        let goto_2d = document.getElementById('goto_2d_button') as HTMLButtonElement;
+        let goto_3d = document.getElementById('goto_3d_button') as HTMLButtonElement;
+        let window_2d = document.getElementById('ctrl_window_2d') as HTMLDivElement;
+        let window_3d = document.getElementById('ctrl_window_3d') as HTMLDivElement;
+
+        this.ui_open = true;
+        ctrl_3d.innerHTML = 'close';
+        ctrl_2d.style.scale = '0%';
+        ctrl_3d.style.scale = '100%';
+        goto_2d.style.scale = '100%';
+        goto_3d.style.scale = '0%';
+        window_2d.style.scale = '0%';
+        window_3d.style.scale = '100%';
+        this.ui_open = true;
 
         let sim = this.props.sim;
-        sim.swap_mode();
+        sim.set_mode(SimMode.Sim3D);
 
-        switch(sim.mode) {
-            case SimMode.Sim2D:
-                break;
-            case SimMode.Sim3D:
-                break;
-        }
+    }
+
+    goto_2d_sim() {
+        let ctrl_2d = document.getElementById('ctrl_button_2d') as HTMLButtonElement;
+        let ctrl_3d = document.getElementById('ctrl_button_3d') as HTMLButtonElement;
+        let goto_2d = document.getElementById('goto_2d_button') as HTMLButtonElement;
+        let goto_3d = document.getElementById('goto_3d_button') as HTMLButtonElement;
+        let window_2d = document.getElementById('ctrl_window_2d') as HTMLDivElement;
+        let window_3d = document.getElementById('ctrl_window_3d') as HTMLDivElement;
+
+        this.ui_open = true;
+        ctrl_2d.innerHTML = 'close';
+        ctrl_2d.style.scale = '100%';
+        ctrl_3d.style.scale = '0%';
+        goto_2d.style.scale = '0%';
+        goto_3d.style.scale = '100%';
+        window_2d.style.scale = '100%';
+        window_3d.style.scale = '0%';
+
+        let sim = this.props.sim;
+        sim.set_mode(SimMode.Sim2D);
     }
 
     toggle_aa() {
@@ -114,10 +145,10 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
         }
     }
 
-    toggle_window() {
+    toggle_window_2d() {
         this.ui_open = !this.ui_open;
         var ui_window = document.getElementById('ctrl_window_2d') as HTMLDivElement;
-        var ui_button = document.getElementById('ctrl_button') as HTMLButtonElement;
+        var ui_button = document.getElementById('ctrl_button_2d') as HTMLButtonElement;
         if (this.ui_open) {
             ui_window.style.cssText='scale:100%;';
             ui_button.style.cssText='background-color:white;color:rgba(0, 0, 0, 0.85);';
@@ -126,6 +157,22 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
         else {
             ui_window.style.cssText='scale:0%;';
             ui_button.style.cssText='';
+            ui_button.innerHTML = 'open';
+        }
+    }
+
+    toggle_window_3d() {
+        this.ui_open = !this.ui_open;
+        var ui_window = document.getElementById('ctrl_window_3d') as HTMLDivElement;
+        var ui_button = document.getElementById('ctrl_button_3d') as HTMLButtonElement;
+        if (this.ui_open) {
+            ui_window.style.cssText='scale:100%;';
+            ui_button.style.cssText='background-color:white;color:rgba(0, 0, 0, 0.85);scale:100%';
+            ui_button.innerHTML = 'close';
+        }
+        else {
+            ui_window.style.cssText='scale:0%;';
+            ui_button.style.cssText='scale:100%';
             ui_button.innerHTML = 'open';
         }
     }
@@ -435,8 +482,8 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
 
                         <div id='ctrl_module'>
                             <div className='ui_info'>
-                                <h4 className='ctrl_module_sub_title'>fps: <span id='fps' className='alt_color_1'/></h4>
-                                <h4 className='ctrl_module_sub_title'>res: <span id='res' className='alt_color_2'/></h4>
+                                <h4 className='ctrl_module_sub_title'>fps: <span id='fps_2d' className='alt_color_1'/></h4>
+                                <h4 className='ctrl_module_sub_title'>res: <span id='res_2d' className='alt_color_2'/></h4>
                             </div>
                         </div>
 
@@ -585,13 +632,35 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
                     </div>
                 </div>
 
-                <div>
-                    <button id='ctrl_button' className='ui_button' onClick={this.toggle_window}>close</button>
+
+                <div id='ctrl_window_3d' className='ui_window'>
+                    <div id='ctrl_window_3d_inside'>
+                        {/* extra padding at the top of the window */}
+                        <div style={{height:'0em'}}/>
+
+                        <div id='ctrl_module'>
+                            <div className='ui_info'>
+                                <h4 className='ctrl_module_sub_title'>fps: <span id='fps_3d' className='alt_color_1'/></h4>
+                                <h4 className='ctrl_module_sub_title'>res: <span id='res_3d' className='alt_color_2'/></h4>
+                            </div>
+                        </div>
+
+                        <hr/>
+                    </div>
                 </div>
 
                 <div>
-                    {/* TODO: swap between 2D and 3D modes */}
-                    <button id='swap_button' className='ui_button' onClick={this.swap_sim}>swap 3D</button>
+                    <button id='ctrl_button_2d' className='ui_button' onClick={this.toggle_window_2d}>close</button>
+                </div>
+                <div>
+                    <button id='ctrl_button_3d' className='ui_button' onClick={this.toggle_window_3d}>close</button>
+                </div>
+
+                <div>
+                    <button id='goto_3d_button' className='ui_button' onClick={this.goto_3d_sim}>swap 3D</button>
+                </div>
+                <div>
+                    <button id='goto_2d_button' className='ui_button' onClick={this.goto_2d_sim}>swap 2D</button>
                 </div>
             </>
         );

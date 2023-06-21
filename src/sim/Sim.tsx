@@ -31,8 +31,10 @@ class Sim {
     private frame_count: number = 0;
 
     // ui nodes
-    public fps_node: Text | null;
-    public res_node: Text | null;
+    public fps_node_2d: Text | null;
+    public res_node_2d: Text | null;
+    public fps_node_3d: Text | null;
+    public res_node_3d: Text | null;
 
     constructor() {
     
@@ -43,8 +45,10 @@ class Sim {
         this.sim2D = null;
         this.sim3D = null;
         this.resize = null;
-        this.fps_node = null;
-        this.res_node = null;
+        this.fps_node_2d = null;
+        this.res_node_2d = null;
+        this.fps_node_3d = null;
+        this.res_node_3d = null;
 
         this.fps = 0;
         this.start_time = 0;
@@ -62,19 +66,32 @@ class Sim {
         this.canvas = _canvas;
         this.context = webgl_util.request_context(this.canvas);
         this.sim2D = new Sim2D(this);
+        this.sim3D = new Sim3D(this);
         this.resize = new CanvasResize(this.canvas);
 
         // add fps text element to screen
-        const fps_element = document.querySelector('#fps')
-        this.fps_node = document.createTextNode('')
-        fps_element?.appendChild(this.fps_node)
-        this.fps_node.nodeValue = ''
+        // 2d fps
+        let fps_element = document.querySelector('#fps_2d')
+        this.fps_node_2d = document.createTextNode('')
+        fps_element?.appendChild(this.fps_node_2d)
+        this.fps_node_2d.nodeValue = ''
+        // 3d fps
+        fps_element = document.querySelector('#fps_3d')
+        this.fps_node_3d = document.createTextNode('')
+        fps_element?.appendChild(this.fps_node_3d)
+        this.fps_node_3d.nodeValue = ''
 
         // add res text element to screen
-        const res_element = document.querySelector('#res')
-        this.res_node = document.createTextNode('')
-        res_element?.appendChild(this.res_node)
-        this.res_node.nodeValue = ''
+        // 2d res
+        let res_element = document.querySelector('#res_2d')
+        this.res_node_2d = document.createTextNode('')
+        res_element?.appendChild(this.res_node_2d)
+        this.res_node_2d.nodeValue = ''
+        // 3d res
+        res_element = document.querySelector('#res_3d')
+        this.res_node_3d = document.createTextNode('')
+        res_element?.appendChild(this.res_node_3d)
+        this.res_node_3d.nodeValue = ''
 
         console.log('simulation initialized.');
     }
@@ -92,27 +109,33 @@ class Sim {
         if (CanvasResize.update_canvas) {
             console.log('update canvas!');
             CanvasResize.update_canvas = false;
-            this.resize?.resize_canvas_to_display_size(this.res_node);
 
             // reset current sim
             switch (this.mode) {
                 case SimMode.Sim2D:
+                    this.resize?.resize_canvas_to_display_size(this.res_node_2d);
                     (async () => { 
                         await delay(1)
                         this.sim2D?.reset()
                     })();
                     break;
                 case SimMode.Sim3D:
+                    this.resize?.resize_canvas_to_display_size(this.res_node_3d);
                     break;
             }
         }
 
         // render current simulation
         switch (this.mode) {
+            default: break;
             case SimMode.Sim2D:
-            let sim2D = this.sim2D as Sim2D;
-            sim2D.render();
-            break;
+                let sim2D = this.sim2D as Sim2D;
+                sim2D.render();
+                break;
+            case SimMode.Sim3D:
+                let sim3D = this.sim3D as Sim3D;
+                sim3D.render();
+                break;
         }
 
         // calculate current delta time
@@ -126,8 +149,16 @@ class Sim {
             this.fps = this.frame_count;
             this.frame_count = 0;
             this.prev_fps_time = Date.now();
-
-            if (this.fps_node) this.fps_node.nodeValue = this.fps.toFixed(0)
+            
+            switch (this.mode) {
+                default: break;
+                case SimMode.Sim2D:
+                    if (this.fps_node_2d) this.fps_node_2d.nodeValue = this.fps.toFixed(0)
+                    break;
+                case SimMode.Sim3D:
+                    if (this.fps_node_3d) this.fps_node_3d.nodeValue = this.fps.toFixed(0)
+                    break;
+            }
         }
 
         // request next frame to be drawn
@@ -190,13 +221,10 @@ class Sim {
         }
     }
 
-    swap_mode() {
-        if (this.mode === SimMode.Sim2D) {
-            this.mode = SimMode.Sim3D;
-        }
-        else if (this.mode === SimMode.Sim3D) {
-            this.mode = SimMode.Sim2D;
-        }
+    set_mode(_mode: SimMode) {
+        if (_mode === this.mode) return;
+        this.mode = _mode;
+        CanvasResize.update_canvas = true;
     }
 
     reset_2d(_seed: string) {
