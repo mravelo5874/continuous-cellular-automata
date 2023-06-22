@@ -39,7 +39,6 @@ class Sim2D {
     brush_1: Uint8Array;
     brush_0: Uint8Array;
   
-
     constructor(_sim: Sim) {
         this.sim = _sim;
         this.kernel = kernels_2d.worms_kernel();
@@ -310,8 +309,7 @@ class Sim2D {
         this.draw(gl, w, h);
     }
 
-    public draw(gl: WebGL2RenderingContext, w: number, h: number): void
-    {
+    public draw(gl: WebGL2RenderingContext, w: number, h: number) {
         // use program !!!
         let program = this.program as WebGLProgram
         gl.useProgram(program)

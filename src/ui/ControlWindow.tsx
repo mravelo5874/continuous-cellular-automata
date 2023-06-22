@@ -13,8 +13,6 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
     ui_init: boolean;
     ui_open: boolean;
 
-
-
     anti_alias: boolean;
     seed: string;
     static SEED_LEN: number = 25;
@@ -151,7 +149,7 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
         var ui_button = document.getElementById('ctrl_button_2d') as HTMLButtonElement;
         if (this.ui_open) {
             ui_window.style.cssText='scale:100%;';
-            ui_button.style.cssText='background-color:white;color:rgba(0, 0, 0, 0.85);';
+            ui_button.style.cssText='background-color:white;color:rgba(0, 0, 0, 0.85);border-color:black;';
             ui_button.innerHTML = 'close';
         }
         else {
@@ -167,7 +165,7 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
         var ui_button = document.getElementById('ctrl_button_3d') as HTMLButtonElement;
         if (this.ui_open) {
             ui_window.style.cssText='scale:100%;';
-            ui_button.style.cssText='background-color:white;color:rgba(0, 0, 0, 0.85);scale:100%';
+            ui_button.style.cssText='background-color:white;color:rgba(0, 0, 0, 0.85);border-color:black;scale:100%';
             ui_button.innerHTML = 'close';
         }
         else {

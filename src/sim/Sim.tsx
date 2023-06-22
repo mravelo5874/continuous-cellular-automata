@@ -37,7 +37,6 @@ class Sim {
     public res_node_3d: Text | null;
 
     constructor() {
-    
         // initialize all variables
         this.mode = SimMode.Sim2D;
         this.canvas = null;
@@ -62,7 +61,6 @@ class Sim {
     }
 
     init(_canvas: HTMLCanvasElement) {
-
         this.canvas = _canvas;
         this.context = webgl_util.request_context(this.canvas);
         this.sim2D = new Sim2D(this);
@@ -224,6 +222,7 @@ class Sim {
     set_mode(_mode: SimMode) {
         if (_mode === this.mode) return;
         this.mode = _mode;
+
         CanvasResize.update_canvas = true;
     }
 
