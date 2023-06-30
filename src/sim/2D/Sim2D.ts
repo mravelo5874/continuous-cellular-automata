@@ -1,16 +1,16 @@
-import { Sim } from "../Sim";
-import { kernels_2d } from "./Kernels2D";
-import { activations_2d } from "./Activations2D";
-import { CanvasResize } from "../CanvasResize";
+import { Sim } from '../Sim';
+import { kernels_2d } from './Kernels2D';
+import { activations_2d } from './Activations2D';
+import { CanvasResize } from '../CanvasResize';
 import { 
     default_vert,
-    rgb_frag, bnw_frag, alpha_frag, acid_frag } from "./Shaders2D";
+    rgb_frag, bnw_frag, alpha_frag, acid_frag } from './Shaders2D';
 import { 
     generate_random_rgb_state,
     generate_random_alpha_state,
     generate_random_binary_state,
     generate_empty_state } from './Util2D';
-import Rand from "src/lib/rand-seed";
+import Rand from 'src/lib/rand-seed';
 
 export { Sim2D, Automata2D, Shader2D };
 

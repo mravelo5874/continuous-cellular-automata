@@ -95,8 +95,8 @@ class Sim {
     }
 
     start() {
-        // start 2D simulation and begin render loop
         this.sim2D?.start();
+        this.sim3D?.start();
         window.requestAnimationFrame(() => this.render_loop())
         console.log('simulation started.');
     }
@@ -119,6 +119,7 @@ class Sim {
                     break;
                 case SimMode.Sim3D:
                     this.resize?.resize_canvas_to_display_size(this.res_node_3d);
+                    // TODO: this
                     break;
             }
         }

@@ -1,7 +1,12 @@
 export { VolumeData }
 
+/**
+ * We want to swap between volume buffers when updating 
+ * Therefore there is always a texture and framebuffer pair
+ * When reading we use the texture directly
+ * When writing we use the layered framebuffer 
+ */
 class VolumeData {
-
     size: number;
     gl: WebGL2RenderingContext;
     texture: WebGLTexture;
@@ -61,7 +66,6 @@ class VolumeData {
 }
 
 class LayeredFrameBuffer {
-
     fb: WebGLFramebuffer;
     layers: Array<number>;
     texture: WebGLTexture;
