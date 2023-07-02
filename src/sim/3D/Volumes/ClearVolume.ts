@@ -1,7 +1,7 @@
 import { Sim } from 'src/sim/Sim';
 import { VolumeData } from './VolumeData';
 import { square_mesh } from '../Meshes/Square';
-import { compile_program } from '../Util3D';
+import { PRGM_LOC, compile_program } from '../Util3D';
 import { UniformLocationCache } from '../UniformLocationCache';
 import { Vec4 } from 'src/lib/TSM';
 
@@ -13,7 +13,7 @@ class ClearVolume {
     ibo: WebGLBuffer | null;
     vbo: WebGLBuffer | null;
     vao: WebGLVertexArrayObject | null;
-    programs: { [key: number]: Program_Location } = {};
+    programs: { [key: number]: PRGM_LOC } = {};
     clear_color: Vec4;
 
     constructor(_sim: Sim) {
@@ -61,8 +61,6 @@ class ClearVolume {
     }
 
     create_program(depth: number) {
-        let gl = this.sim.context as WebGL2RenderingContext;
-
         let vert =
             `#version 300 es
             precision mediump float;
@@ -72,32 +70,32 @@ class ClearVolume {
             }`;
 
         let frag =
-        `#version 300 es
-        precision mediump float;
-        out vec4 vFragColor[${depth}];
-        uniform vec4 u_clear_color;
-        void main() {
-            ${
-                Array(depth)
-                    .fill(0)
-                    .map((_,z) => `vFragColor[${z}] = u_clear_color;`)
-                    .join('\n')
-            }
-        }`;
+            `#version 300 es
+            precision mediump float;
+            out vec4 vFragColor[${depth}];
+            uniform vec4 u_clear_color;
+            void main() {
+                ${
+                    Array(depth)
+                        .fill(0)
+                        .map((_,z) => `vFragColor[${z}] = u_clear_color;`)
+                        .join('\n')
+                }
+            }`;
 
+        let gl = this.sim.context as WebGL2RenderingContext;
         return compile_program(gl, vert, frag);
     }
 
-    get_program(depth: number): Program_Location {
-        let key = depth;
-        if (key in this.programs) {
-            return this.programs[key];
+    get_program(depth: number): PRGM_LOC {
+        if (depth in this.programs) {
+            return this.programs[depth];
         }
 
         let program = this.create_program(depth);
         let ulc = new UniformLocationCache(this.sim, program);
-        let value = new Program_Location(program, ulc);
-        this.programs[key] = value;
+        let value = new PRGM_LOC(program, ulc);
+        this.programs[depth] = value;
         return value;
     }
 
@@ -130,15 +128,5 @@ class ClearVolume {
             gl.clear(gl.COLOR_BUFFER_BIT);
             gl.drawElements(gl.TRIANGLES, this.mesh.index_data.length, gl.UNSIGNED_INT, 0);
         }
-    }
-}
-
-class Program_Location {
-    program: WebGLProgram;
-    location: UniformLocationCache;
-
-    constructor(_program: WebGLProgram, _location: UniformLocationCache) {
-        this.program = _program;
-        this.location = _location;
     }
 }

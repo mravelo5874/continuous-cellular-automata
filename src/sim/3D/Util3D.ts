@@ -1,4 +1,17 @@
-export { validate_shader, validate_program, compile_program };
+import { UniformLocationCache } from "./UniformLocationCache";
+
+export { PRGM_LOC, validate_shader, validate_program, compile_program };
+
+class PRGM_LOC {
+    program: WebGLProgram;
+    location: UniformLocationCache;
+
+    constructor(_program: WebGLProgram, 
+        _location: UniformLocationCache) {
+        this.program = _program;
+        this.location = _location;
+    }
+}
 
 let prepend_line_numbers = (src: string) => {
     let lines = src.split('\n').map((v, i) => `${i+1}\t| ${v}`);

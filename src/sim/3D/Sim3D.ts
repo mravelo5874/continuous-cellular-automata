@@ -53,7 +53,7 @@ class Sim3D {
         // create volumes
         this.compute_volume = new ComputeVolume();
         this.clear_volume = new ClearVolume(_sim);
-        this.randomize_volume = new RandomizeVolume();
+        this.randomize_volume = new RandomizeVolume(_sim);
         this.render_volume = new RenderVolume(_sim);
         this.render_volume.set_colormap(this.colormap);
     }
