@@ -1,13 +1,14 @@
 import { Camera } from 'src/lib/Camera';
 import { Vec3 } from "src/lib/TSM";
 import { VolumeData } from "./VolumeData";
-import { Colormap3D, Sim3D } from "./Sim3D";
-import { Cube } from './Cube';
+import { Colormap3D } from "../Sim3D";
+import { Cube } from '../Cube';
+import { Sim } from 'src/sim/Sim';
 
 export { RenderVolume }
 
 class RenderVolume {
-    sim3D: Sim3D;
+    sim: Sim;
     cube: Cube;
     program: WebGLProgram;
     vao: WebGLVertexArrayObject
@@ -22,15 +23,15 @@ class RenderVolume {
     min_zoom: number = 0.0
     max_zoom: number = 8.0
 
-    constructor(_sim3D: Sim3D) {
-        this.sim3D = _sim3D;
+    constructor(_sim: Sim) {
+        this.sim = _sim;
         this.cube = new Cube();
 
-        let gl = _sim3D.sim.context as WebGL2RenderingContext;
+        let gl = _sim.context as WebGL2RenderingContext;
         this.program = gl.createProgram() as WebGLProgram
         this.vao = gl.createVertexArray() as WebGLVertexArrayObject
 
-        let canvas = _sim3D.sim.canvas as HTMLCanvasElement;
+        let canvas = _sim.canvas as HTMLCanvasElement;
         this.camera = new Camera(
             new Vec3([0, 0, -this.zoom]),
             new Vec3([0, 0, 0]),
@@ -43,7 +44,6 @@ class RenderVolume {
         
         this.func = null;
         this.init(gl);
-        this.set_colormap(_sim3D.colormap);
     }
 
     init(gl: WebGL2RenderingContext) {
@@ -91,8 +91,8 @@ class RenderVolume {
     }
 
     render(w: number, h: number, volume_in: VolumeData) {
-        let gl = this.sim3D.sim.context as WebGL2RenderingContext;
-        let bg = this.sim3D.sim.bg_color;
+        let gl = this.sim.context as WebGL2RenderingContext;
+        let bg = this.sim.bg_color;
 
         // TODO: rotate cube if there is no user input
         // if (!this.sim.paused) {
@@ -227,7 +227,7 @@ class RenderVolume {
     }
 
     load_colormap(path: string) {
-        let gl = this.sim3D.sim.context as WebGL2RenderingContext;
+        let gl = this.sim.context as WebGL2RenderingContext;
         let transfer_function = gl.createTexture() as WebGLTexture
         gl.bindTexture(gl.TEXTURE_2D, transfer_function)
         // add single pixel for now
@@ -250,7 +250,7 @@ class RenderVolume {
 
     set_zoom(_zoom: number) {
         this.zoom = _zoom
-        let canvas = this.sim3D.sim.canvas as HTMLCanvasElement;
+        let canvas = this.sim.canvas as HTMLCanvasElement;
         // offset camera
         this.camera = new Camera(
             new Vec3([0, 0, -this.zoom]),

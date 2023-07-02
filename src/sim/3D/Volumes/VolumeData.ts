@@ -10,7 +10,7 @@ class VolumeData {
     size: number;
     gl: WebGL2RenderingContext;
     texture: WebGLTexture;
-    frame_buffers: Array<WebGLFramebuffer>;
+    frame_buffers: Array<LayeredFrameBuffer>;
     max_layers: number;
 
     constructor(_gl: WebGL2RenderingContext, _size: number) {
@@ -34,17 +34,19 @@ class VolumeData {
         gl.texImage3D(gl.TEXTURE_3D, 0, gl.RG8, s, s, s, 0, gl.RG, gl.UNSIGNED_BYTE, null);
 
         // create framebuffers for layers of volume
-        let framebuffers = []
+        let frame_buffers = []
         const max_layers = gl.getParameter(gl.MAX_COLOR_ATTACHMENTS);
-        for (let i = 0; i < s; i++) {
-            let rem_layers = s - i;
-            let total_layers = Math.min(rem_layers, max_layers);
-            let fb = new LayeredFrameBuffer(gl, texture, i, total_layers);
-            framebuffers.push(fb);
+        let curr_z = 0;
+        while (curr_z !== s) {
+            let rem_z = s - curr_z;
+            let total_layers = Math.min(rem_z, max_layers);
+            let fb = new LayeredFrameBuffer(gl, texture, curr_z, total_layers);
+            frame_buffers.push(fb);
+            curr_z += total_layers;
         }
 
         this.texture = texture;
-        this.frame_buffers = framebuffers;
+        this.frame_buffers = frame_buffers;
         this.max_layers = max_layers;
     }
 
@@ -73,6 +75,9 @@ class LayeredFrameBuffer {
     z_offset: number;
 
     constructor(gl: WebGL2RenderingContext, texture: WebGLTexture, z_offset: number, total_layers: number) {
+        // console.log('z_offset: ' + z_offset);
+        // console.log('total_layers: ' + total_layers);
+        
         let framebuffer = gl.createFramebuffer() as WebGLFramebuffer;
         let layers = Array(total_layers);
         gl.bindFramebuffer(gl.FRAMEBUFFER, framebuffer);

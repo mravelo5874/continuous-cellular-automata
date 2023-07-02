@@ -1,10 +1,14 @@
 import { Sim } from '../Sim';
-import { VolumeData } from './VolumeData';
-import { ComputeVolume } from './ComputeVolume';
-import { RenderVolume } from './RenderVolume';
-import { RandomizeVolume } from './RandomizeVolume';
+
+import { VolumeData } from './Volumes/VolumeData';
+import { ClearVolume } from './Volumes/ClearVolume';
+import { RandomizeVolume } from './Volumes/RandomizeVolume';
+import { ComputeVolume } from './Volumes/ComputeVolume';
+import { RenderVolume } from './Volumes/RenderVolume';
+
 import { kernels_3d } from './Kernels3D';
 import { activations_3d } from './Activations3D';
+
 
 export { Sim3D, Colormap3D }
 
@@ -23,13 +27,13 @@ class Sim3D {
     size: number;
     colormap: Colormap3D;
     automata: Automata3D;
-    
-    volume_texture: WebGLTexture | null;
 
-    // TODO:
+    // volumes
+    clear_volume: ClearVolume;
+    randomize_volume: RandomizeVolume;
     compute_volume: ComputeVolume;
     render_volume: RenderVolume;
-    randomize_volume: RandomizeVolume;
+    
 
     constructor(_sim: Sim) {
         this.sim = _sim;
@@ -39,7 +43,6 @@ class Sim3D {
         this.size = 64;
         this.automata = Automata3D.perlin;
         this.colormap = Colormap3D.ygb;
-        this.volume_texture = null;
 
         // create volume datas
         let gl = this.sim.context as WebGL2RenderingContext;
@@ -49,8 +52,10 @@ class Sim3D {
         
         // create volumes
         this.compute_volume = new ComputeVolume();
-        this.render_volume = new RenderVolume(this);
-        this.randomize_volume = new RandomizeVolume(this);
+        this.clear_volume = new ClearVolume(_sim);
+        this.randomize_volume = new RandomizeVolume();
+        this.render_volume = new RenderVolume(_sim);
+        this.render_volume.set_colormap(this.colormap);
     }
 
     public start() {
