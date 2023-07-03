@@ -51,9 +51,9 @@ class Sim3D {
         this.volume_new = new VolumeData(gl, s);
         
         // create volumes
-        this.compute_volume = new ComputeVolume();
         this.clear_volume = new ClearVolume(_sim);
         this.randomize_volume = new RandomizeVolume(_sim);
+        this.compute_volume = new ComputeVolume(_sim);
         this.render_volume = new RenderVolume(_sim);
         this.render_volume.set_colormap(this.colormap);
     }
@@ -63,6 +63,9 @@ class Sim3D {
     }
 
     public reset(_seed?: string, _reset_cam: boolean = true) {
+        this.randomize_volume.render(this.volume_old);
+
+
         // TODO: set automata
         switch (this.automata)
         {
