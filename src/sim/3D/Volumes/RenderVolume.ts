@@ -175,19 +175,9 @@ class RenderVolume {
         // set volume uniform
         if (volume) {
             const volume_loc = gl.getUniformLocation(program, 'u_volume');
-            gl.activeTexture(gl.TEXTURE2)
-            gl.bindTexture(gl.TEXTURE_3D, volume.texture)
-            // // TODO: replace auto volume
-            // const s = volume.size;
-            // let data = this.auto_volume.get_volume()
-            // gl.texImage3D(gl.TEXTURE_3D, 0, gl.ALPHA, s, s, s, 0, gl.ALPHA, gl.UNSIGNED_BYTE, data)
-            // gl.generateMipmap(gl.TEXTURE_3D)
-            // gl.texParameteri(gl.TEXTURE_3D, gl.TEXTURE_WRAP_R, gl.CLAMP_TO_EDGE)
-            // gl.texParameteri(gl.TEXTURE_3D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
-            // gl.texParameteri(gl.TEXTURE_3D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
-            // gl.texParameteri(gl.TEXTURE_3D, gl.TEXTURE_MIN_FILTER, gl.LINEAR)
-            // gl.texParameteri(gl.TEXTURE_3D, gl.TEXTURE_MAG_FILTER, gl.LINEAR)
-            gl.uniform1i(volume_loc, 2)
+            gl.activeTexture(gl.TEXTURE0);
+            gl.bindTexture(gl.TEXTURE_3D, volume.texture);
+            gl.uniform1i(volume_loc, 0)
         }
         
         // bind transfer function texture

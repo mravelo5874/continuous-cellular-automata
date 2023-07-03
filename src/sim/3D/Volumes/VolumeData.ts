@@ -75,9 +75,6 @@ class LayeredFrameBuffer {
     z_offset: number;
 
     constructor(gl: WebGL2RenderingContext, texture: WebGLTexture, z_offset: number, total_layers: number) {
-        // console.log('z_offset: ' + z_offset);
-        // console.log('total_layers: ' + total_layers);
-        
         let framebuffer = gl.createFramebuffer() as WebGLFramebuffer;
         let layers = Array(total_layers);
         gl.bindFramebuffer(gl.FRAMEBUFFER, framebuffer);
