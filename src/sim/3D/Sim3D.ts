@@ -13,7 +13,7 @@ import { activations_3d } from './Activations3D';
 export { Sim3D, Colormap3D }
 
 enum Colormap3D { cool_warm, plasma, virdis, rainbow, green, ygb, END }
-enum Automata3D { custom, sphere, perlin, random, organized, END }
+enum Automata3D { custom, END }
 
 class Sim3D {
     // automata variables
@@ -41,7 +41,7 @@ class Sim3D {
         this.activation = activations_3d.default_activation();
         
         this.size = 64;
-        this.automata = Automata3D.perlin;
+        this.automata = Automata3D.custom;
         this.colormap = Colormap3D.ygb;
 
         // create volume datas
@@ -63,34 +63,22 @@ class Sim3D {
     }
 
     public reset(_seed?: string, _reset_cam: boolean = true) {
+        // reset framebuffer
+        let gl = this.sim.context as WebGL2RenderingContext;
+        gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+        gl.disable(gl.CULL_FACE);
+        gl.disable(gl.DEPTH_TEST);
+
+        // TODO: customize randomize volume 
         this.randomize_volume.render(this.volume_old);
 
-
         // TODO: set automata
-        switch (this.automata)
-        {
-            default: return;
-            case Automata3D.sphere:
-                //this.auto_volume.sphere_volume()
-                //this.neural_app.option_ui.auto_node.nodeValue = 'sphere'
-                break
-            case Automata3D.organized:
-                //this.neural_app.option_ui.auto_node.nodeValue = 'organized'
-                //this.auto_volume.organize_volume()
-                break
-            case Automata3D.random:
-                //this.neural_app.option_ui.auto_node.nodeValue = 'random'
-                //this.auto_volume.binary_randomize_volume(Date.now().toString(), 0.8)
-                break
-            case Automata3D.perlin:
-                //this.neural_app.option_ui.auto_node.nodeValue = 'perlin'
-                //this.auto_volume.perlin_volume(Date.now().toString(), Vec3.zero)
-                //this.auto_volume.start_perlin()
-                break
+        switch (this.automata) {
+            default: break;
         }
 
         // reset camera
-        // if (_reset_cam) this.set_zoom(this.zoom);
+        if (_reset_cam) this.render_volume.reset_camera();
     }
 
     public render() {

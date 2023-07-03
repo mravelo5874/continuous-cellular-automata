@@ -1,4 +1,4 @@
-import { Sim2D } from "./2D/Sim2D";
+import { Sim } from "./Sim";
 
 export { CanvasResize };
 
@@ -67,8 +67,8 @@ class CanvasResize {
         // Get the size the browser is displaying the canvas in device pixels.
         let [displayWidth, displayHeight] = CanvasResize.canvas_to_disp_size.get(this.canvas) as number[];
 
-        displayWidth /= Sim2D.zoom;
-        displayHeight /= Sim2D.zoom;
+        displayWidth /= Sim.zoom;
+        displayHeight /= Sim.zoom;
 
         if (res_node) res_node.nodeValue = displayWidth.toFixed(0) + ' x ' + displayHeight.toFixed(0)
     

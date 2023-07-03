@@ -25,7 +25,6 @@ class Sim2D {
     activation: string;
     shader: Shader2D;
     automata: Automata2D;
-    static zoom: number = 1.0;
 
     // render variables
     program: WebGLProgram | null;
@@ -33,6 +32,7 @@ class Sim2D {
     vertices: Float32Array;
     textures: WebGLTexture[];
     framebuffers: WebGLFramebuffer[];
+    canvas_zoom: number = 4.0;
 
     // brush stuff
     brush_size: number = 100;
@@ -140,9 +140,9 @@ class Sim2D {
         // prepare render context
         let gl = this.sim.context as WebGL2RenderingContext;
         let canvas = this.sim.canvas as HTMLCanvasElement;
-        gl.disable(gl.CULL_FACE)
-        gl.disable(gl.DEPTH_TEST)
-        gl.bindFramebuffer(gl.FRAMEBUFFER, null)
+        gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+        gl.disable(gl.CULL_FACE);
+        gl.disable(gl.DEPTH_TEST);
 
         // set 2D shader
         let vert = default_vert
@@ -386,9 +386,9 @@ class Sim2D {
 
     private set_fb(fbo: WebGLFramebuffer | null, width: number, height: number, gl: WebGL2RenderingContext): void {
       // make this the framebuffer we are rendering to.
-      gl.bindFramebuffer(gl.FRAMEBUFFER, fbo)
+      gl.bindFramebuffer(gl.FRAMEBUFFER, fbo);
       // Tell WebGL how to convert from clip space to pixels
-      gl.viewport(0, 0, width, height)
+      gl.viewport(0, 0, width, height);
     }
 
     public set_kernel(_kernel: Float32Array) {
@@ -402,11 +402,6 @@ class Sim2D {
     public set_activation(_activation: string) {
         this.activation = _activation;
         this.reset();
-    }
-
-    public set_zoom(_zoom: number) {
-        Sim2D.zoom = _zoom;
-        CanvasResize.update_canvas = true;
     }
 
     public set_brush(size: number): void {  

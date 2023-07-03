@@ -47,8 +47,6 @@ class RenderVolume {
     }
 
     init(gl: WebGL2RenderingContext) {
-        gl.bindFramebuffer(gl.FRAMEBUFFER, null);
-
         {/* CREATE RENDER PROGRAM */}
         let vert = _3D_VERT;
         let frag = _3D_FRAG;
@@ -94,20 +92,21 @@ class RenderVolume {
         let gl = this.sim.context as WebGL2RenderingContext;
         let bg = this.sim.bg_color;
 
-        // TODO: rotate cube if there is no user input
-        // if (!this.sim.paused) {
-        //     if (!this.neural_app.user_input.mouse_down) {
-        //         let t = this.sim.get_elapsed_time() / 1000
-        //         camera.orbitTarget(camera.up().normalize(), this.rot_speed * 0.05)
-        //     }
-        // }
+        //TODO: rotate cube if there is no user input
+        if (!this.sim.paused) {
+            if (!this.sim.is_input) {
+                this.camera.orbitTarget(this.camera.up().normalize(), this.rot_speed * 0.05);
+            }
+        }
 
         // Drawing
+        gl.bindFramebuffer(gl.FRAMEBUFFER, null);
         gl.clearColor(bg.r, bg.g, bg.b, bg.a);
         gl.clear(gl.COLOR_BUFFER_BIT);
-        gl.enable(gl.CULL_FACE);
+        
         gl.cullFace(gl.FRONT);
         gl.frontFace(gl.CCW);
+        gl.enable(gl.CULL_FACE);
         gl.enable(gl.BLEND);
         gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
         gl.viewport(0, 0, w, h);
@@ -116,10 +115,11 @@ class RenderVolume {
         this.setup_cube_render(gl, volume_in);
 
         // draw
+        gl.bindFramebuffer(gl.FRAMEBUFFER, null);
         gl.drawElements(gl.TRIANGLES, this.cube.get_idx_u32().length, gl.UNSIGNED_INT, 0);
     }
 
-    setup_cube_render(gl: WebGL2RenderingContext, volume?: VolumeData) {
+    setup_cube_render(gl: WebGL2RenderingContext, _volume?: VolumeData) {
         let program = this.program as WebGLProgram;
         
         // draw cube
@@ -173,11 +173,11 @@ class RenderVolume {
         gl.uniform3fv(eye_loc, new Float32Array(this.camera.pos().xyz))
 
         // set volume uniform
-        if (volume) {
+        if (_volume) {
             const volume_loc = gl.getUniformLocation(program, 'u_volume');
-            gl.activeTexture(gl.TEXTURE0);
-            gl.bindTexture(gl.TEXTURE_3D, volume.texture);
-            gl.uniform1i(volume_loc, 0)
+            gl.activeTexture(gl.TEXTURE0+2);
+            gl.bindTexture(gl.TEXTURE_3D, _volume.texture);
+            gl.uniform1i(volume_loc, 2)
         }
         
         // bind transfer function texture
@@ -226,6 +226,7 @@ class RenderVolume {
         // add image after load
         const img = new Image() 
         img.onload = () => {
+            console.log('colormap loaded!');
             gl.bindTexture(gl.TEXTURE_2D, transfer_function)
             gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img)
         }
@@ -236,6 +237,20 @@ class RenderVolume {
 
         img.src = path
         return transfer_function
+    }
+
+    reset_camera() {
+        let canvas = this.sim.canvas as HTMLCanvasElement;
+        // offset camera
+        this.camera = new Camera(
+            new Vec3([0, 0, -this.zoom]),
+            new Vec3([0, 0, 0]),
+            new Vec3([0, 1, 0]),
+            45,
+            canvas.width / canvas.height,
+            0.1,
+            1000.0
+        )
     }
 
     set_zoom(_zoom: number) {
@@ -250,7 +265,7 @@ class RenderVolume {
             canvas.width / canvas.height,
             0.1,
             1000.0
-        )
+        );
     }
 }
 

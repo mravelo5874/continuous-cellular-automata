@@ -45,7 +45,7 @@ class ComputeVolume {
             let count = 2;
             let is_normalised = false; 
             let size = 4;
-            let stride = count*size;
+            let stride = count * size;
             let offset = 0;
             gl.vertexAttribPointer(index, count, gl.FLOAT, is_normalised, stride, offset);
             gl.enableVertexAttribArray(index);
@@ -160,7 +160,7 @@ class ComputeVolume {
         return compile_program(gl, vert, frag);
     }
 
-    get_program(depth: number,_activation: string) {
+    get_program(depth: number, _activation: string) {
         let key = `${depth}-${_activation}`;
         if (depth in this.programs) {
             return this.programs[depth];

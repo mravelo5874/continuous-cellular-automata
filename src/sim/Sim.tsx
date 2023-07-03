@@ -19,8 +19,12 @@ class Sim {
     sim3D: Sim3D | null;
     resize: CanvasResize | null;
 
+    static zoom: number = 4.0;
     public paused: boolean;
-    public bg_color: Vec4
+    public bg_color: Vec4;
+
+    // user input
+    public is_input: boolean;
 
     // used to calculate time and fps
     private fps: number;
@@ -56,6 +60,7 @@ class Sim {
         this.prev_fps_time = 0;
         this.paused = false;
         this.bg_color = new Vec4([0.0, 0.0, 0.0, 1.0])
+        this.is_input = false;
 
         console.log('simulation constructed.');
     }
@@ -102,7 +107,6 @@ class Sim {
     }
 
     render_loop() {
-        
         // update canvas size
         if (CanvasResize.update_canvas) {
             console.log('update canvas!');
@@ -113,13 +117,16 @@ class Sim {
                 case SimMode.Sim2D:
                     this.resize?.resize_canvas_to_display_size(this.res_node_2d);
                     (async () => { 
-                        await delay(1)
-                        this.sim2D?.reset()
+                        await delay(1);
+                        this.sim2D?.reset();
                     })();
                     break;
                 case SimMode.Sim3D:
                     this.resize?.resize_canvas_to_display_size(this.res_node_3d);
-                    // TODO: this
+                    (async () => { 
+                        await delay(1);
+                        this.sim3D?.reset();
+                    })();
                     break;
             }
         }
@@ -128,12 +135,10 @@ class Sim {
         switch (this.mode) {
             default: break;
             case SimMode.Sim2D:
-                let sim2D = this.sim2D as Sim2D;
-                sim2D.render();
+                this.sim2D?.render();
                 break;
             case SimMode.Sim3D:
-                let sim3D = this.sim3D as Sim3D;
-                sim3D.render();
+                this.sim3D?.render();
                 break;
         }
 
@@ -224,7 +229,21 @@ class Sim {
         if (_mode === this.mode) return;
         this.mode = _mode;
 
-        CanvasResize.update_canvas = true;
+        // clear canvas
+        let gl = this.context as WebGL2RenderingContext;
+        gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+        gl.drawArrays(gl.TRIANGLES, 0, 6);
+
+        // special changes made when switching modes
+        switch (_mode) {
+            default: break;
+            case SimMode.Sim2D:
+                this.update_zoom(this.sim2D?.canvas_zoom as number);
+                break;
+            case SimMode.Sim3D:
+                this.update_zoom(1.0);
+                break;
+        }
     }
 
     reset_2d(_seed: string) {
@@ -256,7 +275,18 @@ class Sim {
     }
 
     update_zoom(_zoom: number) {
-        this.sim2D?.set_zoom(_zoom);
+        Sim.zoom = _zoom;
+        CanvasResize.update_canvas = true;
+
+        // special mode updates
+        switch (this.mode) {
+            default: break;
+            case SimMode.Sim2D:
+                if (this.sim2D) this.sim2D.canvas_zoom = _zoom;
+                break;
+            case SimMode.Sim3D:
+                break;
+        }
     }
 
     mouse_draw(x: number, y: number) {

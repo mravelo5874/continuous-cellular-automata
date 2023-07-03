@@ -49,6 +49,10 @@ class Canvas extends React.Component<CanvasInterface, {}> {
         this.prev_x = pos.x / canvas.width
         this.prev_y = pos.y / canvas.height
         this.mouse_down = true
+        
+        // update sim about user input
+        let sim = this.props.sim;
+        sim.is_input = true;
     }
 
     private mouse_drag(mouse: MouseEvent) {
@@ -77,7 +81,11 @@ class Canvas extends React.Component<CanvasInterface, {}> {
     }
 
     private mouse_end(mouse: MouseEvent) {
-        this.mouse_down = false
+        this.mouse_down = false;
+        
+        // update sim about user input
+        let sim = this.props.sim;
+        sim.is_input = false;
     }
 
     componentDidMount = () => {
