@@ -25,12 +25,7 @@ class Sim {
 
     // user input
     public is_input: boolean = false;
-    public mouse_x: number = 0;
-    public mouse_y: number = 0;
-    public mouse_dx: number = 0;
-    public mouse_dy: number = 0;
     public mouse_button: number = 0;
-    public wheel_delta: number = 0;
 
     // used to calculate time and fps
     private fps: number;
@@ -136,23 +131,6 @@ class Sim {
             }
         }
 
-        // get user input
-        if (this.is_input) {
-            switch (this.mouse_button) {
-                default: break;
-                case 1:
-                    if (this.mode === SimMode.Sim2D) this.sim2D?.mouse_draw(this.mouse_x, this.mouse_y);
-                    if (this.mode === SimMode.Sim3D) this.sim3D?.orbit_cube(this.mouse_dx, this.mouse_dy);
-                    break;
-                case 2:
-                    if (this.mode === SimMode.Sim2D) this.sim2D?.mouse_erase(this.mouse_x, this.mouse_y);
-                    break;
-            }
-        }
-        if (this.wheel_delta !== 0) {
-            if (this.mode === SimMode.Sim3D) this.sim3D?.camera_zoom(this.wheel_delta);
-        }
-
         // render current simulation
         switch (this.mode) {
             default: break;
@@ -189,6 +167,42 @@ class Sim {
 
         // request next frame to be drawn
         window.requestAnimationFrame(() => this.render_loop());
+    }
+
+    mouse_start(x: number, y: number, button: number) {
+        this.is_input = true;
+        this.mouse_button = button;
+        switch (this.mouse_button) {
+        default: break;
+        case 1:
+            if (this.mode === SimMode.Sim2D) this.sim2D?.mouse_draw(x, y);
+            break;
+        case 2:
+            if (this.mode === SimMode.Sim2D) this.sim2D?.mouse_erase(x, y);
+            break;
+        }
+    }
+
+    mouse_drag(x: number, y: number, dx: number, dy: number) {
+        if (!this.is_input) return;
+        switch (this.mouse_button) {
+        default: break;
+        case 1:
+            if (this.mode === SimMode.Sim2D) this.sim2D?.mouse_draw(x, y);
+            if (this.mode === SimMode.Sim3D) this.sim3D?.orbit_cube(dx, dy);
+            break;
+        case 2:
+            if (this.mode === SimMode.Sim2D) this.sim2D?.mouse_erase(x, y);
+            break;
+        }
+    }
+
+    mouse_end() {
+        this.is_input = false;
+    }
+
+    mouse_wheel(dy: number) {
+        if (this.mode === SimMode.Sim3D) this.sim3D?.camera_zoom(dy);
     }
 
     load_automata(value: string) {
