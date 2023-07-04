@@ -139,7 +139,7 @@ class ComputeVolume {
             vec3 pos = vec3(vPosition.xy, z_norm);
             float sum = get_sum(pos, step);
             float x = activation(sum);
-            return vec4(x, x, x, 1.0);
+            return vec4(x, 0, 0, 0.0);
         }
 
         void main() {

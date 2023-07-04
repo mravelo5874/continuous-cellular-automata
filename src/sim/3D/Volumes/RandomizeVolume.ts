@@ -115,7 +115,6 @@ class RandomizeVolume {
 
                 vec3 pos = vec3(vPosition.xy, z_norm);
                 float value = rand(pos);
-                value = (value < u_density) ? 1.0 : 0.0;
                 return vec4(value);
             }
 
