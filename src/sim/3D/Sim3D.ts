@@ -102,4 +102,12 @@ class Sim3D {
         // draw to screen
         this.render_volume.render(w, h, this.volume_old);
     }
+
+    public orbit_cube(dx: number, dy: number) {
+        this.render_volume.orbit_cube(dx, dy);
+    }
+
+    public camera_zoom(_delta: number) {
+        this.render_volume.camera_zoom(_delta);
+    }
 }

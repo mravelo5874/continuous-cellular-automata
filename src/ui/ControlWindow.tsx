@@ -600,9 +600,9 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
                             <h4 className='ctrl_module_sub_title'>brush size</h4>
                             <div className='ui_row'>
                                 <div className='slider_container'>
-                                    <input type='range' min='1' max='256' defaultValue='100' className='slider' id='brush_slider' onChange={this.update_sim_brush}/>
+                                    <input type='range' min='1' max='256' defaultValue='64' className='slider' id='brush_slider' onChange={this.update_sim_brush}/>
                                 </div>
-                                <h4 style={{width:'24px', paddingLeft:'12px', textAlign:'center'}} id='brush_text'>100</h4>
+                                <h4 style={{width:'24px', paddingLeft:'12px', textAlign:'center'}} id='brush_text'>64</h4>
                             </div>
 
                             <h4 className='ctrl_module_sub_title'>zoom level</h4>

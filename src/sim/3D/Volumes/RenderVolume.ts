@@ -19,7 +19,7 @@ class RenderVolume {
     zoom: number = 3.0
     cam_sense: number = 0.25
     rot_speed: number = 0.03
-    zoom_speed: number = 0.005
+    zoom_speed: number = 0.001
     min_zoom: number = 0.0
     max_zoom: number = 8.0
 
@@ -266,6 +266,35 @@ class RenderVolume {
             0.1,
             1000.0
         );
+    }
+
+    orbit_cube(dx: number, dy: number) {
+        // move camera if in 3d mode
+        let dir = this.camera.right();
+        dir.scale(-dx);
+        dir.add(this.camera.up().scale(dy));
+        dir.normalize();
+
+        // move camera
+        let rotAxis: Vec3 = Vec3.cross(this.camera.forward(), dir);
+        rotAxis = rotAxis.normalize();
+
+        // make sure values are not NaN
+        if (dy !== 0 || dx !== 0) {
+            this.camera.orbitTarget(rotAxis, this.rot_speed);
+        }
+    }
+
+    camera_zoom(_delta: number) {
+        let dist: number = this.camera.distance();
+
+        // do not zoom if too far away or too close
+        if (dist + (_delta*this.zoom_speed) > this.max_zoom) return;
+        else if (dist + (_delta*this.zoom_speed) < this.min_zoom) return;
+
+        // offset camera
+        this.camera.offsetDist(_delta*this.zoom_speed);
+        this.zoom = this.camera.distance();
     }
 }
 

@@ -24,7 +24,13 @@ class Sim {
     public bg_color: Vec4;
 
     // user input
-    public is_input: boolean;
+    public is_input: boolean = false;
+    public mouse_x: number = 0;
+    public mouse_y: number = 0;
+    public mouse_dx: number = 0;
+    public mouse_dy: number = 0;
+    public mouse_button: number = 0;
+    public wheel_delta: number = 0;
 
     // used to calculate time and fps
     private fps: number;
@@ -60,8 +66,7 @@ class Sim {
         this.prev_fps_time = 0;
         this.paused = false;
         this.bg_color = new Vec4([0.0, 0.0, 0.0, 1.0])
-        this.is_input = false;
-
+    
         console.log('simulation constructed.');
     }
 
@@ -129,6 +134,23 @@ class Sim {
                     })();
                     break;
             }
+        }
+
+        // get user input
+        if (this.is_input) {
+            switch (this.mouse_button) {
+                default: break;
+                case 1:
+                    if (this.mode === SimMode.Sim2D) this.sim2D?.mouse_draw(this.mouse_x, this.mouse_y);
+                    if (this.mode === SimMode.Sim3D) this.sim3D?.orbit_cube(this.mouse_dx, this.mouse_dy);
+                    break;
+                case 2:
+                    if (this.mode === SimMode.Sim2D) this.sim2D?.mouse_erase(this.mouse_x, this.mouse_y);
+                    break;
+            }
+        }
+        if (this.wheel_delta !== 0) {
+            if (this.mode === SimMode.Sim3D) this.sim3D?.camera_zoom(this.wheel_delta);
         }
 
         // render current simulation

@@ -35,7 +35,7 @@ class Sim2D {
     canvas_zoom: number = 2.0;
 
     // brush stuff
-    brush_size: number = 100;
+    brush_size: number = 64;
     brush_1: Uint8Array;
     brush_0: Uint8Array;
   

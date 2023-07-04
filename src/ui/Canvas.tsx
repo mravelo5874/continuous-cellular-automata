@@ -15,7 +15,6 @@ class Canvas extends React.Component<CanvasInterface, {}> {
     // mouse variables
     prev_x: number;
     prev_y: number;
-    mouse_down: boolean;
     
     constructor(props: CanvasInterface) {
         super(props);
@@ -23,7 +22,6 @@ class Canvas extends React.Component<CanvasInterface, {}> {
         this.sim_init = false;
         this.prev_x = 0;
         this.prev_y = 0;
-        this.mouse_down = false;
     }
 
     // thanks to:
@@ -46,46 +44,51 @@ class Canvas extends React.Component<CanvasInterface, {}> {
     private mouse_start(mouse: MouseEvent) {
         let canvas = this.canvas_ref.current as HTMLCanvasElement;
         const pos = this.get_mouse_canvas(mouse, canvas)
-        this.prev_x = pos.x / canvas.width
-        this.prev_y = pos.y / canvas.height
-        this.mouse_down = true
+        const x = pos.x / canvas.width;
+        const y = pos.y / canvas.height;
+        this.prev_x = x;
+        this.prev_y = y;
         
         // update sim about user input
         let sim = this.props.sim;
         sim.is_input = true;
+        sim.mouse_x = x;
+        sim.mouse_y = y;
+        sim.mouse_dx = 0;
+        sim.mouse_dy = 0;
+        sim.mouse_button = mouse.buttons;
     }
 
     private mouse_drag(mouse: MouseEvent) {
         // draw with mouse
         let canvas = this.canvas_ref.current as HTMLCanvasElement;
-        const pos = this.get_mouse_canvas(mouse, canvas)
-        const x = pos.x / canvas.width
-        const y = pos.y / canvas.height
+        const pos = this.get_mouse_canvas(mouse, canvas);
+        const x = pos.x / canvas.width;
+        const y = pos.y / canvas.height;
         const dx = x - this.prev_x;
         const dy = y - this.prev_y;
-        this.prev_x = x
-        this.prev_y = y
+        this.prev_x = x;
+        this.prev_y = y;
 
-        if (this.mouse_down) {
-            let sim = this.props.sim;
-            switch (mouse.buttons) {
-                default:
-                case 1:
-                    sim.mouse_draw(x, y)
-                    break;
-                case 2:
-                    sim.mouse_erase(x, y)
-                    break
-            }
-        }
+        // update sim about user input
+        let sim = this.props.sim;
+        sim.mouse_x = x;
+        sim.mouse_y = y;
+        sim.mouse_dx = dx;
+        sim.mouse_dy = dy;
+        sim.mouse_button = mouse.buttons;
     }
 
     private mouse_end(mouse: MouseEvent) {
-        this.mouse_down = false;
-        
         // update sim about user input
         let sim = this.props.sim;
         sim.is_input = false;
+    }
+
+    private mouse_wheel(wheel: WheelEvent) {
+        // update sim about user input
+        let sim = this.props.sim;
+        sim.wheel_delta = wheel.deltaY;
     }
 
     componentDidMount = () => {
@@ -101,6 +104,7 @@ class Canvas extends React.Component<CanvasInterface, {}> {
             canvas.addEventListener('mousedown', (mouse: MouseEvent) => this.mouse_start(mouse))
             canvas.addEventListener('mousemove', (mouse: MouseEvent) => this.mouse_drag(mouse))
             canvas.addEventListener('mouseup', (mouse: MouseEvent) => this.mouse_end(mouse))
+            canvas.addEventListener("wheel", (event: WheelEvent) => this.mouse_wheel(event))
 
             // setup simulation
             let sim = this.props.sim;
