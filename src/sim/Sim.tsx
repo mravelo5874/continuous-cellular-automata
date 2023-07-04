@@ -19,7 +19,7 @@ class Sim {
     sim3D: Sim3D | null;
     resize: CanvasResize | null;
 
-    static zoom: number = 4.0;
+    static zoom: number = 2.0;
     public paused: boolean;
     public bg_color: Vec4;
 

@@ -60,7 +60,7 @@ class ComputeVolume {
     create_program(depth: number, _activation: string) {
         let vert =
         `#version 300 es
-        precision mediump float;
+        precision highp float;
 
         layout(location = 0) in vec2 position;
         out vec2 vPosition; // 0.0 to 1.0
@@ -72,7 +72,7 @@ class ComputeVolume {
 
         let frag = 
         `#version 300 es
-        precision mediump float;
+        precision highp float;
         precision highp sampler3D;
 
         in vec2 vPosition; // 0.0 to 1.0
@@ -93,7 +93,7 @@ class ComputeVolume {
         }
 
         float get_state(vec3 pos) {
-            return texture(volume_in, pos).x;
+            return texture(volume_in, pos).r;
         }
 
         float get_sum(vec3 pos, vec3 step) {
@@ -136,10 +136,14 @@ class ComputeVolume {
         vec4 process_layer(int z_, vec3 step, float delta) {
             int z = z_ + z_offset;
             float z_norm = float(z) / float(size.z);
+            // NOTE: We do this do prevent an off by one error
+            // This occurs since the range (0...N-1) gets mapped to (0...N)
+            z_norm += 0.5 / float(size.z);
+
             vec3 pos = vec3(vPosition.xy, z_norm);
             float sum = get_sum(pos, step);
             float x = activation(sum);
-            return vec4(x, 0, 0, 0.0);
+            return vec4(x, 0.0, 0.0, 1.0);
         }
 
         void main() {

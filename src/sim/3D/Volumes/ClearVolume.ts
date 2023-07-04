@@ -18,7 +18,7 @@ class ClearVolume {
 
     constructor(_sim: Sim) {
         this.sim = _sim;
-        this.clear_color = new Vec4([0.0, 0.0, 0.0, 0.0])
+        this.clear_color = new Vec4([0.0, 0.0, 0.0, 1.0])
         this.ibo = null;
         this.vbo = null;
         this.vao = null;
@@ -63,7 +63,7 @@ class ClearVolume {
     create_program(depth: number) {
         let vert =
             `#version 300 es
-            precision mediump float;
+            precision highp float;
             layout(location = 0) in vec2 position;
             void main() {
                 gl_Position = vec4(position.xy, 0.0, 1.0);
@@ -71,7 +71,7 @@ class ClearVolume {
 
         let frag =
             `#version 300 es
-            precision mediump float;
+            precision highp float;
             out vec4 vFragColor[${depth}];
             uniform vec4 u_clear_color;
             void main() {

@@ -40,7 +40,7 @@ class Sim3D {
         this.kernel = kernels_3d.default_kernel();
         this.activation = activations_3d.default_activation();
         
-        this.size = 256;
+        this.size = 16;
         this.automata = Automata3D.custom;
         this.colormap = Colormap3D.ygb;
 
@@ -69,8 +69,12 @@ class Sim3D {
         gl.disable(gl.CULL_FACE);
         gl.disable(gl.DEPTH_TEST);
 
-        // TODO: customize randomize volume 
-        this.randomize_volume.render(this.volume_old);
+        // TODO: customize randomize volume
+        let seed = this.sim.generate_seed(32);
+        if (_seed) {
+            seed = _seed;
+        }
+        this.randomize_volume.render(this.volume_old, seed);
 
         // TODO: set automata
         switch (this.automata) {

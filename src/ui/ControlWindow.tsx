@@ -15,7 +15,7 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
 
     anti_alias: boolean;
     seed: string;
-    static SEED_LEN: number = 25;
+    static SEED_LEN: number = 16;
 
     constructor(props: ControlPanelInterface) {
         super(props);
@@ -642,6 +642,18 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
                                 <h4 className='ctrl_module_sub_title'>res: <span id='res_3d' className='alt_color_2'/></h4>
                             </div>
                         </div>
+
+                        <div id='ctrl_module'>
+                            <div style={{paddingBottom:'1em'}}>
+                                <h4 className='ctrl_module_sub_title'>seed</h4>
+                                <div className='ui_row'>
+                                    <input id='seed_field' className='ui_text_field' maxLength={ControlWindow.SEED_LEN}></input>
+                                    <button id='randomize_seed' className='ui_button' style={{width:'35%'}} onClick={this.randomize_seed}>new seed</button>
+                                </div>
+                            </div>
+                        </div>
+                
+                        <button id='reset_button' className='ui_button' onClick={this.reset_automata} style={{padding:'0.5em', width:'100%'}}>reset automata</button>
 
                         <hr/>
                     </div>

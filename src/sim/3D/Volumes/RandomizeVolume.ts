@@ -4,6 +4,7 @@ import { square_mesh } from '../Meshes/Square';
 import { PRGM_LOC, compile_program } from '../Util3D';
 import { UniformLocationCache } from "../UniformLocationCache";
 import { Vec3 } from "src/lib/TSM";
+import Rand from "src/lib/rand-seed";
 
 export { RandomizeVolume }
 
@@ -58,7 +59,7 @@ class RandomizeVolume {
     create_program(depth: number) {
         let vert =
            `#version 300 es
-            precision mediump float;
+            precision highp float;
 
             layout(location = 0) in vec2 position;
             out vec2 vPosition;
@@ -66,12 +67,12 @@ class RandomizeVolume {
 
             void main() {
                 vPosition = position;
-                gl_Position = vec4(position.xy*u_region.xy, 0.0, 1.0);
+                gl_Position = vec4(position.xy * u_region.xy, 0.0, 1.0);
             }`;
 
         let frag =
            `#version 300 es
-            precision mediump float;
+            precision highp float;
             precision highp sampler3D;
 
             in vec2 vPosition;
@@ -106,8 +107,8 @@ class RandomizeVolume {
                 float z_norm = float(z) / float(u_size.z); 
 
                 // NOTE: We do this do prevent an off by one error
-                //       This occurs since the range (0...N-1) gets mapped to (0...N)
-                z_norm += 0.5/float(u_size.z);
+                // This occurs since the range (0...N-1) gets mapped to (0...N)
+                z_norm += 0.5 / float(u_size.z);
 
                 if (!is_within_region(z_norm)) {
                     return vec4(0);
@@ -117,7 +118,8 @@ class RandomizeVolume {
                 float chance = rand(pos);
                 float value = rand(pos);
                 value = (chance < u_density) ? value : 0.0;
-                return vec4(value);
+                // TODO remove testing overwrite
+                return vec4(value, 0.0, 0.0, 1.0);
             }
 
             void main() {
@@ -154,15 +156,15 @@ class RandomizeVolume {
         return pad;
     }
 
-    render(_vol: VolumeData) {
+    render(_vol: VolumeData, _seed: string) {
         let gl = this.sim.context as WebGL2RenderingContext;
         let density = 0.5;
         let region = new Vec3([1.0, 1.0, 1.0]);
+        //let region = new Vec3([0.5, 0.5, 0.5]);
         
         _vol.set_wrap(false);
         let s = _vol.size;
         let fbs = _vol.frame_buffers;
-        let pad_region = this.pad_region(region, s);
 
         gl.viewport(0,0,s,s);
         gl.disable(gl.DEPTH_TEST);
@@ -170,6 +172,8 @@ class RandomizeVolume {
         // NOTE: Enable basic blending for randomised fields to overlap (i guess?)
         gl.enable(gl.BLEND);
         gl.blendFunc(gl.ONE, gl.ONE);
+
+        let rng = new Rand(_seed);
 
         for (let lfb of fbs) {
             let program_location = this.get_program(lfb.total_layers);
@@ -182,7 +186,7 @@ class RandomizeVolume {
 
             gl.uniform1f(location.find('u_density'), density);
             gl.uniform3f(location.find('u_region'), region.x, region.y, region.z);
-            gl.uniform1f(location.find('u_external_rand'), Math.random());
+            gl.uniform1f(location.find('u_external_rand'), rng.next());
             gl.uniform3i(location.find('u_size'), s, s, s);
             gl.uniform1i(location.find('u_z_offset'), lfb.z_offset);
 

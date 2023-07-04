@@ -15,13 +15,13 @@ class RenderVolume {
     func: WebGLTexture | null;
 
     // camera
-    camera: Camera
-    zoom: number = 3.0
-    cam_sense: number = 0.25
-    rot_speed: number = 0.03
-    zoom_speed: number = 0.001
-    min_zoom: number = 0.0
-    max_zoom: number = 8.0
+    camera: Camera;
+    zoom: number = 3.0;
+    cam_sense: number = 0.25;
+    rot_speed: number = 0.02;
+    zoom_speed: number = 0.002;
+    min_zoom: number = 0.0;
+    max_zoom: number = 8.0;
 
     constructor(_sim: Sim) {
         this.sim = _sim;
@@ -92,7 +92,7 @@ class RenderVolume {
         let gl = this.sim.context as WebGL2RenderingContext;
         let bg = this.sim.bg_color;
 
-        //TODO: rotate cube if there is no user input
+        // rotate cube if there is no user input
         if (!this.sim.paused) {
             if (!this.sim.is_input) {
                 this.camera.orbitTarget(this.camera.up().normalize(), this.rot_speed * 0.05);
@@ -104,9 +104,9 @@ class RenderVolume {
         gl.clearColor(bg.r, bg.g, bg.b, bg.a);
         gl.clear(gl.COLOR_BUFFER_BIT);
         
+        gl.enable(gl.CULL_FACE);
         gl.cullFace(gl.FRONT);
         gl.frontFace(gl.CCW);
-        gl.enable(gl.CULL_FACE);
         gl.enable(gl.BLEND);
         gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
         gl.viewport(0, 0, w, h);
@@ -123,68 +123,73 @@ class RenderVolume {
         let program = this.program as WebGLProgram;
         
         // draw cube
-        gl.useProgram(this.program)
+        gl.useProgram(this.program);
         /* Setup VAO */
-        gl.bindVertexArray(this.vao)
+        gl.bindVertexArray(this.vao);
 
         /* Setup Index Buffer */
-        const idx_buffer = gl.createBuffer() as WebGLBuffer
-        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, idx_buffer)
-        gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, this.cube.get_idx_u32(), gl.STATIC_DRAW)
+        const idx_buffer = gl.createBuffer() as WebGLBuffer;
+        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, idx_buffer);
+        gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, this.cube.get_idx_u32(), gl.STATIC_DRAW);
 
         /* Setup Attributes */
         // position attribute
-        let pos_loc = gl.getAttribLocation(program, 'a_pos')
-        const pos_buffer = gl.createBuffer() as WebGLBuffer
-        gl.bindBuffer(gl.ARRAY_BUFFER, pos_buffer)
-        gl.bufferData(gl.ARRAY_BUFFER, this.cube.get_pos_f32(), gl.STATIC_DRAW)
-        gl.vertexAttribPointer(pos_loc, 4, gl.FLOAT, false, 4 * Float32Array.BYTES_PER_ELEMENT, 0)
-        gl.vertexAttribDivisor(pos_loc, 0)
-        gl.enableVertexAttribArray(pos_loc)
+        let pos_loc = gl.getAttribLocation(program, 'a_pos');
+        const pos_buffer = gl.createBuffer() as WebGLBuffer;
+        gl.bindBuffer(gl.ARRAY_BUFFER, pos_buffer);
+        gl.bufferData(gl.ARRAY_BUFFER, this.cube.get_pos_f32(), gl.STATIC_DRAW);
+        gl.vertexAttribPointer(pos_loc, 4, gl.FLOAT, false, 4 * Float32Array.BYTES_PER_ELEMENT, 0);
+        gl.vertexAttribDivisor(pos_loc, 0);
+        gl.enableVertexAttribArray(pos_loc);
 
         // normal attribute
-        let norm_loc = gl.getAttribLocation(program, 'a_norm')
-        const norm_buffer = gl.createBuffer() as WebGLBuffer
-        gl.bindBuffer(gl.ARRAY_BUFFER, norm_buffer)
-        gl.bufferData(gl.ARRAY_BUFFER, this.cube.get_norms_f32(), gl.STATIC_DRAW)
-        gl.vertexAttribPointer(norm_loc, 4, gl.FLOAT, false, 4 * Float32Array.BYTES_PER_ELEMENT, 0)
-        gl.vertexAttribDivisor(norm_loc, 0)
-        gl.enableVertexAttribArray(norm_loc)
+        let norm_loc = gl.getAttribLocation(program, 'a_norm');
+        const norm_buffer = gl.createBuffer() as WebGLBuffer;
+        gl.bindBuffer(gl.ARRAY_BUFFER, norm_buffer);
+        gl.bufferData(gl.ARRAY_BUFFER, this.cube.get_norms_f32(), gl.STATIC_DRAW);
+        gl.vertexAttribPointer(norm_loc, 4, gl.FLOAT, false, 4 * Float32Array.BYTES_PER_ELEMENT, 0);
+        gl.vertexAttribDivisor(norm_loc, 0);
+        gl.enableVertexAttribArray(norm_loc);
 
         // uvs attribute
-        let uv_loc = gl.getAttribLocation(program, 'a_uv')
-        const uv_buffer = gl.createBuffer() as WebGLBuffer
-        gl.bindBuffer(gl.ARRAY_BUFFER, uv_buffer)
-        gl.bufferData(gl.ARRAY_BUFFER, this.cube.get_uvs_f32(), gl.STATIC_DRAW)
-        gl.vertexAttribPointer(uv_loc, 2, gl.FLOAT, false, 2 * Float32Array.BYTES_PER_ELEMENT, 0)
-        gl.vertexAttribDivisor(uv_loc, 0)
-        gl.enableVertexAttribArray(uv_loc)
+        let uv_loc = gl.getAttribLocation(program, 'a_uv');
+        const uv_buffer = gl.createBuffer() as WebGLBuffer;
+        gl.bindBuffer(gl.ARRAY_BUFFER, uv_buffer);
+        gl.bufferData(gl.ARRAY_BUFFER, this.cube.get_uvs_f32(), gl.STATIC_DRAW);
+        gl.vertexAttribPointer(uv_loc, 2, gl.FLOAT, false, 2 * Float32Array.BYTES_PER_ELEMENT, 0);
+        gl.vertexAttribDivisor(uv_loc, 0);
+        gl.enableVertexAttribArray(uv_loc);
 
         // set view uniform
-        const view_loc = gl.getUniformLocation(program, "u_view")
-        gl.uniformMatrix4fv(view_loc, false, new Float32Array(this.camera.viewMatrix().all()))
+        const view_loc = gl.getUniformLocation(program, "u_view");
+        gl.uniformMatrix4fv(view_loc, false, new Float32Array(this.camera.viewMatrix().all()));
 
         // set projection uniform
-        const proj_loc = gl.getUniformLocation(program, "u_proj")
-        gl.uniformMatrix4fv(proj_loc, false, new Float32Array(this.camera.projMatrix().all()))
+        const proj_loc = gl.getUniformLocation(program, "u_proj");
+        gl.uniformMatrix4fv(proj_loc, false, new Float32Array(this.camera.projMatrix().all()));
 
         // set eye uniform
-        const eye_loc = gl.getUniformLocation(program, "u_eye")
-        gl.uniform3fv(eye_loc, new Float32Array(this.camera.pos().xyz))
+        const eye_loc = gl.getUniformLocation(program, "u_eye");
+        gl.uniform3fv(eye_loc, new Float32Array(this.camera.pos().xyz));
+
+        // bind transfer function texture
+        const func_loc = gl.getUniformLocation(program, 'u_func');
+        gl.activeTexture(gl.TEXTURE1);
+        gl.bindTexture(gl.TEXTURE_2D, this.func);
+        gl.uniform1i(func_loc, 1);
 
         // set volume uniform
         if (_volume) {
             const volume_loc = gl.getUniformLocation(program, 'u_volume');
             gl.activeTexture(gl.TEXTURE0+2);
             gl.bindTexture(gl.TEXTURE_3D, _volume.texture);
-            gl.uniform1i(volume_loc, 2)
+            gl.uniform1i(volume_loc, 2);
+
+            // print volume to console
+            // let tex = _volume as WebGLTexture;
+            // console.log('volume texture: ' + tex);
+            // console.log('texture type: ' + typeof(tex));
         }
-        
-        // bind transfer function texture
-        const func_loc = gl.getUniformLocation(program, 'u_func');
-        gl.activeTexture(gl.TEXTURE1);
-        gl.bindTexture(gl.TEXTURE_2D, this.func);
-        gl.uniform1i(func_loc, 1);
     }
 
     set_colormap(_color: Colormap3D) {
@@ -316,8 +321,7 @@ out vec2 v_uv;
 out vec3 v_eye;
 out vec3 v_ray;
 
-void main() 
-{
+void main() {
     gl_Position = u_proj * u_view * a_pos;
     v_norm = normalize(a_norm);
     v_uv = a_uv;
@@ -340,8 +344,7 @@ in vec3 v_ray;
 
 out vec4 fragColor;
 
-vec2 intersect_box(vec3 orig, vec3 dir) 
-{
+vec2 intersect_box(vec3 orig, vec3 dir) {
 	const vec3 box_min = vec3(-0.5, -0.5, -0.5);
 	const vec3 box_max = vec3(0.5, 0.5, 0.5);
 	vec3 inv_dir = 1.0 / dir;
@@ -354,8 +357,7 @@ vec2 intersect_box(vec3 orig, vec3 dir)
 	return vec2(t0, t1);
 }
 
-void main() 
-{   
+void main() {   
     vec4 my_color = vec4(0.0, 0.0, 0.0, 0.0);
 
     // step 1: normalize ray
@@ -363,8 +365,7 @@ void main()
 
     // step 2: intersect ray with volume, find interval along ray inside volume
     vec2 t_hit = intersect_box(v_eye, ray);
-    if (t_hit.x > t_hit.y)
-    {
+    if (t_hit.x > t_hit.y) {
         discard;
     }
 
@@ -372,29 +373,27 @@ void main()
     t_hit.x = max(t_hit.x, 0.0);
 
     // step 3: set step size to march through volume
-    float dt = 0.002;
+    float dt = 0.001;
 
     // step 4: march ray through volume and sample
     vec3 p = v_eye + t_hit.x * ray;
-    for (float t = t_hit.x; t < t_hit.y; t += dt)
-    {
+    for (float t = t_hit.x; t < t_hit.y; t += dt) {
         // sample volume
         float val = texture(u_volume, p + vec3(0.5, 0.5, 0.5)).r;
 
         // get color from transfer function
-        float alpha = val * 0.5; //pow(exp(0.97 * (val / 255.0)), 12.0) - 1.0;
+        float alpha = val * val;
         vec4 val_color = vec4(texture(u_func, vec2(val * 2.0, 0.5)).rgb, alpha);
 
         my_color.rgb += (1.0 - my_color.a) * val_color.a * val_color.rgb;
         my_color.a += (1.0 - my_color.a) * val_color.a;
 
-        if (my_color.a >= 0.95)
-        {
+        if (my_color.a >= 0.95) {
             break;
         }
         p += ray * dt;
     }
 
-    fragColor = my_color; // (abs(v_norm) * 0.25) + (vec4(ray, 1.0) * 0.25); +
+    fragColor = my_color;
 }
 `;
