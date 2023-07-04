@@ -98,12 +98,12 @@ h1, h2, h3, h4 {
 }
 
 /*
-// #####################
-// CONTROL WINDOWS 2D/3D
-// #####################
+// #######################
+// CONTROL WINDOW + BUTTON
+// #######################
 */
 
-#ctrl_window_2d {
+#ctrl_window {
   scale: 100%; /* start open */
   width: 388px;
   overflow-y: auto;
@@ -119,62 +119,12 @@ h1, h2, h3, h4 {
   direction: rtl;
 }
 
-#ctrl_window_2d_inside {
+#ctrl_window_inside {
   direction: ltr;
 }
 
-#ctrl_window_3d {
-  scale: 0%; /* start closed */
-  width: 388px;
-  overflow-y: auto;
-
-  padding-top: 0.5em;
-  padding-bottom: 0.5em;
-
-  /* position */
-  position: absolute;
-  top:0px;
-  bottom:0px;
-  right:0px;
-  direction: ltr;
-}
-
-#ctrl_window_3d_inside {
-  direction: ltr;
-}
-
-/*
-// #####################
-// CONTROL BUTTONS 2D/3D
-// #####################
-*/
-
-#ctrl_button_2d {
+#ctrl_button {
   scale:100%;
-  /* position */
-  position: absolute;
-  bottom:0px;
-  left:0px;
-}
-
-#ctrl_button_3d {
-  scale:0%;
-  /* position */
-  position: absolute;
-  bottom:0px;
-  right:0px;
-}
-
-#goto_3d_button {
-  scale: 100%;
-  /* position */
-  position: absolute;
-  bottom:0px;
-  right:0px;
-}
-
-#goto_2d_button {
-  scale: 0%;
   /* position */
   position: absolute;
   bottom:0px;
@@ -333,4 +283,64 @@ h1, h2, h3, h4 {
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(0, 119, 255, 0.85);
+}
+
+/*
+// ####################
+// CUSTOM SWITCH TOGGLE
+// ####################
+*/
+
+/* The switch - the box around the slider */
+.toggle_switch {
+  position: relative;
+  display: inline-block;
+  width: 60px;
+  height: 34px;
+}
+
+/* Hide default HTML checkbox */
+.toggle_switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+/* The slider */
+.toggle_slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+.toggle_slider:before {
+  position: absolute;
+  content: "";
+  height: 26px;
+  width: 26px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+input:checked + .toggle_slider {
+  background-color: #2196F3;
+}
+
+input:focus + .toggle_slider {
+  box-shadow: 0 0 1px #2196F3;
+}
+
+input:checked + .toggle_slider:before {
+  -webkit-transform: translateX(26px);
+  -ms-transform: translateX(26px);
+  transform: translateX(26px);
 }

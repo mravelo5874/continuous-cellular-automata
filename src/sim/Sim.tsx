@@ -36,10 +36,8 @@ class Sim {
     private frame_count: number = 0;
 
     // ui nodes
-    public fps_node_2d: Text | null;
-    public res_node_2d: Text | null;
-    public fps_node_3d: Text | null;
-    public res_node_3d: Text | null;
+    public fps_node: Text | null;
+    public res_node: Text | null;
 
     constructor() {
         // initialize all variables
@@ -49,10 +47,9 @@ class Sim {
         this.sim2D = null;
         this.sim3D = null;
         this.resize = null;
-        this.fps_node_2d = null;
-        this.res_node_2d = null;
-        this.fps_node_3d = null;
-        this.res_node_3d = null;
+        this.fps_node = null;
+        this.res_node = null;
+
 
         this.fps = 0;
         this.start_time = 0;
@@ -73,28 +70,17 @@ class Sim {
         this.resize = new CanvasResize(this.canvas);
 
         // add fps text element to screen
-        // 2d fps
-        let fps_element = document.querySelector('#fps_2d')
-        this.fps_node_2d = document.createTextNode('')
-        fps_element?.appendChild(this.fps_node_2d)
-        this.fps_node_2d.nodeValue = ''
-        // 3d fps
-        fps_element = document.querySelector('#fps_3d')
-        this.fps_node_3d = document.createTextNode('')
-        fps_element?.appendChild(this.fps_node_3d)
-        this.fps_node_3d.nodeValue = ''
-
+        let fps_element = document.querySelector('#fps')
+        this.fps_node = document.createTextNode('')
+        fps_element?.appendChild(this.fps_node)
+        this.fps_node.nodeValue = ''
         // add res text element to screen
         // 2d res
-        let res_element = document.querySelector('#res_2d')
-        this.res_node_2d = document.createTextNode('')
-        res_element?.appendChild(this.res_node_2d)
-        this.res_node_2d.nodeValue = ''
-        // 3d res
-        res_element = document.querySelector('#res_3d')
-        this.res_node_3d = document.createTextNode('')
-        res_element?.appendChild(this.res_node_3d)
-        this.res_node_3d.nodeValue = ''
+        let res_element = document.querySelector('#res')
+        this.res_node = document.createTextNode('')
+        res_element?.appendChild(this.res_node)
+        this.res_node.nodeValue = ''
+
 
         console.log('simulation initialized.');
     }
@@ -114,32 +100,32 @@ class Sim {
 
             // reset current sim
             switch (this.mode) {
-                case SimMode.Sim2D:
-                    this.resize?.resize_canvas_to_display_size(this.res_node_2d);
-                    (async () => { 
-                        await delay(1);
-                        this.sim2D?.reset();
-                    })();
-                    break;
-                case SimMode.Sim3D:
-                    this.resize?.resize_canvas_to_display_size(this.res_node_3d);
-                    (async () => { 
-                        await delay(1);
-                        this.sim3D?.reset();
-                    })();
-                    break;
+            case SimMode.Sim2D:
+                this.resize?.resize_canvas_to_display_size(this.res_node);
+                (async () => { 
+                    await delay(1);
+                    this.sim2D?.reset();
+                })();
+                break;
+            case SimMode.Sim3D:
+                this.resize?.resize_canvas_to_display_size(this.res_node);
+                (async () => { 
+                    await delay(1);
+                    this.sim3D?.reset();
+                })();
+                break;
             }
         }
 
         // render current simulation
         switch (this.mode) {
-            default: break;
-            case SimMode.Sim2D:
-                this.sim2D?.render();
-                break;
-            case SimMode.Sim3D:
-                this.sim3D?.render();
-                break;
+        default: break;
+        case SimMode.Sim2D:
+            this.sim2D?.render();
+            break;
+        case SimMode.Sim3D:
+            this.sim3D?.render();
+            break;
         }
 
         // calculate current delta time
@@ -153,16 +139,7 @@ class Sim {
             this.fps = this.frame_count;
             this.frame_count = 0;
             this.prev_fps_time = Date.now();
-            
-            switch (this.mode) {
-                default: break;
-                case SimMode.Sim2D:
-                    if (this.fps_node_2d) this.fps_node_2d.nodeValue = this.fps.toFixed(0)
-                    break;
-                case SimMode.Sim3D:
-                    if (this.fps_node_3d) this.fps_node_3d.nodeValue = this.fps.toFixed(0)
-                    break;
-            }
+            if (this.fps_node) this.fps_node.nodeValue = this.fps.toFixed(0);
         }
 
         // request next frame to be drawn
@@ -208,56 +185,56 @@ class Sim {
     load_automata(value: string) {
         // load 2D simulation based on string value
         switch(value) {
-            default: return;
-            case 'worms':
-                this.sim2D?.load_automata(Automata2D.worms);
-                break;
-            case 'drops':
-                this.sim2D?.load_automata(Automata2D.drops);
-                break;
-            case 'waves':
-                this.sim2D?.load_automata(Automata2D.waves);
-                break;
-            case 'paths':
-                this.sim2D?.load_automata(Automata2D.paths);
-                break;
-            case 'stars':
-                this.sim2D?.load_automata(Automata2D.stars);
-                break;
-            case 'cells':
-                this.sim2D?.load_automata(Automata2D.cells);
-                break;
-            case 'slime':
-                this.sim2D?.load_automata(Automata2D.slime);
-                break;
-            case 'lands':
-                this.sim2D?.load_automata(Automata2D.lands);
-                break;
-            case 'circuit':
-                this.sim2D?.load_automata(Automata2D.circuit);
-                break;
-            case 'cgol':
-                this.sim2D?.load_automata(Automata2D.cgol);
-                break;
+        default: return;
+        case 'worms':
+            this.sim2D?.load_automata(Automata2D.worms);
+            break;
+        case 'drops':
+            this.sim2D?.load_automata(Automata2D.drops);
+            break;
+        case 'waves':
+            this.sim2D?.load_automata(Automata2D.waves);
+            break;
+        case 'paths':
+            this.sim2D?.load_automata(Automata2D.paths);
+            break;
+        case 'stars':
+            this.sim2D?.load_automata(Automata2D.stars);
+            break;
+        case 'cells':
+            this.sim2D?.load_automata(Automata2D.cells);
+            break;
+        case 'slime':
+            this.sim2D?.load_automata(Automata2D.slime);
+            break;
+        case 'lands':
+            this.sim2D?.load_automata(Automata2D.lands);
+            break;
+        case 'circuit':
+            this.sim2D?.load_automata(Automata2D.circuit);
+            break;
+        case 'cgol':
+            this.sim2D?.load_automata(Automata2D.cgol);
+            break;
         }
     }
 
     load_shader(value: string) {
         // load 2D shader based on string value
         switch(value) {
-            default: return;
-            case 'bnw':
-                this.sim2D?.load_shader(Shader2D.bnw);
-                break;
-            case 'alpha':
-                this.sim2D?.load_shader(Shader2D.alpha);
-                break;
-            case 'rgb':
-                this.sim2D?.load_shader(Shader2D.rgb);
-                break;
-            case 'acid':
-                this.sim2D?.load_shader(Shader2D.acid);
-                break;
+        default: return;
+        case 'bnw':
+            this.sim2D?.load_shader(Shader2D.bnw);
+            break;
+        case 'alpha':
+            this.sim2D?.load_shader(Shader2D.alpha);
+            break;
+        case 'rgb':
+            this.sim2D?.load_shader(Shader2D.rgb);
+            break;
+        case 'acid':
+            this.sim2D?.load_shader(Shader2D.acid);
+            break;
         }
     }
 
@@ -272,18 +249,26 @@ class Sim {
 
         // special changes made when switching modes
         switch (_mode) {
-            default: break;
-            case SimMode.Sim2D:
-                this.update_zoom(this.sim2D?.canvas_zoom as number);
-                break;
-            case SimMode.Sim3D:
-                this.update_zoom(1.0);
-                break;
+        default: break;
+        case SimMode.Sim2D:
+            this.update_zoom(this.sim2D?.canvas_zoom as number);
+            break;
+        case SimMode.Sim3D:
+            this.update_zoom(1.0);
+            break;
         }
     }
 
-    reset_2d(_seed: string) {
-        this.sim2D?.reset(_seed);
+    reset(_seed: string) {
+        switch (this.mode) {
+        default: break;
+        case SimMode.Sim2D:
+            this.sim2D?.reset(_seed);
+            break;
+        case SimMode.Sim3D:
+            this.sim3D?.reset(_seed);
+            break;
+        }
     }
 
     custom_kernel() {

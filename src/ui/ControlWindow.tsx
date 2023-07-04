@@ -32,15 +32,13 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
         this.load_automata = this.load_automata.bind(this);
         this.load_shader = this.load_shader.bind(this);
         this.load_activation = this.load_activation.bind(this);
-        this.toggle_window_2d = this.toggle_window_2d.bind(this);
-        this.toggle_window_3d = this.toggle_window_3d.bind(this);
+        this.toggle_window = this.toggle_window.bind(this);
         this.toggle_aa = this.toggle_aa.bind(this);
         this.randomize_kernel = this.randomize_kernel.bind(this);
         this.randomize_seed = this.randomize_seed.bind(this);
         this.reset_automata = this.reset_automata.bind(this);
         this.pause_sim = this.pause_sim.bind(this);
-        this.goto_2d_sim = this.goto_2d_sim.bind(this);
-        this.goto_3d_sim = this.goto_3d_sim.bind(this);
+        this.toggle_sim = this.toggle_sim.bind(this);
     }
 
     componentDidMount = () => {
@@ -70,7 +68,7 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
         }
     }
 
-    private on_key_down(key: KeyboardEvent) {
+    on_key_down(key: KeyboardEvent) {
         switch(key.key) {
             default: return;
             // case 'Control':
@@ -79,53 +77,22 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
         }
     }
 
+    toggle_sim() {
+        let sim = this.props.sim;
+        switch (sim.mode) {
+        default: break;
+        case SimMode.Sim2D:
+            sim.set_mode(SimMode.Sim3D);
+            break;
+        case SimMode.Sim3D:
+            sim.set_mode(SimMode.Sim2D);
+            break;
+        }
+    }
+
     pause_sim() {
         let sim = this.props.sim;
         sim.paused = !sim.paused
-    }
-
-    goto_3d_sim() {
-        let ctrl_2d = document.getElementById('ctrl_button_2d') as HTMLButtonElement;
-        let ctrl_3d = document.getElementById('ctrl_button_3d') as HTMLButtonElement;
-        let goto_2d = document.getElementById('goto_2d_button') as HTMLButtonElement;
-        let goto_3d = document.getElementById('goto_3d_button') as HTMLButtonElement;
-        let window_2d = document.getElementById('ctrl_window_2d') as HTMLDivElement;
-        let window_3d = document.getElementById('ctrl_window_3d') as HTMLDivElement;
-
-        this.ui_open = true;
-        ctrl_3d.innerHTML = 'close';
-        ctrl_2d.style.scale = '0%';
-        ctrl_3d.style.scale = '100%';
-        goto_2d.style.scale = '100%';
-        goto_3d.style.scale = '0%';
-        window_2d.style.scale = '0%';
-        window_3d.style.scale = '100%';
-        this.ui_open = true;
-
-        let sim = this.props.sim;
-        sim.set_mode(SimMode.Sim3D);
-
-    }
-
-    goto_2d_sim() {
-        let ctrl_2d = document.getElementById('ctrl_button_2d') as HTMLButtonElement;
-        let ctrl_3d = document.getElementById('ctrl_button_3d') as HTMLButtonElement;
-        let goto_2d = document.getElementById('goto_2d_button') as HTMLButtonElement;
-        let goto_3d = document.getElementById('goto_3d_button') as HTMLButtonElement;
-        let window_2d = document.getElementById('ctrl_window_2d') as HTMLDivElement;
-        let window_3d = document.getElementById('ctrl_window_3d') as HTMLDivElement;
-
-        this.ui_open = true;
-        ctrl_2d.innerHTML = 'close';
-        ctrl_2d.style.scale = '100%';
-        ctrl_3d.style.scale = '0%';
-        goto_2d.style.scale = '0%';
-        goto_3d.style.scale = '100%';
-        window_2d.style.scale = '100%';
-        window_3d.style.scale = '0%';
-
-        let sim = this.props.sim;
-        sim.set_mode(SimMode.Sim2D);
     }
 
     toggle_aa() {
@@ -143,10 +110,10 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
         }
     }
 
-    toggle_window_2d() {
+    toggle_window() {
         this.ui_open = !this.ui_open;
-        var ui_window = document.getElementById('ctrl_window_2d') as HTMLDivElement;
-        var ui_button = document.getElementById('ctrl_button_2d') as HTMLButtonElement;
+        var ui_window = document.getElementById('ctrl_window') as HTMLDivElement;
+        var ui_button = document.getElementById('ctrl_button') as HTMLButtonElement;
         if (this.ui_open) {
             ui_window.style.cssText='scale:100%;';
             ui_button.style.cssText='background-color:white;color:rgba(0, 0, 0, 0.85);border-color:black;';
@@ -155,22 +122,6 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
         else {
             ui_window.style.cssText='scale:0%;';
             ui_button.style.cssText='';
-            ui_button.innerHTML = 'open';
-        }
-    }
-
-    toggle_window_3d() {
-        this.ui_open = !this.ui_open;
-        var ui_window = document.getElementById('ctrl_window_3d') as HTMLDivElement;
-        var ui_button = document.getElementById('ctrl_button_3d') as HTMLButtonElement;
-        if (this.ui_open) {
-            ui_window.style.cssText='scale:100%;';
-            ui_button.style.cssText='background-color:white;color:rgba(0, 0, 0, 0.85);border-color:black;scale:100%';
-            ui_button.innerHTML = 'close';
-        }
-        else {
-            ui_window.style.cssText='scale:0%;';
-            ui_button.style.cssText='scale:100%';
             ui_button.innerHTML = 'open';
         }
     }
@@ -467,21 +418,35 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
     reset_automata() {
         let seed_field = document.getElementById('seed_field') as HTMLInputElement;
         let sim = this.props.sim;
-        sim.reset_2d(seed_field.value);
+        sim.reset(seed_field.value);
     }
 
     render() {
         return(
             <>
-                <div id='ctrl_window_2d' className='ui_window'>
-                    <div id='ctrl_window_2d_inside'>
+                <div id='ctrl_window' className='ui_window'>
+                    <div id='ctrl_window_inside'>
                         {/* extra padding at the top of the window */}
                         <div style={{height:'0em'}}/>
 
                         <div id='ctrl_module'>
+                            <h4 className='ctrl_module_sub_title'>simulation mode</h4>
+                            <div className='ui_row'>
+                                <h1 className='ctrl_module_title' style={{paddingRight:'0.5em'}}>2D</h1>
+                                <label className='toggle_switch'>
+                                    <input onClick={this.toggle_sim} type='checkbox'/>
+                                    <span className='toggle_slider'></span>
+                                </label>
+                                <h1 className='ctrl_module_title' style={{paddingLeft:'0.5em'}}>3D</h1>
+                            </div>
+                        </div>
+
+                        <hr/>
+
+                        <div id='ctrl_module'>
                             <div className='ui_info'>
-                                <h4 className='ctrl_module_sub_title'>fps: <span id='fps_2d' className='alt_color_1'/></h4>
-                                <h4 className='ctrl_module_sub_title'>res: <span id='res_2d' className='alt_color_2'/></h4>
+                                <h4 className='ctrl_module_sub_title'>fps: <span id='fps' className='alt_color_1'/></h4>
+                                <h4 className='ctrl_module_sub_title'>res: <span id='res' className='alt_color_2'/></h4>
                             </div>
                         </div>
 
@@ -630,47 +595,8 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
                     </div>
                 </div>
 
-
-                <div id='ctrl_window_3d' className='ui_window'>
-                    <div id='ctrl_window_3d_inside'>
-                        {/* extra padding at the top of the window */}
-                        <div style={{height:'0em'}}/>
-
-                        <div id='ctrl_module'>
-                            <div className='ui_info'>
-                                <h4 className='ctrl_module_sub_title'>fps: <span id='fps_3d' className='alt_color_1'/></h4>
-                                <h4 className='ctrl_module_sub_title'>res: <span id='res_3d' className='alt_color_2'/></h4>
-                            </div>
-                        </div>
-
-                        <div id='ctrl_module'>
-                            <div style={{paddingBottom:'1em'}}>
-                                <h4 className='ctrl_module_sub_title'>seed</h4>
-                                <div className='ui_row'>
-                                    <input id='seed_field' className='ui_text_field' maxLength={ControlWindow.SEED_LEN}></input>
-                                    <button id='randomize_seed' className='ui_button' style={{width:'35%'}} onClick={this.randomize_seed}>new seed</button>
-                                </div>
-                            </div>
-                        </div>
-                
-                        <button id='reset_button' className='ui_button' onClick={this.reset_automata} style={{padding:'0.5em', width:'100%'}}>reset automata</button>
-
-                        <hr/>
-                    </div>
-                </div>
-
                 <div>
-                    <button id='ctrl_button_2d' className='ui_button' onClick={this.toggle_window_2d}>close</button>
-                </div>
-                <div>
-                    <button id='ctrl_button_3d' className='ui_button' onClick={this.toggle_window_3d}>close</button>
-                </div>
-
-                <div>
-                    <button id='goto_3d_button' className='ui_button' onClick={this.goto_3d_sim}>swap 3D</button>
-                </div>
-                <div>
-                    <button id='goto_2d_button' className='ui_button' onClick={this.goto_2d_sim}>swap 2D</button>
+                    <button id='ctrl_button' className='ui_button' onClick={this.toggle_window}>close</button>
                 </div>
             </>
         );
