@@ -608,9 +608,9 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
                             <h4 className='ctrl_module_sub_title'>zoom level</h4>
                             <div className='ui_row' style={{paddingBottom:'0.5em'}}>
                                 <div className='slider_container'>
-                                    <input type='range' min='0.6' max='16.0' defaultValue='1.0' step='0.2' className='slider' id='zoom_slider' onChange={this.update_zoom_text} onMouseUp={this.update_sim_zoom}/>
+                                    <input type='range' min='0.6' max='16.0' defaultValue='2.0' step='0.2' className='slider' id='zoom_slider' onChange={this.update_zoom_text} onMouseUp={this.update_sim_zoom}/>
                                 </div>
-                                <h4 style={{width:'24px', paddingLeft:'12px', textAlign:'center'}} id='zoom_text'>1</h4>
+                                <h4 style={{width:'24px', paddingLeft:'12px', textAlign:'center'}} id='zoom_text'>2.0</h4>
                             </div>
 
                             <div className='ui_row'>

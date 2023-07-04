@@ -40,7 +40,7 @@ class Sim3D {
         this.kernel = kernels_3d.default_kernel();
         this.activation = activations_3d.default_activation();
         
-        this.size = 64;
+        this.size = 256;
         this.automata = Automata3D.custom;
         this.colormap = Colormap3D.ygb;
 

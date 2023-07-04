@@ -32,7 +32,7 @@ class Sim2D {
     vertices: Float32Array;
     textures: WebGLTexture[];
     framebuffers: WebGLFramebuffer[];
-    canvas_zoom: number = 4.0;
+    canvas_zoom: number = 2.0;
 
     // brush stuff
     brush_size: number = 100;
