@@ -70,17 +70,16 @@ class Sim {
         this.resize = new CanvasResize(this.canvas);
 
         // add fps text element to screen
-        let fps_element = document.querySelector('#fps')
-        this.fps_node = document.createTextNode('')
-        fps_element?.appendChild(this.fps_node)
-        this.fps_node.nodeValue = ''
+        let fps_element = document.querySelector('#fps');
+        this.fps_node = document.createTextNode('');
+        fps_element?.appendChild(this.fps_node);
+        this.fps_node.nodeValue = '';
         // add res text element to screen
         // 2d res
-        let res_element = document.querySelector('#res')
-        this.res_node = document.createTextNode('')
-        res_element?.appendChild(this.res_node)
-        this.res_node.nodeValue = ''
-
+        let res_element = document.querySelector('#res');
+        this.res_node = document.createTextNode('');
+        res_element?.appendChild(this.res_node);
+        this.res_node.nodeValue = '';
 
         console.log('simulation initialized.');
     }
@@ -88,7 +87,8 @@ class Sim {
     start() {
         this.sim2D?.start();
         this.sim3D?.start();
-        window.requestAnimationFrame(() => this.render_loop())
+        window.requestAnimationFrame(() => this.render_loop());
+
         console.log('simulation started.');
     }
 

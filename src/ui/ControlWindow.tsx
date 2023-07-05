@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useState } from 'react';
 import { Sim, SimMode } from '../sim/Sim';
 import Rand from 'src/lib/rand-seed';
 
@@ -9,13 +9,13 @@ interface ControlPanelInterface {
 }
 
 class ControlWindow extends React.Component<ControlPanelInterface, {}> {
-
+    
     ui_init: boolean;
     ui_open: boolean;
-
     anti_alias: boolean;
     seed: string;
-    static SEED_LEN: number = 16;
+
+    static SEED_LEN: number = 32;
 
     constructor(props: ControlPanelInterface) {
         super(props);
@@ -78,14 +78,21 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
     }
 
     toggle_sim() {
+        var _2D_modules = document.getElementById('_2D') as HTMLDivElement;
+        var _3D_modules = document.getElementById('_3D') as HTMLDivElement;
+
         let sim = this.props.sim;
         switch (sim.mode) {
         default: break;
         case SimMode.Sim2D:
             sim.set_mode(SimMode.Sim3D);
+            _2D_modules.style.cssText='scale:0%;';
+            _3D_modules.style.cssText='scale:100%;';
             break;
         case SimMode.Sim3D:
             sim.set_mode(SimMode.Sim2D);
+            _2D_modules.style.cssText='scale:100%;';
+            _3D_modules.style.cssText='scale:0%;';
             break;
         }
     }
@@ -96,7 +103,7 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
     }
 
     toggle_aa() {
-        var aa_toggle = document.getElementById('aa') as HTMLInputElement;
+        var aa_toggle = document.getElementById('toggle_aa') as HTMLInputElement;
         this.anti_alias = aa_toggle.checked;
 
         let sim = this.props.sim;
@@ -272,14 +279,15 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
         let k8 = document.getElementById('k8') as HTMLInputElement;
 
         // reset all kernel styles
-        k0.style.background = 'white';
-        k1.style.background = 'white';
-        k2.style.background = 'white';
-        k3.style.background = 'white';
-        k5.style.background = 'white';
-        k6.style.background = 'white';
-        k7.style.background = 'white';
-        k8.style.background = 'white';
+        k0.style.background = 'rgba(255, 255, 255, 0.6)';
+        k1.style.background = 'rgba(255, 255, 255, 0.6)';
+        k2.style.background = 'rgba(255, 255, 255, 0.6)';
+        k3.style.background = 'rgba(255, 255, 255, 0.6)';
+        k4.style.background = 'rgba(255, 255, 255, 0.6)';
+        k5.style.background = 'rgba(255, 255, 255, 0.6)';
+        k6.style.background = 'rgba(255, 255, 255, 0.6)';
+        k7.style.background = 'rgba(255, 255, 255, 0.6)';
+        k8.style.background = 'rgba(255, 255, 255, 0.6)';
         k0.disabled = false;
         k1.disabled = false;
         k2.disabled = false;
@@ -290,36 +298,36 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
         k8.disabled = false;
 
         if (v_sym.checked && !h_sym.checked) {
-            k0.style.background = '#6ed3fc';
-            k3.style.background = '#6ed3fc';
-            k6.style.background = '#6ed3fc';
-            k2.style.background = '#6ed3fc';
-            k5.style.background = '#6ed3fc';
-            k8.style.background = '#6ed3fc';
+            k0.style.background = 'rgba(110, 212, 252, 0.6)';
+            k3.style.background = 'rgba(110, 212, 252, 0.6)';
+            k6.style.background = 'rgba(110, 212, 252, 0.6)';
+            k2.style.background = 'rgba(110, 212, 252, 0.6)';
+            k5.style.background = 'rgba(110, 212, 252, 0.6)';
+            k8.style.background = 'rgba(110, 212, 252, 0.6)';
             k2.disabled = true;
             k5.disabled = true;
             k8.disabled = true;
         }   
         else if (h_sym.checked && !v_sym.checked) {
-            k0.style.background = '#6ed3fc';
-            k1.style.background = '#6ed3fc';
-            k2.style.background = '#6ed3fc';
-            k6.style.background = '#6ed3fc';
-            k7.style.background = '#6ed3fc';
-            k8.style.background = '#6ed3fc';
+            k0.style.background = 'rgba(110, 212, 252, 0.6)';
+            k1.style.background = 'rgba(110, 212, 252, 0.6)';
+            k2.style.background = 'rgba(110, 212, 252, 0.6)';
+            k6.style.background = 'rgba(110, 212, 252, 0.6)';
+            k7.style.background = 'rgba(110, 212, 252, 0.6)';
+            k8.style.background = 'rgba(110, 212, 252, 0.6)';
             k6.disabled = true;
             k7.disabled = true;
             k8.disabled = true;
         }
         else if (v_sym.checked && h_sym.checked) {
-            k0.style.background = '#2694c0';
-            k2.style.background = '#2694c0';
-            k6.style.background = '#2694c0';
-            k8.style.background = '#2694c0';
-            k1.style.background = '#6ed3fc';
-            k3.style.background = '#6ed3fc';
-            k5.style.background = '#6ed3fc';
-            k7.style.background = '#6ed3fc';
+            k0.style.background = 'rgba(38, 148, 192, 0.6)';
+            k2.style.background = 'rgba(38, 148, 192, 0.6)';
+            k6.style.background = 'rgba(38, 148, 192, 0.6)';
+            k8.style.background = 'rgba(38, 148, 192, 0.6)';
+            k1.style.background = 'rgba(110, 212, 252, 0.6)';
+            k3.style.background = 'rgba(110, 212, 252, 0.6)';
+            k5.style.background = 'rgba(110, 212, 252, 0.6)';
+            k7.style.background = 'rgba(110, 212, 252, 0.6)';
             k1.disabled = true;
             k2.disabled = true;
             k5.disabled = true;
@@ -366,25 +374,25 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
         let menu = document.getElementById('load_activation') as HTMLSelectElement;
         let act = '';
         switch(menu.value) {
-            default: return;
-            case 'id':
-                act = 'return x;';
-                break;
-            case 'sin':
-                act = 'return sin(x);';
-                break;
-            case 'pow':
-                act = 'return pow(x,2.0);';
-                break;
-            case 'abs':
-                act = 'return abs(x);';
-                break;
-            case 'tanh':
-                act = 'return (exp(2.0*x)-1.0)/(exp(2.0*x)+1.0);';
-                break;
-            case 'inv_gaus':
-                act = 'return -1.0/pow(2.0,(pow(x,2.0)))+1.0;';
-                break;
+        default: return;
+        case 'id':
+            act = 'return x;';
+            break;
+        case 'sin':
+            act = 'return sin(x);';
+            break;
+        case 'pow':
+            act = 'return pow(x,2.0);';
+            break;
+        case 'abs':
+            act = 'return abs(x);';
+            break;
+        case 'tanh':
+            act = 'return (exp(2.0*x)-1.0)/(exp(2.0*x)+1.0);';
+            break;
+        case 'inv_gaus':
+            act = 'return -1.0/pow(2.0,(pow(x,2.0)))+1.0;';
+            break;
         }
 
         let sim = this.props.sim;
@@ -430,166 +438,168 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
                         <div style={{height:'0em'}}/>
 
                         <div id='ctrl_module'>
+                            <div className='ui_info'>
+                                <h4 className='ctrl_module_sub_title'>fps: <span id='fps'/></h4>
+                                <h4 className='ctrl_module_sub_title'>res: <span id='res'/></h4>
+                            </div>
+                        </div>
+
+                        <hr/>
+                        <div id='ctrl_module'>
                             <h4 className='ctrl_module_sub_title'>simulation mode</h4>
                             <div className='ui_row'>
                                 <h1 className='ctrl_module_title' style={{paddingRight:'0.5em'}}>2D</h1>
                                 <label className='toggle_switch'>
-                                    <input onClick={this.toggle_sim} type='checkbox'/>
+                                    <input id='sim_mode' onClick={this.toggle_sim} type='checkbox'/>
                                     <span className='toggle_slider'></span>
                                 </label>
                                 <h1 className='ctrl_module_title' style={{paddingLeft:'0.5em'}}>3D</h1>
                             </div>
-                        </div>
-
-                        <hr/>
-
-                        <div id='ctrl_module'>
-                            <div className='ui_info'>
-                                <h4 className='ctrl_module_sub_title'>fps: <span id='fps' className='alt_color_1'/></h4>
-                                <h4 className='ctrl_module_sub_title'>res: <span id='res' className='alt_color_2'/></h4>
-                            </div>
-                        </div>
-
-                        <hr/>
-
-                        <div id='ctrl_module'>
-                            <h1 className='ctrl_module_title'>automata</h1>
-                            <div style={{paddingBottom:'0.5em'}}>
-                                <h4 className='ctrl_module_sub_title'>load preset</h4>
-                                <select className='dropdown_input' name='automata' id='load_automata' onChange={this.load_automata}>
-                                    <option value='worms'>worms 🐍</option>
-                                    <option value='drops'>drops 💧</option>
-                                    <option value='waves'>waves 🌊</option>
-                                    <option value='paths'>paths 🚪</option>
-                                    <option value='stars'>stars ⭐</option>
-                                    <option value='cells'>cells 🦠</option>
-                                    <option value='slime'>slime 🧫</option>
-                                    <option value='lands'>lands 🗺️</option>
-                                    <option value='circuit'>circuit 💻</option>
-                                    <option value='cgol'>game of life ♟️</option>
-                                    <option value='custom' disabled>custom 🛠️</option>
-                                </select>
-                            </div>
-    
-                            <div style={{paddingBottom:'1em'}}>
-                                <h4 className='ctrl_module_sub_title'>seed</h4>
-                                <div className='ui_row'>
-                                    <input id='seed_field' className='ui_text_field' maxLength={ControlWindow.SEED_LEN}></input>
-                                    <button id='randomize_seed' className='ui_button' style={{width:'35%'}} onClick={this.randomize_seed}>new seed</button>
-                                </div>
-                            </div>
-
-                            <button id='reset_button' className='ui_button' onClick={this.reset_automata} style={{padding:'0.5em', width:'100%'}}>reset automata</button>
-
-                            {/* TODO export import automata using .json files */}
-                            <div style={{paddingTop:'0.5em'}}>
-                                <button id='export_button' className='ui_button' style={{width:'50%'}}>export</button>
-                                <button id='import_button' className='ui_button' style={{width:'50%'}}>import</button>
-                            </div>
-                        </div>
-
-                        <hr/>
-
-                        <div id='ctrl_module'>
-                            <h1 className='ctrl_module_title'>shader</h1>
-                            <div>
-                                <select className='dropdown_input' name='shader' id='load_shader' onChange={this.load_shader}>
-                                    <option value='bnw'>black and white</option>
-                                    <option value='alpha'>alpha channel</option>
-                                    <option value='rgb'>red green blue channels</option>
-                                    <option value='acid'>acid</option>
-                                </select>
-                            </div>
-                        </div>
-                        
-                        <hr/>
-                        
-                        <div id='ctrl_module'>
-                            <h1 className='ctrl_module_title'>kernel</h1>
-                            <div className='ui_row'>
-                                <div className='ui_column'>
-                                    <input id='k0' type='number'step='0.001' className='kernel_input' onChange={this.update_sim_kernel}/>
-                                    <input id='k1' type='number'step='0.001' className='kernel_input' onChange={this.update_sim_kernel}/>
-                                    <input id='k2' type='number'step='0.001' className='kernel_input' onChange={this.update_sim_kernel}/>
-                                </div>
-                                <div className='ui_column'>
-                                    <input id='k3' type='number'step='0.001' className='kernel_input' onChange={this.update_sim_kernel}/>
-                                    <input id='k4' type='number'step='0.001' className='kernel_input' onChange={this.update_sim_kernel}/>
-                                    <input id='k5' type='number'step='0.001' className='kernel_input' onChange={this.update_sim_kernel}/>
-                                </div>
-                                <div className='ui_column'>
-                                    <input id='k6' type='number'step='0.001' className='kernel_input' onChange={this.update_sim_kernel}/>
-                                    <input id='k7' type='number'step='0.001' className='kernel_input' onChange={this.update_sim_kernel}/>
-                                    <input id='k8' type='number'step='0.001' className='kernel_input' onChange={this.update_sim_kernel}/>
-                                </div>
-                            </div>
-
-                            <div style={{padding:'0.5em'}}>
-                                <div className='ui_row'>
-                                    <input type='checkbox' id='v_sym' className='ui_button' onClick={this.update_kernel_symmetry}/>
-                                    <h4 className='ctrl_module_sub_title'>vertical symmetry</h4>
-                                </div>
-                                <div className='ui_row' style={{paddingBottom:'0.5em'}}>
-                                    <input type='checkbox' id='h_sym' className='ui_button' onClick={this.update_kernel_symmetry}/>
-                                    <h4 className='ctrl_module_sub_title'>horizontal symmetry</h4>
-                                </div>
-                                <button className='ui_button' onClick={this.randomize_kernel} style={{padding:'0.5em', width:'100%'}}>randomize kernel</button>
-                            </div>
-                        </div>
-                    
-                        <hr/>
-
-                        <div id='ctrl_module'>
-                            <h1 className='ctrl_module_title'>activation function</h1>
-                            <div>
-                                <textarea id='af' className='activation_input' onChange={this.update_sim_activation}/>
-                            </div>
-                            <h4 className='ctrl_module_sub_title'>load activation function</h4>
-                            <div>
-                                <select className='dropdown_input' name='automata' id='load_activation' onChange={this.load_activation}>
-                                    <option value='id'>identity</option>
-                                    <option value='sin'>sin</option>
-                                    <option value='pow'>power</option>
-                                    <option value='abs'>absolute value</option>
-                                    <option value='tanh'>tanh</option>
-                                    <option value='inv_gaus'>inverse gaussian</option>
-                                    <option value='custom' disabled>custom 🛠️</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <hr/>
-
-                        <div id='ctrl_module'>
-                            <h1 className='ctrl_module_title'>options</h1>
-                            <h4 className='ctrl_module_sub_title'>brush size</h4>
-                            <div className='ui_row'>
-                                <div className='slider_container'>
-                                    <input type='range' min='1' max='256' defaultValue='64' className='slider' id='brush_slider' onChange={this.update_sim_brush}/>
-                                </div>
-                                <h4 style={{width:'24px', paddingLeft:'12px', textAlign:'center'}} id='brush_text'>64</h4>
-                            </div>
-
-                            <h4 className='ctrl_module_sub_title'>zoom level</h4>
-                            <div className='ui_row' style={{paddingBottom:'0.5em'}}>
-                                <div className='slider_container'>
-                                    <input type='range' min='0.6' max='16.0' defaultValue='2.0' step='0.2' className='slider' id='zoom_slider' onChange={this.update_zoom_text} onMouseUp={this.update_sim_zoom}/>
-                                </div>
-                                <h4 style={{width:'24px', paddingLeft:'12px', textAlign:'center'}} id='zoom_text'>2.0</h4>
-                            </div>
 
                             <div className='ui_row'>
-                                <input type='checkbox' id='aa' className='ui_button' onClick={this.toggle_aa}/>
+                                <input type='checkbox' id='toggle_aa' className='ui_button' onClick={this.toggle_aa}/>
                                 <h4 className='ctrl_module_sub_title'>anti-aliasing</h4>
                             </div>
 
                             <div className='ui_row'>
-                                <input type='checkbox' id='aa' className='ui_button' onClick={this.pause_sim}/>
+                                <input type='checkbox' id='toggle_pause' className='ui_button' onClick={this.pause_sim}/>
                                 <h4 className='ctrl_module_sub_title'>paused</h4>
                             </div>
-                        </div>                        
-                    
+                        </div>
 
+                        <div id='_2D'>
+                            <hr/>
+                            <div id='ctrl_module'>
+                                <h2 className='ctrl_module_title'>automata</h2>
+                                <div style={{paddingBottom:'0.5em'}}>
+                                    <h4 className='ctrl_module_sub_title'>load preset</h4>
+                                    <select className='dropdown_input' name='automata' id='load_automata' onChange={this.load_automata}>
+                                        <option className='dropdown_option' value='worms'>worms 🐍</option>
+                                        <option value='drops'>drops 💧</option>
+                                        <option value='waves'>waves 🌊</option>
+                                        <option value='paths'>paths 🚪</option>
+                                        <option value='stars'>stars ⭐</option>
+                                        <option value='cells'>cells 🦠</option>
+                                        <option value='slime'>slime 🧫</option>
+                                        <option value='lands'>lands 🗺️</option>
+                                        <option value='circuit'>circuit 💻</option>
+                                        <option value='cgol'>game of life ♟️</option>
+                                        <option value='custom' disabled>custom 🛠️</option>
+                                    </select>
+                                </div>
+        
+                                <div style={{paddingBottom:'1em'}}>
+                                    <h4 className='ctrl_module_sub_title'>seed</h4>
+                                    <div className='ui_row'>
+                                        <input id='seed_field' className='ui_text_field' maxLength={ControlWindow.SEED_LEN}></input>
+                                        <button id='randomize_seed' className='ui_button' style={{width:'35%'}} onClick={this.randomize_seed}>new seed</button>
+                                    </div>
+                                </div>
+
+                                <button id='reset_button' className='ui_button' onClick={this.reset_automata} style={{padding:'0.5em', width:'100%'}}>reset automata</button>
+
+                                {/* TODO export import automata using .json files 
+                                <div style={{paddingTop:'0.5em'}}>
+                                    <button id='export_button' className='ui_button' style={{width:'50%'}}>export</button>
+                                    <button id='import_button' className='ui_button' style={{width:'50%'}}>import</button>
+                                </div>
+                                */}
+                            </div>
+                            
+                            <hr/>
+                            <div id='ctrl_module'>
+                                <h2 className='ctrl_module_title'>shader</h2>
+                                <div>
+                                    <select className='dropdown_input' name='shader' id='load_shader' onChange={this.load_shader}>
+                                        <option value='bnw'>black and white</option>
+                                        <option value='alpha'>alpha channel</option>
+                                        <option value='rgb'>red green blue channels</option>
+                                        <option value='acid'>acid</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <hr/>
+                            <div id='ctrl_module'>
+                                <h2 className='ctrl_module_title'>kernel</h2>
+                                <div className='ui_row' style={{justifyContent:'center'}}>
+                                    <div className='ui_column'>
+                                        <input id='k0' type='number'step='0.001' className='kernel_input' onChange={this.update_sim_kernel} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
+                                        <input id='k1' type='number'step='0.001' className='kernel_input' onChange={this.update_sim_kernel} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
+                                        <input id='k2' type='number'step='0.001' className='kernel_input' onChange={this.update_sim_kernel} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
+                                    </div>
+                                    <div className='ui_column'>
+                                        <input id='k3' type='number'step='0.001' className='kernel_input' onChange={this.update_sim_kernel} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
+                                        <input id='k4' type='number'step='0.001' className='kernel_input' onChange={this.update_sim_kernel} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
+                                        <input id='k5' type='number'step='0.001' className='kernel_input' onChange={this.update_sim_kernel} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
+                                    </div>
+                                    <div className='ui_column'>
+                                        <input id='k6' type='number'step='0.001' className='kernel_input' onChange={this.update_sim_kernel} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
+                                        <input id='k7' type='number'step='0.001' className='kernel_input' onChange={this.update_sim_kernel} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
+                                        <input id='k8' type='number'step='0.001' className='kernel_input' onChange={this.update_sim_kernel} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
+                                    </div>
+                                </div>
+
+                                <div style={{padding:'0.5em'}}>
+                                    <div className='ui_column'>
+                                        <div className='ui_row'>
+                                            <input type='checkbox' id='v_sym' className='ui_button' onClick={this.update_kernel_symmetry}/>
+                                            <h4 className='ctrl_module_sub_title'>vertical symmetry</h4>
+                                        </div>
+                                        <div className='ui_row' style={{paddingBottom:'0.5em'}}>
+                                            <input type='checkbox' id='h_sym' className='ui_button' onClick={this.update_kernel_symmetry}/>
+                                            <h4 className='ctrl_module_sub_title'>horizontal symmetry</h4>
+                                        </div>
+                                    </div>
+                                    <button className='ui_button' onClick={this.randomize_kernel} style={{padding:'0.5em', width:'100%'}}>randomize kernel</button>
+                                </div>
+                            </div>
+                            
+                            <hr/>
+                            <div id='ctrl_module'>
+                                <h2 className='ctrl_module_title'>activation function</h2>
+                                <div>
+                                    <textarea id='af' className='activation_input' onChange={this.update_sim_activation}/>
+                                </div>
+                                <h4 className='ctrl_module_sub_title'>load activation function</h4>
+                                <div>
+                                    <select className='dropdown_input' name='automata' id='load_activation' onChange={this.load_activation}>
+                                        <option value='id'>identity</option>
+                                        <option value='sin'>sin</option>
+                                        <option value='pow'>power</option>
+                                        <option value='abs'>absolute value</option>
+                                        <option value='tanh'>tanh</option>
+                                        <option value='inv_gaus'>inverse gaussian</option>
+                                        <option value='custom' disabled>custom 🛠️</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <hr/>
+                            <div id='ctrl_module'>
+                                <h2 className='ctrl_module_title'>options</h2>
+                                <h4 className='ctrl_module_sub_title'>brush size</h4>
+                                <div className='ui_row'>
+                                    <div className='slider_container'>
+                                        <input type='range' min='1' max='256' defaultValue='64' className='slider' id='brush_slider' onChange={this.update_sim_brush}/>
+                                    </div>
+                                    <h4 style={{width:'24px', paddingLeft:'12px', textAlign:'center', color:'rgba(0, 0, 0, 0.5)'}} id='brush_text'>64</h4>
+                                </div>
+
+                                <h4 className='ctrl_module_sub_title'>zoom level</h4>
+                                <div className='ui_row' style={{paddingBottom:'0.5em'}}>
+                                    <div className='slider_container'>
+                                        <input type='range' min='0.6' max='16.0' defaultValue='2.0' step='0.2' className='slider' id='zoom_slider' onChange={this.update_zoom_text} onMouseUp={this.update_sim_zoom}/>
+                                    </div>
+                                    <h4 style={{width:'24px', paddingLeft:'12px', textAlign:'center', color:'rgba(0, 0, 0, 0.5)'}} id='zoom_text'>2.0</h4>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id='_3D'>
+
+                        </div>
+                                                
                         {/* extra padding at the bottom of the window */}
                         <div style={{height:'12em'}}/>
                     </div>
