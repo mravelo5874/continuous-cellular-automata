@@ -211,6 +211,24 @@ h1, h2, h3, h4 {
   background-color: rgb(255, 255, 255);
   resize: none;
   width: 94.5%;
+  height: 5em;
+
+  /* text */
+  font-family: monospace;
+  font-size:16px;
+  text-align:left;
+  /* padding */
+  padding-top: 0.5em;
+  padding-left: 0.7em;
+  padding-right: 0.7em;
+  padding-bottom: 0.5em;
+  /* border */
+  border: solid 0.1em rgba(0, 0, 0, 0.3);
+}
+
+.how_textarea {
+  background-color: rgb(255, 255, 255);
+  resize: none;
   width: 94.5%;
   height: 5em;
 

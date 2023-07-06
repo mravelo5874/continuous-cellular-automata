@@ -468,6 +468,15 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
                         </div>
 
                         <div id='_2D'>
+                            {/* TODO
+                            <hr/>
+                            <div id='ctrl_module'>
+                                <h4 className='ctrl_module_sub_title'>how it works:</h4>
+                                <div>
+ 
+                                </div>
+                            </div> */}
+
                             <hr/>
                             <div id='ctrl_module'>
                                 <h2 className='ctrl_module_title'>automata</h2>
