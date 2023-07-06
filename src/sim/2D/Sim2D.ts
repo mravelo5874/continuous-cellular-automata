@@ -66,11 +66,11 @@ class Sim2D {
 		this.brush_0 = new Uint8Array(arr_size);
     }
 
-    public start() {
+    start() {
         this.reset();
     }
 
-    public load_automata(auto: Automata2D) {
+    load_automata(auto: Automata2D) {
         switch (auto) {
             // ignore load
             default:
@@ -126,17 +126,17 @@ class Sim2D {
         this.reset();
     }
 
-    public load_shader(shade: Shader2D) {
+    load_shader(shade: Shader2D) {
         this.shader = shade;
         this.reset();
     }
 
-    public custom_kernel() {
+    custom_kernel() {
         this.automata = Automata2D.custom;
         this.reset();
     }
 
-    public reset(_seed?: string) {
+    reset(_seed?: string) {
         // prepare render context
         let gl = this.sim.context as WebGL2RenderingContext;
         let canvas = this.sim.canvas as HTMLCanvasElement;
@@ -292,7 +292,7 @@ class Sim2D {
         this.draw_to_canvas(gl)
     }
 
-    public render() {
+    render() {
         // prepare render context
         let gl = this.sim.context as WebGL2RenderingContext;
         let canvas = this.sim.canvas as HTMLCanvasElement;
@@ -309,7 +309,7 @@ class Sim2D {
         this.draw(gl, w, h);
     }
 
-    public draw(gl: WebGL2RenderingContext, w: number, h: number) {
+    draw(gl: WebGL2RenderingContext, w: number, h: number) {
         // use program !!!
         let program = this.program as WebGLProgram
         gl.useProgram(program)
@@ -362,7 +362,7 @@ class Sim2D {
         this.draw_to_canvas(gl)
     }
 
-    private draw_to_canvas(gl: WebGL2RenderingContext) {
+    draw_to_canvas(gl: WebGL2RenderingContext) {
         // Draw the rectangle.
         var primitiveType = gl.TRIANGLES;
         var offset = 0;
@@ -370,7 +370,7 @@ class Sim2D {
         gl.drawArrays(primitiveType, offset, count);
     }
 
-    private create_setup_texture(gl: WebGL2RenderingContext): WebGLTexture {
+    create_setup_texture(gl: WebGL2RenderingContext): WebGLTexture {
         var texture = gl.createTexture() as WebGLTexture
         gl.bindTexture(gl.TEXTURE_2D, texture)
 
@@ -384,14 +384,14 @@ class Sim2D {
         return texture
     }
 
-    private set_fb(fbo: WebGLFramebuffer | null, width: number, height: number, gl: WebGL2RenderingContext): void {
+    set_fb(fbo: WebGLFramebuffer | null, width: number, height: number, gl: WebGL2RenderingContext): void {
       // make this the framebuffer we are rendering to.
       gl.bindFramebuffer(gl.FRAMEBUFFER, fbo);
       // Tell WebGL how to convert from clip space to pixels
       gl.viewport(0, 0, width, height);
     }
 
-    public set_kernel(_kernel: Float32Array) {
+    set_kernel(_kernel: Float32Array) {
         this.kernel = _kernel;
         let gl = this.sim.context as WebGL2RenderingContext;
         let program = this.program as WebGLProgram;
@@ -399,12 +399,12 @@ class Sim2D {
         gl.uniform1fv(kernel_loc, this.kernel)
     }
 
-    public set_activation(_activation: string) {
+    set_activation(_activation: string) {
         this.activation = _activation;
         this.reset();
     }
 
-    public set_brush(size: number): void {  
+    set_brush(size: number): void {  
 		this.brush_size = size;
 		let arr_size = size*size*4;
 		this.brush_1 = new Uint8Array(arr_size);
@@ -418,7 +418,7 @@ class Sim2D {
 		}
 	}
 
-    private randomize_brush() {
+    randomize_brush() {
         let arr_size = this.brush_size*this.brush_size*4;
         this.brush_1 = new Uint8Array(arr_size)
         let rng = new Rand();
@@ -434,7 +434,7 @@ class Sim2D {
         }
     }
   
-    public mouse_draw(rel_x: number, rel_y: number) {
+    mouse_draw(rel_x: number, rel_y: number) {
         let gl = this.sim.context as WebGL2RenderingContext;
         let canvas = this.sim.canvas as HTMLCanvasElement;
         let w = canvas.width;
@@ -452,7 +452,7 @@ class Sim2D {
         this.draw_to_canvas(gl);
     }
 
-    public mouse_erase(rel_x: number, rel_y: number) {
+    mouse_erase(rel_x: number, rel_y: number) {
         let gl = this.sim.context as WebGL2RenderingContext;
         let canvas = this.sim.canvas as HTMLCanvasElement;
         let w = canvas.width;

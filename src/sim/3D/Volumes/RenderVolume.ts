@@ -23,6 +23,9 @@ class RenderVolume {
     min_zoom: number = 0.0;
     max_zoom: number = 8.0;
 
+    // visuals
+    blend_volume: boolean = true;
+
     constructor(_sim: Sim) {
         this.sim = _sim;
         this.cube = new Cube();
@@ -99,11 +102,10 @@ class RenderVolume {
             }
         }
 
-        // Drawing
+        // gl stuff
         gl.bindFramebuffer(gl.FRAMEBUFFER, null);
         gl.clearColor(bg.r, bg.g, bg.b, bg.a);
         gl.clear(gl.COLOR_BUFFER_BIT);
-        
         gl.enable(gl.CULL_FACE);
         gl.cullFace(gl.FRONT);
         gl.frontFace(gl.CCW);
@@ -183,12 +185,15 @@ class RenderVolume {
             const volume_loc = gl.getUniformLocation(program, 'u_volume');
             gl.activeTexture(gl.TEXTURE0+2);
             gl.bindTexture(gl.TEXTURE_3D, _volume.texture);
+            gl.generateMipmap(gl.TEXTURE_3D);
+            gl.texParameteri(gl.TEXTURE_3D, gl.TEXTURE_WRAP_R, gl.CLAMP_TO_EDGE);
+            gl.texParameteri(gl.TEXTURE_3D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+            gl.texParameteri(gl.TEXTURE_3D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+            if (this.blend_volume) {
+                gl.texParameteri(gl.TEXTURE_3D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+                gl.texParameteri(gl.TEXTURE_3D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+            }
             gl.uniform1i(volume_loc, 2);
-
-            // print volume to console
-            // let tex = _volume as WebGLTexture;
-            // console.log('volume texture: ' + tex);
-            // console.log('texture type: ' + typeof(tex));
         }
     }
 
@@ -382,7 +387,7 @@ void main() {
         float val = texture(u_volume, p + vec3(0.5, 0.5, 0.5)).r;
 
         // get color from transfer function
-        float alpha = val * val;
+        float alpha = pow(val, 2.0);
         vec4 val_color = vec4(texture(u_func, vec2(val * 2.0, 0.5)).rgb, alpha);
 
         my_color.rgb += (1.0 - my_color.a) * val_color.a * val_color.rgb;

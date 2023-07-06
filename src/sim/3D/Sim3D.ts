@@ -40,7 +40,7 @@ class Sim3D {
         this.kernel = kernels_3d.default_kernel();
         this.activation = activations_3d.default_activation();
         
-        this.size = 16;
+        this.size = 128;
         this.automata = Automata3D.custom;
         this.colormap = Colormap3D.ygb;
 
@@ -58,16 +58,20 @@ class Sim3D {
         this.render_volume.set_colormap(this.colormap);
     }
 
-    public start() {
+    start() {
         this.reset();
     }
 
-    public reset(_seed?: string, _reset_cam: boolean = true) {
+    reset(_seed?: string, _reset_cam: boolean = true) {
         // reset framebuffer
         let gl = this.sim.context as WebGL2RenderingContext;
         gl.bindFramebuffer(gl.FRAMEBUFFER, null);
         gl.disable(gl.CULL_FACE);
         gl.disable(gl.DEPTH_TEST);
+
+        // clear volumes
+        this.clear_volume.render(this.volume_old);
+        this.clear_volume.render(this.volume_new);
 
         // TODO: customize randomize volume
         let seed = this.sim.generate_seed(32);
@@ -85,7 +89,7 @@ class Sim3D {
         if (_reset_cam) this.render_volume.reset_camera();
     }
 
-    public render() {
+    render() {
         // prepare render context
         let canvas = this.sim.canvas as HTMLCanvasElement;
         let w = canvas.width;
@@ -107,11 +111,11 @@ class Sim3D {
         this.render_volume.render(w, h, this.volume_old);
     }
 
-    public orbit_cube(dx: number, dy: number) {
+    orbit_cube(dx: number, dy: number) {
         this.render_volume.orbit_cube(dx, dy);
     }
 
-    public camera_zoom(_delta: number) {
+    camera_zoom(_delta: number) {
         this.render_volume.camera_zoom(_delta);
     }
 }
