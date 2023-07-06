@@ -123,7 +123,7 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
         var ui_button = document.getElementById('ctrl_button') as HTMLButtonElement;
         if (this.ui_open) {
             ui_window.style.cssText='scale:100%;';
-            ui_button.style.cssText='background-color:white;color:rgba(0, 0, 0, 0.85);border-color:black;';
+            ui_button.style.cssText='background-color:white;color:rgba(0, 0, 0, 0.85);border-color:black;border: solid 2px black';
             ui_button.innerHTML = 'close';
         }
         else {
@@ -492,6 +492,7 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
                                     <h4 className='ctrl_module_sub_title'>seed</h4>
                                     <div className='ui_row'>
                                         <input id='seed_field' className='ui_text_field' maxLength={ControlWindow.SEED_LEN}></input>
+                                        <div style={{paddingRight:'0.5em'}}/>
                                         <button id='randomize_seed' className='ui_button' style={{width:'35%'}} onClick={this.randomize_seed}>new seed</button>
                                     </div>
                                 </div>
@@ -606,7 +607,10 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
                 </div>
 
                 <div>
-                    <button id='ctrl_button' className='ui_button' onClick={this.toggle_window}>close</button>
+                    <button id='ctrl_button' className='ui_button' style={{
+                        backgroundColor:'white', 
+                        color:'rgba(0, 0, 0, 0.85)', 
+                        border:'solid 2px black'}} onClick={this.toggle_window}>close</button>
                 </div>
             </>
         );
