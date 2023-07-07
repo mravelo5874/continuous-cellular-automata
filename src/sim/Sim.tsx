@@ -259,14 +259,14 @@ class Sim {
         }
     }
 
-    reset(_seed: string) {
+    reset(_seed: string, _reset_cam: boolean) {
         switch (this.mode) {
         default: break;
         case SimMode.Sim2D:
             this.sim2D?.reset(_seed);
             break;
         case SimMode.Sim3D:
-            this.sim3D?.reset(_seed);
+            this.sim3D?.reset(_seed, _reset_cam);
             break;
         }
     }

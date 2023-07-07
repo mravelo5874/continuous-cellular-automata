@@ -77,7 +77,8 @@ class Sim3D {
         this.clear_volume.render(this.volume_old);
         this.clear_volume.render(this.volume_new);
 
-        // TODO: customize randomize volume
+    
+        // customize randomize volume
         this.seed = this.sim.generate_seed(32);
         if (_seed) {
             this.seed = _seed;

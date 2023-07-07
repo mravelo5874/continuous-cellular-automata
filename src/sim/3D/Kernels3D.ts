@@ -4,7 +4,7 @@ export class kernels_3d
     {
         let kernel = new Float32Array(27)
         // face 1
-        kernel[0] =  0.0 // layer 0
+        kernel[0] =  0.01 // layer 0
         kernel[1] =  0.0
         kernel[2] =  0.0
         kernel[3] =  0.0 // layer 1
@@ -32,7 +32,7 @@ export class kernels_3d
         kernel[23] =  0.0
         kernel[24] =  0.0 // layer 2
         kernel[25] =  0.0
-        kernel[26] =  0.0
+        kernel[26] = -0.01
         return kernel
     }
 }

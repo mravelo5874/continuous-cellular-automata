@@ -62,8 +62,10 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
 
             // set seed
             let seed_field = document.getElementById('seed_field') as HTMLInputElement;
+            let seed_field_3d = document.getElementById('seed_field_3d') as HTMLInputElement;
             this.seed = sim.generate_seed(ControlWindow.SEED_LEN);
             seed_field.value = this.seed.toString();
+            seed_field_3d.value = this.seed.toString();
             
             // update kernel ui
             let v_sym = document.getElementById('v_sym') as HTMLInputElement;
@@ -236,8 +238,10 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
         // set seed
         let sim = this.props.sim;
         let seed_field = document.getElementById('seed_field') as HTMLInputElement;
+        let seed_field_3d = document.getElementById('seed_field_3d') as HTMLInputElement;
         this.seed = sim.generate_seed(ControlWindow.SEED_LEN);
         seed_field.value = this.seed.toString();
+        seed_field_3d.value = this.seed.toString();
     }
 
     randomize_kernel() {
@@ -425,6 +429,10 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
         this.set_activation(act, false);
     }
 
+    load_automata_3d() {
+        
+    }
+
     load_automata() {
         let menu = document.getElementById('load_automata') as HTMLSelectElement;
         const value = menu.value;
@@ -457,8 +465,9 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
 
     reset_automata() {
         let seed_field = document.getElementById('seed_field') as HTMLInputElement;
+        let reset_cam = document.getElementById('toggle_reset_cam') as HTMLInputElement;
         let sim = this.props.sim;
-        sim.reset(seed_field.value);
+        sim.reset(seed_field.value, reset_cam.checked);
     }
 
     render() {
@@ -501,6 +510,40 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
 
 
                         <div id='_3D' style={{scale:'0%', height:'0px'}}>
+
+                        <hr/>
+                            <div id='ctrl_module'>
+                                <h2 className='ctrl_module_title'>automata</h2>
+                                <div style={{paddingBottom:'0.5em'}}>
+                                    <h4 className='ctrl_module_sub_title'>load preset</h4>
+                                    <select className='dropdown_input' name='automata' id='load_automata_3d' onChange={this.load_automata_3d}>
+                                        <option value='custom' disabled>custom 🛠️</option>
+                                    </select>
+                                </div>
+        
+                                <div style={{paddingBottom:'1em'}}>
+                                    <h4 className='ctrl_module_sub_title'>seed</h4>
+                                    <div className='ui_row'>
+                                        <input id='seed_field_3d' className='ui_text_field' maxLength={ControlWindow.SEED_LEN}></input>
+                                        <div style={{paddingRight:'0.5em'}}/>
+                                        <button id='randomize_seed' className='ui_button' style={{width:'35%'}} onClick={this.randomize_seed}>new seed</button>
+                                    </div>
+                                </div>
+
+                                <div className='ui_row'>
+                                    <input type='checkbox' id='toggle_reset_cam' className='ui_button'/>
+                                    <h4 className='ctrl_module_sub_title'>reset camera</h4>
+                                </div>
+                                <button id='reset_button' className='ui_button' onClick={this.reset_automata} style={{padding:'0.5em', width:'100%'}}>reset automata</button>
+
+                                {/* TODO export import automata using .json files 
+                                <div style={{paddingTop:'0.5em'}}>
+                                    <button id='export_button' className='ui_button' style={{width:'50%'}}>export</button>
+                                    <button id='import_button' className='ui_button' style={{width:'50%'}}>import</button>
+                                </div>
+                                */}
+                            </div>
+
                             <hr/>
                             <div id='ctrl_module'>
                                 <h2 className='ctrl_module_title'>render</h2>

@@ -84,6 +84,12 @@ class RandomizeVolume {
             uniform ivec3 u_size;
             uniform int u_z_offset;
 
+            // return a random float value between 0 and 1 (i think ???)
+            float random(vec2 pt, float seed)
+            {
+                return fract(sin((seed+dot(pt.xy,vec2(12.9898,78.233))))*43758.5453123);
+            }
+
             bool is_within_region(float z_norm) {
                 // Convert 0...1 fill radius to 0...1 texture coordinate
                 float z0 = 2.0*z_norm - 1.0;    // 0...1 to -1...+1
@@ -106,8 +112,10 @@ class RandomizeVolume {
                     return vec4(0);
                 }
 
+                float value = random(vPosition.xy + z_norm, u_external_rand);
                 vec3 pos = vec3(vPosition.xy, z_norm);
-                return vec4(z_norm, 0.0, 0.0, 1.0);
+
+                return vec4(value, 0.0, 0.0, 1.0);
             }
 
             void main() {
