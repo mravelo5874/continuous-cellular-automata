@@ -77,7 +77,6 @@ class Sim3D {
         this.clear_volume.render(this.volume_old);
         this.clear_volume.render(this.volume_new);
 
-    
         // customize randomize volume
         this.seed = this.sim.generate_seed(32);
         if (_seed) {
@@ -106,6 +105,7 @@ class Sim3D {
         let h = canvas.height;
 
         // compute single step
+        //console.log('kernel: ' + this.kernel);
         this.compute_volume.render(
             this.volume_old, 
             this.volume_new, 
@@ -142,5 +142,12 @@ class Sim3D {
         this.volume_new = new VolumeData(gl, s);
 
         if (_reset) this.reset(this.seed, false);
+    }
+
+    set_kernel(_kernel: Float32Array) {
+        if (_kernel.length === 27) {
+            this.kernel = _kernel;
+            this.reset(this.seed, false);
+        }
     }
 }

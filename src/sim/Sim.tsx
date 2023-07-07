@@ -319,10 +319,27 @@ class Sim {
     }
 
     get_kernel() {
-        return this.sim2D?.kernel;
+        switch (this.mode) {
+        default: break;
+        case SimMode.Sim2D:
+            if (this.sim2D) return this.sim2D?.kernel;
+            break;
+        case SimMode.Sim3D:
+            if (this.sim3D) return this.sim3D?.kernel;
+            break;
+        }
     }
 
     get_activation() {
+        switch (this.mode) {
+        default: break;
+        case SimMode.Sim2D:
+            if (this.sim2D) return this.sim2D?.activation;
+            break;
+        case SimMode.Sim3D:
+            if (this.sim3D) return this.sim3D?.activation;
+            break;
+        }
         return this.sim2D?.activation;
     }
 
@@ -333,7 +350,16 @@ class Sim {
     } 
 
     update_kernel(_kernel: Float32Array) {
-        this.sim2D?.set_kernel(_kernel);
+        // special mode updates
+        switch (this.mode) {
+        default: break;
+        case SimMode.Sim2D:
+            if (this.sim2D) this.sim2D?.set_kernel(_kernel);
+            break;
+        case SimMode.Sim3D:
+            if (this.sim3D) this.sim3D?.set_kernel(_kernel);
+            break;
+        }
     }
 
     update_activation(_activation: string) {
@@ -347,15 +373,14 @@ class Sim {
     update_zoom(_zoom: number) {
         Sim.zoom = _zoom;
         CanvasResize.update_canvas = true;
-
         // special mode updates
         switch (this.mode) {
-            default: break;
-            case SimMode.Sim2D:
-                if (this.sim2D) this.sim2D.canvas_zoom = _zoom;
-                break;
-            case SimMode.Sim3D:
-                break;
+        default: break;
+        case SimMode.Sim2D:
+            if (this.sim2D) this.sim2D.canvas_zoom = _zoom;
+            break;
+        case SimMode.Sim3D:
+            break;
         }
     }
 

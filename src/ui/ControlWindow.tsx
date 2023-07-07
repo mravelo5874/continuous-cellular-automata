@@ -111,6 +111,8 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
             _3D_modules.style.cssText='scale:0%;height:0px;';
             break;
         }
+        this.set_kernel(sim.get_kernel() as Float32Array);
+        this.set_activation(sim.get_activation() as string, true);
     }
 
     pause_sim() {
@@ -184,54 +186,116 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
     }
 
     update_sim_kernel() {
-        let k0 = document.getElementById('k0') as HTMLInputElement;
-        let k1 = document.getElementById('k1') as HTMLInputElement;
-        let k2 = document.getElementById('k2') as HTMLInputElement;
-
-        let k3 = document.getElementById('k3') as HTMLInputElement;
-        let k4 = document.getElementById('k4') as HTMLInputElement;
-        let k5 = document.getElementById('k5') as HTMLInputElement;
-
-        let k6 = document.getElementById('k6') as HTMLInputElement;
-        let k7 = document.getElementById('k7') as HTMLInputElement;
-        let k8 = document.getElementById('k8') as HTMLInputElement;
-
-        var v_sym = document.getElementById('v_sym') as HTMLInputElement;
-        var h_sym = document.getElementById('h_sym') as HTMLInputElement;
-
-        if (v_sym.checked && !h_sym.checked) {
-            k2.value = k0.value;
-            k5.value = k3.value;
-            k8.value = k6.value;
-        }
-        else if (h_sym.checked && !v_sym.checked) {
-            k6.value = k0.value;
-            k7.value = k1.value;
-            k8.value = k2.value;
-        }
-        else if (v_sym.checked && h_sym.checked) {
-            k2.value = k0.value;
-            k6.value = k0.value;
-            k8.value = k0.value;
-            k1.value = k3.value;
-            k5.value = k3.value;
-            k7.value = k3.value;
-        }
-
-        let kernel = new Float32Array([
-            k0.valueAsNumber,
-            k1.valueAsNumber,
-            k2.valueAsNumber,
-            k3.valueAsNumber,
-            k4.valueAsNumber,
-            k5.valueAsNumber,
-            k6.valueAsNumber,
-            k7.valueAsNumber,
-            k8.valueAsNumber
-        ]);
-
         let sim = this.props.sim;
-        sim.update_kernel(kernel);
+        if (sim.mode === SimMode.Sim2D) {
+            let k0 = document.getElementById('k0') as HTMLInputElement;
+            let k1 = document.getElementById('k1') as HTMLInputElement;
+            let k2 = document.getElementById('k2') as HTMLInputElement;
+            let k3 = document.getElementById('k3') as HTMLInputElement;
+            let k4 = document.getElementById('k4') as HTMLInputElement;
+            let k5 = document.getElementById('k5') as HTMLInputElement;
+            let k6 = document.getElementById('k6') as HTMLInputElement;
+            let k7 = document.getElementById('k7') as HTMLInputElement;
+            let k8 = document.getElementById('k8') as HTMLInputElement;
+            var v_sym = document.getElementById('v_sym') as HTMLInputElement;
+            var h_sym = document.getElementById('h_sym') as HTMLInputElement;
+            if (v_sym.checked && !h_sym.checked) {
+                k2.value = k0.value;
+                k5.value = k3.value;
+                k8.value = k6.value;
+            }
+            else if (h_sym.checked && !v_sym.checked) {
+                k6.value = k0.value;
+                k7.value = k1.value;
+                k8.value = k2.value;
+            }
+            else if (v_sym.checked && h_sym.checked) {
+                k2.value = k0.value;
+                k6.value = k0.value;
+                k8.value = k0.value;
+                k1.value = k3.value;
+                k5.value = k3.value;
+                k7.value = k3.value;
+            }
+            let kernel = new Float32Array([
+                k0.valueAsNumber,
+                k1.valueAsNumber,
+                k2.valueAsNumber,
+                k3.valueAsNumber,
+                k4.valueAsNumber,
+                k5.valueAsNumber,
+                k6.valueAsNumber,
+                k7.valueAsNumber,
+                k8.valueAsNumber
+            ]);
+            sim.update_kernel(kernel);
+        }
+        else if (sim.mode === SimMode.Sim3D) {
+            // layer 1
+            let j0 = document.getElementById('j0') as HTMLInputElement;
+            let j1 = document.getElementById('j1') as HTMLInputElement;
+            let j2 = document.getElementById('j2') as HTMLInputElement;
+            let j3 = document.getElementById('j3') as HTMLInputElement;
+            let j4 = document.getElementById('j4') as HTMLInputElement;
+            let j5 = document.getElementById('j5') as HTMLInputElement;
+            let j6 = document.getElementById('j6') as HTMLInputElement;
+            let j7 = document.getElementById('j7') as HTMLInputElement;
+            let j8 = document.getElementById('j8') as HTMLInputElement;
+            // layer 2
+            let j9 = document.getElementById('j0') as HTMLInputElement;
+            let j10 = document.getElementById('j1') as HTMLInputElement;
+            let j11 = document.getElementById('j2') as HTMLInputElement;
+            let j12 = document.getElementById('j3') as HTMLInputElement;
+            let j13 = document.getElementById('j4') as HTMLInputElement;
+            let j14 = document.getElementById('j5') as HTMLInputElement;
+            let j15 = document.getElementById('j6') as HTMLInputElement;
+            let j16 = document.getElementById('j7') as HTMLInputElement;
+            let j17 = document.getElementById('j8') as HTMLInputElement;
+            // layer 2
+            let j18 = document.getElementById('j0') as HTMLInputElement;
+            let j19 = document.getElementById('j1') as HTMLInputElement;
+            let j20 = document.getElementById('j2') as HTMLInputElement;
+            let j21 = document.getElementById('j3') as HTMLInputElement;
+            let j22 = document.getElementById('j4') as HTMLInputElement;
+            let j23 = document.getElementById('j5') as HTMLInputElement;
+            let j24 = document.getElementById('j6') as HTMLInputElement;
+            let j25 = document.getElementById('j7') as HTMLInputElement;
+            let j26 = document.getElementById('j8') as HTMLInputElement;
+            // TODO: symmetry
+            var x_sym = document.getElementById('x_sym') as HTMLInputElement;
+            var y_sym = document.getElementById('y_sym') as HTMLInputElement;
+            var z_sym = document.getElementById('z_sym') as HTMLInputElement;
+            let kernel = new Float32Array([
+                j0.valueAsNumber,
+                j1.valueAsNumber,
+                j2.valueAsNumber,
+                j3.valueAsNumber,
+                j4.valueAsNumber,
+                j5.valueAsNumber,
+                j6.valueAsNumber,
+                j7.valueAsNumber,
+                j8.valueAsNumber,
+                j9.valueAsNumber,
+                j10.valueAsNumber,
+                j11.valueAsNumber,
+                j12.valueAsNumber,
+                j13.valueAsNumber,
+                j14.valueAsNumber,
+                j15.valueAsNumber,
+                j16.valueAsNumber,
+                j17.valueAsNumber,
+                j18.valueAsNumber,
+                j19.valueAsNumber,
+                j20.valueAsNumber,
+                j21.valueAsNumber,
+                j22.valueAsNumber,
+                j23.valueAsNumber,
+                j24.valueAsNumber,
+                j25.valueAsNumber,
+                j26.valueAsNumber
+            ]);
+            sim.update_kernel(kernel);
+        }
     }
 
     randomize_seed() {
@@ -245,154 +309,217 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
     }
 
     randomize_kernel() {
-        var v_sym = document.getElementById('v_sym') as HTMLInputElement;
-        var h_sym = document.getElementById('h_sym') as HTMLInputElement;
-        
-        let rng = new Rand();
-        let k0 = rng.next()*2-1;
-        let k1 = rng.next()*2-1;
-        let k2 = rng.next()*2-1;
-        let k3 = rng.next()*2-1;
-        let k4 = rng.next()*2-1;
-        let k5 = rng.next()*2-1;
-        let k6 = rng.next()*2-1;
-        let k7 = rng.next()*2-1;
-        let k8 = rng.next()*2-1;
-
-        if (h_sym.checked) {
-            k6 = k0;
-            k7 = k1;
-            k8 = k2;
-        }
-        if (v_sym.checked) {
-            k2 = k0;
-            k5 = k3;
-            k8 = k6;
-        }
-
-        let kernel = new Float32Array([k0, k1, k2, k3, k4, k5, k6, k7, k8]);
         let sim = this.props.sim;
-
-        this.set_kernel(kernel);
-        sim.update_kernel(kernel);
-        sim.custom_kernel();
-
-        let menu = document.getElementById('load_automata') as HTMLSelectElement;
-        menu.value = 'custom';
+        if (sim.mode === SimMode.Sim2D) {
+            var v_sym = document.getElementById('v_sym') as HTMLInputElement;
+            var h_sym = document.getElementById('h_sym') as HTMLInputElement;
+            let rng = new Rand();
+            let k0 = rng.next()*2-1;
+            let k1 = rng.next()*2-1;
+            let k2 = rng.next()*2-1;
+            let k3 = rng.next()*2-1;
+            let k4 = rng.next()*2-1;
+            let k5 = rng.next()*2-1;
+            let k6 = rng.next()*2-1;
+            let k7 = rng.next()*2-1;
+            let k8 = rng.next()*2-1;
+            if (h_sym.checked) {
+                k6 = k0;
+                k7 = k1;
+                k8 = k2;
+            }
+            if (v_sym.checked) {
+                k2 = k0;
+                k5 = k3;
+                k8 = k6;
+            }
+            let kernel = new Float32Array([k0, k1, k2, k3, k4, k5, k6, k7, k8]);
+            this.set_kernel(kernel);
+            sim.update_kernel(kernel);
+            sim.custom_kernel();
+            let menu = document.getElementById('load_automata') as HTMLSelectElement;
+            menu.value = 'custom';
+        }
+        else if (sim.mode === SimMode.Sim3D) {
+            let rng = new Rand();
+            // layer 1
+            let j0 = rng.next()*2-1;
+            let j1 = rng.next()*2-1;
+            let j2 = rng.next()*2-1;
+            let j3 = rng.next()*2-1;
+            let j4 = rng.next()*2-1;
+            let j5 = rng.next()*2-1;
+            let j6 = rng.next()*2-1;
+            let j7 = rng.next()*2-1;
+            let j8 = rng.next()*2-1;
+            // layer 2
+            let j9 = rng.next()*2-1;
+            let j10 = rng.next()*2-1;
+            let j11 = rng.next()*2-1;
+            let j12 = rng.next()*2-1;
+            let j13 = rng.next()*2-1;
+            let j14 = rng.next()*2-1;
+            let j15 = rng.next()*2-1;
+            let j16 = rng.next()*2-1;
+            let j17 = rng.next()*2-1;
+            // layer 3
+            let j18 = rng.next()*2-1;
+            let j19 = rng.next()*2-1;
+            let j20 = rng.next()*2-1;
+            let j21 = rng.next()*2-1;
+            let j22 = rng.next()*2-1;
+            let j23 = rng.next()*2-1;
+            let j24 = rng.next()*2-1;
+            let j25 = rng.next()*2-1;
+            let j26 = rng.next()*2-1;
+            let kernel = new Float32Array([
+                j0,  j1,  j2,  j3,  j4,  j5,  j6,  j7,  j8, 
+                j9,  j10, j11, j12, j13, j14, j15, j16, j17,
+                j18, j19, j20, j21, j22, j23, j24, j25, j26, ]);
+            this.set_kernel(kernel);
+            sim.update_kernel(kernel);
+        }
     }
 
     update_sim_activation() {
         let af = document.getElementById('af') as HTMLTextAreaElement;
         this.set_activation(af.value, true);
-
-        // TODO - parse af string to make sure it is a valid function
-
         let sim = this.props.sim;
         sim.update_activation(af.value);
     }
 
     update_kernel_symmetry() {
-        let v_sym = document.getElementById('v_sym') as HTMLInputElement;
-        let h_sym = document.getElementById('h_sym') as HTMLInputElement;
-
-        let k0 = document.getElementById('k0') as HTMLInputElement;
-        let k1 = document.getElementById('k1') as HTMLInputElement;
-        let k2 = document.getElementById('k2') as HTMLInputElement;
-
-        let k3 = document.getElementById('k3') as HTMLInputElement;
-        let k4 = document.getElementById('k4') as HTMLInputElement;
-        let k5 = document.getElementById('k5') as HTMLInputElement;
-
-        let k6 = document.getElementById('k6') as HTMLInputElement;
-        let k7 = document.getElementById('k7') as HTMLInputElement;
-        let k8 = document.getElementById('k8') as HTMLInputElement;
-
-        // reset all kernel styles
-        k0.style.background = 'rgba(255, 255, 255, 0.6)';
-        k1.style.background = 'rgba(255, 255, 255, 0.6)';
-        k2.style.background = 'rgba(255, 255, 255, 0.6)';
-        k3.style.background = 'rgba(255, 255, 255, 0.6)';
-        k4.style.background = 'rgba(255, 255, 255, 0.6)';
-        k5.style.background = 'rgba(255, 255, 255, 0.6)';
-        k6.style.background = 'rgba(255, 255, 255, 0.6)';
-        k7.style.background = 'rgba(255, 255, 255, 0.6)';
-        k8.style.background = 'rgba(255, 255, 255, 0.6)';
-        k0.disabled = false;
-        k1.disabled = false;
-        k2.disabled = false;
-        k3.disabled = false;
-        k5.disabled = false;
-        k6.disabled = false;
-        k7.disabled = false;
-        k8.disabled = false;
-
-        if (v_sym.checked && !h_sym.checked) {
-            k0.style.background = 'rgba(110, 212, 252, 0.6)';
-            k3.style.background = 'rgba(110, 212, 252, 0.6)';
-            k6.style.background = 'rgba(110, 212, 252, 0.6)';
-            k2.style.background = 'rgba(110, 212, 252, 0.6)';
-            k5.style.background = 'rgba(110, 212, 252, 0.6)';
-            k8.style.background = 'rgba(110, 212, 252, 0.6)';
-            k2.disabled = true;
-            k5.disabled = true;
-            k8.disabled = true;
-        }   
-        else if (h_sym.checked && !v_sym.checked) {
-            k0.style.background = 'rgba(110, 212, 252, 0.6)';
-            k1.style.background = 'rgba(110, 212, 252, 0.6)';
-            k2.style.background = 'rgba(110, 212, 252, 0.6)';
-            k6.style.background = 'rgba(110, 212, 252, 0.6)';
-            k7.style.background = 'rgba(110, 212, 252, 0.6)';
-            k8.style.background = 'rgba(110, 212, 252, 0.6)';
-            k6.disabled = true;
-            k7.disabled = true;
-            k8.disabled = true;
+        let sim = this.props.sim;
+        if (sim.mode === SimMode.Sim2D) {
+            let k0 = document.getElementById('k0') as HTMLInputElement;
+            let k1 = document.getElementById('k1') as HTMLInputElement;
+            let k2 = document.getElementById('k2') as HTMLInputElement;
+            let k3 = document.getElementById('k3') as HTMLInputElement;
+            let k4 = document.getElementById('k4') as HTMLInputElement;
+            let k5 = document.getElementById('k5') as HTMLInputElement;
+            let k6 = document.getElementById('k6') as HTMLInputElement;
+            let k7 = document.getElementById('k7') as HTMLInputElement;
+            let k8 = document.getElementById('k8') as HTMLInputElement;
+            let v_sym = document.getElementById('v_sym') as HTMLInputElement;
+            let h_sym = document.getElementById('h_sym') as HTMLInputElement;
+            // reset all kernel styles
+            k0.style.background = 'rgba(255, 255, 255, 0.6)';
+            k1.style.background = 'rgba(255, 255, 255, 0.6)';
+            k2.style.background = 'rgba(255, 255, 255, 0.6)';
+            k3.style.background = 'rgba(255, 255, 255, 0.6)';
+            k4.style.background = 'rgba(255, 255, 255, 0.6)';
+            k5.style.background = 'rgba(255, 255, 255, 0.6)';
+            k6.style.background = 'rgba(255, 255, 255, 0.6)';
+            k7.style.background = 'rgba(255, 255, 255, 0.6)';
+            k8.style.background = 'rgba(255, 255, 255, 0.6)';
+            k0.disabled = false;
+            k1.disabled = false;
+            k2.disabled = false;
+            k3.disabled = false;
+            k5.disabled = false;
+            k6.disabled = false;
+            k7.disabled = false;
+            k8.disabled = false;
+            if (v_sym.checked && !h_sym.checked) {
+                k0.style.background = 'rgba(110, 212, 252, 0.6)';
+                k3.style.background = 'rgba(110, 212, 252, 0.6)';
+                k6.style.background = 'rgba(110, 212, 252, 0.6)';
+                k2.style.background = 'rgba(110, 212, 252, 0.6)';
+                k5.style.background = 'rgba(110, 212, 252, 0.6)';
+                k8.style.background = 'rgba(110, 212, 252, 0.6)';
+                k2.disabled = true;
+                k5.disabled = true;
+                k8.disabled = true;
+            }   
+            else if (h_sym.checked && !v_sym.checked) {
+                k0.style.background = 'rgba(110, 212, 252, 0.6)';
+                k1.style.background = 'rgba(110, 212, 252, 0.6)';
+                k2.style.background = 'rgba(110, 212, 252, 0.6)';
+                k6.style.background = 'rgba(110, 212, 252, 0.6)';
+                k7.style.background = 'rgba(110, 212, 252, 0.6)';
+                k8.style.background = 'rgba(110, 212, 252, 0.6)';
+                k6.disabled = true;
+                k7.disabled = true;
+                k8.disabled = true;
+            }
+            else if (v_sym.checked && h_sym.checked) {
+                k0.style.background = 'rgba(38, 148, 192, 0.6)';
+                k2.style.background = 'rgba(38, 148, 192, 0.6)';
+                k6.style.background = 'rgba(38, 148, 192, 0.6)';
+                k8.style.background = 'rgba(38, 148, 192, 0.6)';
+                k1.style.background = 'rgba(110, 212, 252, 0.6)';
+                k3.style.background = 'rgba(110, 212, 252, 0.6)';
+                k5.style.background = 'rgba(110, 212, 252, 0.6)';
+                k7.style.background = 'rgba(110, 212, 252, 0.6)';
+                k1.disabled = true;
+                k2.disabled = true;
+                k5.disabled = true;
+                k6.disabled = true;
+                k7.disabled = true;
+                k8.disabled = true;
+            }
         }
-        else if (v_sym.checked && h_sym.checked) {
-            k0.style.background = 'rgba(38, 148, 192, 0.6)';
-            k2.style.background = 'rgba(38, 148, 192, 0.6)';
-            k6.style.background = 'rgba(38, 148, 192, 0.6)';
-            k8.style.background = 'rgba(38, 148, 192, 0.6)';
-            k1.style.background = 'rgba(110, 212, 252, 0.6)';
-            k3.style.background = 'rgba(110, 212, 252, 0.6)';
-            k5.style.background = 'rgba(110, 212, 252, 0.6)';
-            k7.style.background = 'rgba(110, 212, 252, 0.6)';
-            k1.disabled = true;
-            k2.disabled = true;
-            k5.disabled = true;
-            k6.disabled = true;
-            k7.disabled = true;
-            k8.disabled = true;
+        else if (sim.mode === SimMode.Sim3D) {
+            // layer 1
+            let j0 = document.getElementById('j0') as HTMLInputElement;
+            let j1 = document.getElementById('j1') as HTMLInputElement;
+            let j2 = document.getElementById('j2') as HTMLInputElement;
+            let j3 = document.getElementById('j3') as HTMLInputElement;
+            let j4 = document.getElementById('j4') as HTMLInputElement;
+            let j5 = document.getElementById('j5') as HTMLInputElement;
+            let j6 = document.getElementById('j6') as HTMLInputElement;
+            let j7 = document.getElementById('j7') as HTMLInputElement;
+            let j8 = document.getElementById('j8') as HTMLInputElement;
+            // layer 2
+            let j9 = document.getElementById('j0') as HTMLInputElement;
+            let j10 = document.getElementById('j1') as HTMLInputElement;
+            let j11 = document.getElementById('j2') as HTMLInputElement;
+            let j12 = document.getElementById('j3') as HTMLInputElement;
+            let j13 = document.getElementById('j4') as HTMLInputElement;
+            let j14 = document.getElementById('j5') as HTMLInputElement;
+            let j15 = document.getElementById('j6') as HTMLInputElement;
+            let j16 = document.getElementById('j7') as HTMLInputElement;
+            let j17 = document.getElementById('j8') as HTMLInputElement;
+            // layer 2
+            let j18 = document.getElementById('j0') as HTMLInputElement;
+            let j19 = document.getElementById('j1') as HTMLInputElement;
+            let j20 = document.getElementById('j2') as HTMLInputElement;
+            let j21 = document.getElementById('j3') as HTMLInputElement;
+            let j22 = document.getElementById('j4') as HTMLInputElement;
+            let j23 = document.getElementById('j5') as HTMLInputElement;
+            let j24 = document.getElementById('j6') as HTMLInputElement;
+            let j25 = document.getElementById('j7') as HTMLInputElement;
+            let j26 = document.getElementById('j8') as HTMLInputElement;
+            // TODO: symmetry
+            var x_sym = document.getElementById('x_sym') as HTMLInputElement;
+            var y_sym = document.getElementById('y_sym') as HTMLInputElement;
+            var z_sym = document.getElementById('z_sym') as HTMLInputElement;
         }
     }
 
     set_kernel(_kernel: Float32Array) {
-        let k0 = document.getElementById('k0') as HTMLInputElement;
-        let k1 = document.getElementById('k1') as HTMLInputElement;
-        let k2 = document.getElementById('k2') as HTMLInputElement;
-        k0.value = _kernel[0].toFixed(3).toString();
-        k1.value = _kernel[1].toFixed(3).toString();
-        k2.value = _kernel[2].toFixed(3).toString();
-
-        let k3 = document.getElementById('k3') as HTMLInputElement;
-        let k4 = document.getElementById('k4') as HTMLInputElement;
-        let k5 = document.getElementById('k5') as HTMLInputElement;
-        k3.value = _kernel[3].toFixed(3).toString();
-        k4.value = _kernel[4].toFixed(3).toString();
-        k5.value = _kernel[5].toFixed(3).toString();
-
-        let k6 = document.getElementById('k6') as HTMLInputElement;
-        let k7 = document.getElementById('k7') as HTMLInputElement;
-        let k8 = document.getElementById('k8') as HTMLInputElement;
-        k6.value = _kernel[6].toFixed(3).toString();
-        k7.value = _kernel[7].toFixed(3).toString();
-        k8.value = _kernel[8].toFixed(3).toString();
+        let sim = this.props.sim;
+        if (sim.mode === SimMode.Sim2D) {
+            // assert _kernel is correct length
+            if (_kernel.length !== 9) return;
+            for (let i = 0; i < _kernel.length; i++) {
+                let k = document.getElementById('k'+i.toFixed(0).toString()) as HTMLInputElement;
+                k.value = _kernel[i].toFixed(3).toString();
+            }
+        }
+        else if (sim.mode === SimMode.Sim3D) {
+            // assert _kernel is correct length
+            if (_kernel.length !== 27) return;
+            for (let i = 0; i < _kernel.length; i++) {
+                let j = document.getElementById('j'+i.toFixed(0).toString()) as HTMLInputElement;
+                j.value = _kernel[i].toFixed(3).toString();
+            }
+        }
     }
 
     set_activation(_activation: string, is_custom: boolean) {
         let af = document.getElementById('af') as HTMLTextAreaElement;
         af.value = _activation;
-
         if (is_custom) {
             let menu = document.getElementById('load_activation') as HTMLSelectElement;
             menu.value = 'custom';
@@ -430,7 +557,7 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
     }
 
     load_automata_3d() {
-        
+        // TODO find and load interesting 3d automata
     }
 
     load_automata() {
@@ -438,7 +565,6 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
         const value = menu.value;
         let sim = this.props.sim;
         sim.load_automata(value);
-
         // update ui
         let v_sym = document.getElementById('v_sym') as HTMLInputElement;
         let h_sym = document.getElementById('h_sym') as HTMLInputElement;
@@ -570,6 +696,85 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
                                         <input type='range' min='1' max='256' defaultValue='64' className='slider' id='volume_size' onChange={this.update_volume_text} onMouseUp={this.update_volume_size}/>
                                     </div>
                                     <h4 style={{width:'24px', paddingLeft:'12px', textAlign:'center', color:'rgba(0, 0, 0, 0.5)'}} id='volume_size_text'>64</h4>
+                                </div>
+                            </div>
+
+                            <hr/>
+                            <div id='ctrl_module'>
+                                <h2 className='ctrl_module_title'>kernel</h2>
+                                <h4 className='ctrl_module_sub_title' style={{textAlign:'center'}}>layer 1</h4>
+                                <div className='ui_row' style={{justifyContent:'center'}}>
+                                    <div className='ui_column'>
+                                        <input id='j0' type='number'step='0.001' className='kernel_input' onChange={this.update_sim_kernel} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
+                                        <input id='j1' type='number'step='0.001' className='kernel_input' onChange={this.update_sim_kernel} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
+                                        <input id='j2' type='number'step='0.001' className='kernel_input' onChange={this.update_sim_kernel} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
+                                    </div>
+                                    <div className='ui_column'>
+                                        <input id='j3' type='number'step='0.001' className='kernel_input' onChange={this.update_sim_kernel} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
+                                        <input id='j4' type='number'step='0.001' className='kernel_input' onChange={this.update_sim_kernel} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
+                                        <input id='j5' type='number'step='0.001' className='kernel_input' onChange={this.update_sim_kernel} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
+                                    </div>
+                                    <div className='ui_column'>
+                                        <input id='j6' type='number'step='0.001' className='kernel_input' onChange={this.update_sim_kernel} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
+                                        <input id='j7' type='number'step='0.001' className='kernel_input' onChange={this.update_sim_kernel} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
+                                        <input id='j8' type='number'step='0.001' className='kernel_input' onChange={this.update_sim_kernel} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
+                                    </div>
+                                </div>
+                                
+                                <h4 className='ctrl_module_sub_title' style={{textAlign:'center'}}>layer 2</h4>
+                                <div className='ui_row' style={{justifyContent:'center'}}>
+                                    <div className='ui_column'>
+                                        <input id='j9' type='number'step='0.001' className='kernel_input' onChange={this.update_sim_kernel} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
+                                        <input id='j10' type='number'step='0.001' className='kernel_input' onChange={this.update_sim_kernel} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
+                                        <input id='j11' type='number'step='0.001' className='kernel_input' onChange={this.update_sim_kernel} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
+                                    </div>
+                                    <div className='ui_column'>
+                                        <input id='j12' type='number'step='0.001' className='kernel_input' onChange={this.update_sim_kernel} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
+                                        <input id='j13' type='number'step='0.001' className='kernel_input' onChange={this.update_sim_kernel} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
+                                        <input id='j14' type='number'step='0.001' className='kernel_input' onChange={this.update_sim_kernel} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
+                                    </div>
+                                    <div className='ui_column'>
+                                        <input id='j15' type='number'step='0.001' className='kernel_input' onChange={this.update_sim_kernel} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
+                                        <input id='j16' type='number'step='0.001' className='kernel_input' onChange={this.update_sim_kernel} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
+                                        <input id='j17' type='number'step='0.001' className='kernel_input' onChange={this.update_sim_kernel} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
+                                    </div>
+                                </div>
+                                
+                                <h4 className='ctrl_module_sub_title' style={{textAlign:'center'}}>layer 3</h4>
+                                <div className='ui_row' style={{justifyContent:'center'}}>
+                                    <div className='ui_column'>
+                                        <input id='j18' type='number'step='0.001' className='kernel_input' onChange={this.update_sim_kernel} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
+                                        <input id='j19' type='number'step='0.001' className='kernel_input' onChange={this.update_sim_kernel} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
+                                        <input id='j20' type='number'step='0.001' className='kernel_input' onChange={this.update_sim_kernel} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
+                                    </div>
+                                    <div className='ui_column'>
+                                        <input id='j21' type='number'step='0.001' className='kernel_input' onChange={this.update_sim_kernel} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
+                                        <input id='j22' type='number'step='0.001' className='kernel_input' onChange={this.update_sim_kernel} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
+                                        <input id='j23' type='number'step='0.001' className='kernel_input' onChange={this.update_sim_kernel} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
+                                    </div>
+                                    <div className='ui_column'>
+                                        <input id='j24' type='number'step='0.001' className='kernel_input' onChange={this.update_sim_kernel} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
+                                        <input id='j25' type='number'step='0.001' className='kernel_input' onChange={this.update_sim_kernel} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
+                                        <input id='j26' type='number'step='0.001' className='kernel_input' onChange={this.update_sim_kernel} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
+                                    </div>
+                                </div>
+
+                                <div style={{padding:'0.5em'}}>
+                                    <div className='ui_column'>
+                                        <div className='ui_row'>
+                                            <input type='checkbox' id='x_sym' className='ui_button' onClick={this.update_kernel_symmetry}/>
+                                            <h4 className='ctrl_module_sub_title'>x symmetry</h4>
+                                        </div>
+                                        <div className='ui_row'>
+                                            <input type='checkbox' id='y_sym' className='ui_button' onClick={this.update_kernel_symmetry}/>
+                                            <h4 className='ctrl_module_sub_title'>y symmetry</h4>
+                                        </div>
+                                        <div className='ui_row' style={{paddingBottom:'0.5em'}}>
+                                            <input type='checkbox' id='z_sym' className='ui_button' onClick={this.update_kernel_symmetry}/>
+                                            <h4 className='ctrl_module_sub_title'>z symmetry</h4>
+                                        </div>
+                                    </div>
+                                    <button className='ui_button' onClick={this.randomize_kernel} style={{padding:'0.5em', width:'100%'}}>randomize kernel</button>
                                 </div>
                             </div>
                         </div>
