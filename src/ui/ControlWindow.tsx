@@ -29,16 +29,25 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
         this.update_sim_activation = this.update_sim_activation.bind(this);
         this.update_sim_brush = this.update_sim_brush.bind(this);
         this.update_sim_zoom = this.update_sim_zoom.bind(this);
+        this.update_volume_size = this.update_volume_size.bind(this);
+        this.update_volume_text = this.update_volume_text.bind(this);
+
         this.load_automata = this.load_automata.bind(this);
         this.load_shader = this.load_shader.bind(this);
         this.load_activation = this.load_activation.bind(this);
+        this.load_colormap = this.load_colormap.bind(this);
+
         this.toggle_window = this.toggle_window.bind(this);
+        this.toggle_blend = this.toggle_blend.bind(this);
+        this.toggle_sim = this.toggle_sim.bind(this);
         this.toggle_aa = this.toggle_aa.bind(this);
+
         this.randomize_kernel = this.randomize_kernel.bind(this);
         this.randomize_seed = this.randomize_seed.bind(this);
+
         this.reset_automata = this.reset_automata.bind(this);
         this.pause_sim = this.pause_sim.bind(this);
-        this.toggle_sim = this.toggle_sim.bind(this);
+        
     }
 
     componentDidMount = () => {
@@ -68,6 +77,11 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
         }
     }
 
+    toggle_blend() {
+        let sim = this.props.sim;
+        sim.toggle_blend();
+    }
+
     on_key_down(key: KeyboardEvent) {
         switch(key.key) {
             default: return;
@@ -86,13 +100,13 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
         default: break;
         case SimMode.Sim2D:
             sim.set_mode(SimMode.Sim3D);
-            _2D_modules.style.cssText='scale:0%;';
-            _3D_modules.style.cssText='scale:100%;';
+            _2D_modules.style.cssText='scale:0%;height:0px;';
+            _3D_modules.style.cssText='height:100%;';
             break;
         case SimMode.Sim3D:
             sim.set_mode(SimMode.Sim2D);
-            _2D_modules.style.cssText='scale:100%;';
-            _3D_modules.style.cssText='scale:0%;';
+            _2D_modules.style.cssText='height:100%;';
+            _3D_modules.style.cssText='scale:0%;height:0px;';
             break;
         }
     }
@@ -150,10 +164,21 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
     }
 
     update_zoom_text() {
-        // update text with correct value
         var zoom_slider = document.getElementById('zoom_slider') as HTMLInputElement;
         var zoom_text = document.getElementById('zoom_text') as HTMLElement;
         zoom_text.innerHTML = zoom_slider.value;
+    }
+
+    update_volume_size() {
+        var volume_size = document.getElementById('volume_size') as HTMLInputElement;
+        let sim = this.props.sim;
+        sim.update_volume_size(volume_size.valueAsNumber);
+    }
+
+    update_volume_text() {
+        var volume_size = document.getElementById('volume_size') as HTMLInputElement;
+        var volume_text = document.getElementById('volume_size_text') as HTMLElement;
+        volume_text.innerHTML = volume_size.value;
     }
 
     update_sim_kernel() {
@@ -416,6 +441,13 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
         this.set_activation(sim.get_activation() as string, true);
     }
 
+    load_colormap() {
+        let menu = document.getElementById('load_colormap') as HTMLSelectElement;
+        const value = menu.value;
+        let sim = this.props.sim;
+        sim.load_colormap(value); 
+    }
+
     load_shader() {
         let menu = document.getElementById('load_shader') as HTMLSelectElement;
         const value = menu.value;
@@ -467,7 +499,40 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
                             </div>
                         </div>
 
-                        <div id='_2D'>
+
+                        <div id='_3D' style={{scale:'0%', height:'0px'}}>
+                            <hr/>
+                            <div id='ctrl_module'>
+                                <h2 className='ctrl_module_title'>render</h2>
+                                <div className='ui_row'>
+                                    <input type='checkbox' id='toggle_blend' className='ui_button' onClick={this.toggle_blend}/>
+                                    <h4 className='ctrl_module_sub_title'>blend</h4>
+                                </div>
+
+                                <div style={{paddingBottom:'0.5em'}}>
+                                    <h4 className='ctrl_module_sub_title'>colormap</h4>
+                                    <select className='dropdown_input' name='colormap' id='load_colormap' onChange={this.load_colormap}>
+                                        <option className='dropdown_option' value='ygb'>yellow green blue</option>
+                                        <option value='cool_warm'>cool warm</option>
+                                        <option value='plasma'>plasma</option>
+                                        <option value='virdis'>virdis</option>
+                                        <option value='rainbow'>rainbow</option>
+                                        <option value='green'>green</option>
+                                    </select>
+                                </div>
+
+                                <h4 className='ctrl_module_sub_title'>volume size</h4>
+                                <div className='ui_row'>
+                                    <div className='slider_container'>
+                                        <input type='range' min='1' max='256' defaultValue='64' className='slider' id='volume_size' onChange={this.update_volume_text} onMouseUp={this.update_volume_size}/>
+                                    </div>
+                                    <h4 style={{width:'24px', paddingLeft:'12px', textAlign:'center', color:'rgba(0, 0, 0, 0.5)'}} id='volume_size_text'>64</h4>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <div id='_2D' style={{scale:'100%', height:'100%'}}>
                             {/* TODO
                             <hr/>
                             <div id='ctrl_module'>
@@ -604,10 +669,6 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
                                     <h4 style={{width:'24px', paddingLeft:'12px', textAlign:'center', color:'rgba(0, 0, 0, 0.5)'}} id='zoom_text'>2.0</h4>
                                 </div>
                             </div>
-                        </div>
-
-                        <div id='_3D'>
-
                         </div>
                                                 
                         {/* extra padding at the bottom of the window */}

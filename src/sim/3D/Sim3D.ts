@@ -16,15 +16,19 @@ enum Colormap3D { cool_warm, plasma, virdis, rainbow, green, ygb, END }
 enum Automata3D { custom, END }
 
 class Sim3D {
+    static START_SIZE: number = 64;
+    static MAX_SIZE: number = 512;
+
     // automata variables
     sim: Sim;
     kernel: Float32Array;
     activation: string;
-    volume_old: VolumeData;
-    volume_new: VolumeData;
+    volume_old: VolumeData | null = null;
+    volume_new: VolumeData | null = null;
+    seed: string = '';
 
     // renderables
-    size: number;
+    size: number = Sim3D.START_SIZE;
     colormap: Colormap3D;
     automata: Automata3D;
 
@@ -40,15 +44,10 @@ class Sim3D {
         this.kernel = kernels_3d.default_kernel();
         this.activation = activations_3d.default_activation();
         
-        this.size = 128;
+        // create volume datas
+        this.set_size(this.size, false);
         this.automata = Automata3D.custom;
         this.colormap = Colormap3D.ygb;
-
-        // create volume datas
-        let gl = this.sim.context as WebGL2RenderingContext;
-        let s = this.size;
-        this.volume_old = new VolumeData(gl, s);
-        this.volume_new = new VolumeData(gl, s);
         
         // create volumes
         this.clear_volume = new ClearVolume(_sim);
@@ -63,6 +62,11 @@ class Sim3D {
     }
 
     reset(_seed?: string, _reset_cam: boolean = true) {
+        // make sure volumes are not null 
+        if (this.volume_old === null || this.volume_new === null) {
+            return;
+        }
+
         // reset framebuffer
         let gl = this.sim.context as WebGL2RenderingContext;
         gl.bindFramebuffer(gl.FRAMEBUFFER, null);
@@ -74,11 +78,11 @@ class Sim3D {
         this.clear_volume.render(this.volume_new);
 
         // TODO: customize randomize volume
-        let seed = this.sim.generate_seed(32);
+        this.seed = this.sim.generate_seed(32);
         if (_seed) {
-            seed = _seed;
+            this.seed = _seed;
         }
-        this.randomize_volume.render(this.volume_old, seed);
+        this.randomize_volume.render(this.volume_old, this.seed);
 
         // TODO: set automata
         switch (this.automata) {
@@ -90,6 +94,11 @@ class Sim3D {
     }
 
     render() {
+        // make sure volumes are not null 
+        if (this.volume_old === null || this.volume_new === null) {
+            return;
+        }
+
         // prepare render context
         let canvas = this.sim.canvas as HTMLCanvasElement;
         let w = canvas.width;
@@ -117,5 +126,20 @@ class Sim3D {
 
     camera_zoom(_delta: number) {
         this.render_volume.camera_zoom(_delta);
+    }
+
+    set_size(_size: number, _reset: boolean = true) {
+        if (_size <= 0 || _size > Sim3D.MAX_SIZE) {
+            return;
+        }
+        this.size = _size;
+
+        // create volume datas
+        let gl = this.sim.context as WebGL2RenderingContext;
+        let s = this.size;
+        this.volume_old = new VolumeData(gl, s);
+        this.volume_new = new VolumeData(gl, s);
+
+        if (_reset) this.reset(this.seed, false);
     }
 }

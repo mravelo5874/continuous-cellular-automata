@@ -24,7 +24,7 @@ class RenderVolume {
     max_zoom: number = 8.0;
 
     // visuals
-    blend_volume: boolean = true;
+    blend_volume: boolean = false;
 
     constructor(_sim: Sim) {
         this.sim = _sim;
@@ -192,6 +192,10 @@ class RenderVolume {
             if (this.blend_volume) {
                 gl.texParameteri(gl.TEXTURE_3D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
                 gl.texParameteri(gl.TEXTURE_3D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+            }
+            else {
+                gl.texParameteri(gl.TEXTURE_3D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+                gl.texParameteri(gl.TEXTURE_3D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
             }
             gl.uniform1i(volume_loc, 2);
         }

@@ -1,7 +1,7 @@
 import { webgl_util } from "./WebGL-Util";
 import { CanvasResize } from "./CanvasResize";
 import { Sim2D, Automata2D, Shader2D } from "./2D/Sim2D";
-import { Sim3D } from "./3D/Sim3D";
+import { Colormap3D, Sim3D } from "./3D/Sim3D";
 import { Vec4 } from "../lib/TSM";
 import { delay } from "./Gen-Util"; 
 import Rand from "src/lib/rand-seed";
@@ -271,6 +271,49 @@ class Sim {
         }
     }
 
+    toggle_blend() {
+        switch (this.mode) {
+        default: break;
+        case SimMode.Sim2D:
+            break;
+        case SimMode.Sim3D:
+            let blend = this.sim3D?.render_volume.blend_volume;
+            if (this.sim3D) this.sim3D.render_volume.blend_volume = !blend;
+            break;
+        }
+    }
+
+    load_colormap(_colormap: string) {
+        switch (this.mode) {
+        default: break;
+        case SimMode.Sim2D:
+            break;
+        case SimMode.Sim3D:
+            switch (_colormap) {
+            default: break;
+            case 'cool_warm':
+                this.sim3D?.render_volume.set_colormap(Colormap3D.cool_warm);
+                break;
+            case 'plasma':
+                this.sim3D?.render_volume.set_colormap(Colormap3D.plasma);
+                break;
+            case 'virdis':
+                this.sim3D?.render_volume.set_colormap(Colormap3D.virdis);
+                break;
+            case 'rainbow':
+                this.sim3D?.render_volume.set_colormap(Colormap3D.rainbow);
+                break;
+            case 'green':
+                this.sim3D?.render_volume.set_colormap(Colormap3D.green);
+                break;
+            case 'ygb':
+                this.sim3D?.render_volume.set_colormap(Colormap3D.ygb);
+                break;
+            }
+            break;
+        }
+    }
+
     custom_kernel() {
         this.sim2D?.custom_kernel();
     }
@@ -282,6 +325,12 @@ class Sim {
     get_activation() {
         return this.sim2D?.activation;
     }
+
+    update_volume_size(_size: number) {
+        if (this.mode == SimMode.Sim3D) {
+            this.sim3D?.set_size(_size);
+        } 
+    } 
 
     update_kernel(_kernel: Float32Array) {
         this.sim2D?.set_kernel(_kernel);

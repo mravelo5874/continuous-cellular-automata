@@ -84,14 +84,6 @@ class RandomizeVolume {
             uniform ivec3 u_size;
             uniform int u_z_offset;
 
-            float rand(vec3 co){
-                const vec3 rand_vec = vec3(12.9898, 78.233, 3.2345);
-                float a = dot(co, rand_vec) * u_external_rand;
-                float b = sin(a);
-                float c = b * 43758.5453;
-                return fract(c);
-            }
-
             bool is_within_region(float z_norm) {
                 // Convert 0...1 fill radius to 0...1 texture coordinate
                 float z0 = 2.0*z_norm - 1.0;    // 0...1 to -1...+1
@@ -115,11 +107,7 @@ class RandomizeVolume {
                 }
 
                 vec3 pos = vec3(vPosition.xy, z_norm);
-                float chance = rand(pos);
-                float value = rand(pos);
-                value = (chance < u_density) ? value : 0.0;
-                // TODO remove testing overwrite
-                return vec4(value, 0.0, 0.0, 1.0);
+                return vec4(z_norm, 0.0, 0.0, 1.0);
             }
 
             void main() {
@@ -158,7 +146,7 @@ class RandomizeVolume {
 
     render(_vol: VolumeData, _seed: string) {
         let gl = this.sim.context as WebGL2RenderingContext;
-        let density = 0.5;
+        let density = 0.25;
         let region = new Vec3([1.0, 1.0, 1.0]);
         //let region = new Vec3([0.5, 0.5, 0.5]);
         
