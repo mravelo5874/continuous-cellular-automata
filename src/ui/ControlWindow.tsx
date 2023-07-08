@@ -31,6 +31,7 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
         this.update_sim_zoom = this.update_sim_zoom.bind(this);
         this.update_volume_size = this.update_volume_size.bind(this);
         this.update_volume_text = this.update_volume_text.bind(this);
+        this.update_kernel_symmetry = this.update_kernel_symmetry.bind(this);
 
         this.load_automata = this.load_automata.bind(this);
         this.load_shader = this.load_shader.bind(this);
