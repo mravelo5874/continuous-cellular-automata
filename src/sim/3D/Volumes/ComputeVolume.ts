@@ -14,7 +14,7 @@ class ComputeVolume {
     ibo: WebGLBuffer | null;
     vbo: WebGLBuffer | null;
     vao: WebGLVertexArrayObject | null;
-    programs: { [key: number]: PRGM_LOC } = {};
+    programs: { [key: string]: PRGM_LOC } = {};
 
     constructor(_sim: Sim) {
         this.sim = _sim;
@@ -166,14 +166,14 @@ class ComputeVolume {
 
     get_program(depth: number, _activation: string) {
         let key = `${depth}-${_activation}`;
-        if (depth in this.programs) {
-            return this.programs[depth];
+        if (key in this.programs) {
+            return this.programs[key];
         }
 
         let program = this.create_program(depth, _activation);
         let ulc = new UniformLocationCache(this.sim, program);
         let value = new PRGM_LOC(program, ulc);
-        this.programs[depth] = value;
+        this.programs[key] = value;
         return value;
     }
 

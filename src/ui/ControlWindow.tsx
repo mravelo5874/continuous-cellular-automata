@@ -31,6 +31,7 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
         this.update_volume_size = this.update_volume_size.bind(this);
         this.update_volume_text = this.update_volume_text.bind(this);
         this.update_kernel_symmetry = this.update_kernel_symmetry.bind(this);
+        this.update_region = this.update_region.bind(this);
 
         this.load_automata = this.load_automata.bind(this);
         this.load_shader = this.load_shader.bind(this);
@@ -158,11 +159,9 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
     }
 
     update_sim_brush() {
-        // update text with correct value
         var brush_slider = document.getElementById('brush_slider') as HTMLInputElement;
         var brush_text = document.getElementById('brush_text') as HTMLElement;
         brush_text.innerHTML = brush_slider.value;
-
         let sim = this.props.sim;
         sim.update_brush(brush_slider.valueAsNumber);
     }
@@ -242,7 +241,156 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
             sim.update_kernel(kernel);
         }
         else if (sim.mode === SimMode.Sim3D) {
-           // TODO
+            // symmetry toggles
+            var xp_sym = document.getElementById('x_plane_sym') as HTMLInputElement;
+            var x1_sym = document.getElementById('x_diag_1_sym') as HTMLInputElement;
+            var x2_sym = document.getElementById('x_diag_2_sym') as HTMLInputElement;
+            var yp_sym = document.getElementById('y_plane_sym') as HTMLInputElement;
+            var y1_sym = document.getElementById('y_diag_1_sym') as HTMLInputElement;
+            var y2_sym = document.getElementById('y_diag_2_sym') as HTMLInputElement;
+            var zp_sym = document.getElementById('z_plane_sym') as HTMLInputElement;
+            var z1_sym = document.getElementById('z_diag_1_sym') as HTMLInputElement;
+            var z2_sym = document.getElementById('z_diag_2_sym') as HTMLInputElement;
+            let full_sym = document.getElementById('full_sym') as HTMLInputElement;
+            // devise kernel array
+            let kernel = new Float32Array([
+                0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+                0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+                0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+            ]);
+            for (let i = 0; i < 27; i++) {
+                let k = document.getElementById('j'+i.toFixed(0).toString()) as HTMLInputElement;
+                kernel[i] = k.valueAsNumber;
+            }
+            // apply symmetries
+            if (xp_sym.checked) {
+                kernel[2] = kernel[0];
+                kernel[5] = kernel[3];
+                kernel[8] = kernel[6];
+                kernel[11] = kernel[9];
+                kernel[14] = kernel[12];
+                kernel[17] = kernel[15];
+                kernel[20] = kernel[18];
+                kernel[23] = kernel[21];
+                kernel[26] = kernel[24];
+            }
+            if (x1_sym.checked) {
+                kernel[24] = kernel[0];
+                kernel[25] = kernel[1];
+                kernel[26] = kernel[2];
+                kernel[15] = kernel[3];
+                kernel[16] = kernel[4];
+                kernel[17] = kernel[5];
+                kernel[21] = kernel[9];
+                kernel[22] = kernel[10];
+                kernel[23] = kernel[11];
+            }
+            if (x2_sym.checked) {
+                kernel[9] = kernel[3];
+                kernel[10] = kernel[4];
+                kernel[11] = kernel[5];
+                kernel[18] = kernel[6];
+                kernel[19] = kernel[7];
+                kernel[20] = kernel[8];
+                kernel[21] = kernel[15];
+                kernel[22] = kernel[16];
+                kernel[23] = kernel[17];
+            }
+            if (yp_sym.checked) {
+                kernel[6] = kernel[0];
+                kernel[7] = kernel[1];
+                kernel[8] = kernel[2];
+                kernel[15] = kernel[9];
+                kernel[16] = kernel[10];
+                kernel[17] = kernel[11];
+                kernel[24] = kernel[18];
+                kernel[25] = kernel[19];
+                kernel[26] = kernel[20];
+            }
+            if (y1_sym.checked) {
+                kernel[18] = kernel[2];
+                kernel[21] = kernel[5];
+                kernel[24] = kernel[8];
+                kernel[9] = kernel[1];
+                kernel[12] = kernel[4];
+                kernel[15] = kernel[7];
+                kernel[19] = kernel[11];
+                kernel[22] = kernel[14];
+                kernel[25] = kernel[17];
+            }
+            if (y2_sym.checked) {
+                kernel[20] = kernel[0];
+                kernel[23] = kernel[3];
+                kernel[26] = kernel[6];
+                kernel[11] = kernel[1];
+                kernel[14] = kernel[4];
+                kernel[17] = kernel[7];
+                kernel[19] = kernel[9];
+                kernel[22] = kernel[12];
+                kernel[25] = kernel[15];
+            }
+            if (zp_sym.checked) {
+                kernel[18] = kernel[0];
+                kernel[19] = kernel[1];
+                kernel[20] = kernel[2];
+                kernel[21] = kernel[3];
+                kernel[22] = kernel[4];
+                kernel[23] = kernel[5];
+                kernel[24] = kernel[6];
+                kernel[25] = kernel[7];
+                kernel[26] = kernel[8];
+            }
+            if (z1_sym.checked) {
+                kernel[8] = kernel[0];
+                kernel[17] = kernel[9];
+                kernel[26] = kernel[18];
+                kernel[5] = kernel[1];
+                kernel[14] = kernel[10];
+                kernel[23] = kernel[19];
+                kernel[7] = kernel[3];
+                kernel[16] = kernel[12];
+                kernel[25] = kernel[21];
+            }
+            if (z2_sym.checked) {
+                kernel[6] = kernel[2];
+                kernel[15] = kernel[11];
+                kernel[24] = kernel[20];
+                kernel[3] = kernel[1];
+                kernel[12] = kernel[10];
+                kernel[21] = kernel[19];
+                kernel[7] = kernel[5];
+                kernel[16] = kernel[14];
+                kernel[25] = kernel[23];
+            }
+            if (full_sym.checked) {
+                kernel[1] = kernel[0];
+                kernel[2] = kernel[0];
+                kernel[3] = kernel[0];
+                kernel[4] = kernel[0];
+                kernel[5] = kernel[0];
+                kernel[6] = kernel[0];
+                kernel[7] = kernel[0];
+                kernel[8] = kernel[0];
+                kernel[9] = kernel[0];
+                kernel[10] = kernel[0];
+                kernel[11] = kernel[0];
+                kernel[12] = kernel[0];
+                kernel[14] = kernel[0];
+                kernel[15] = kernel[0];
+                kernel[16] = kernel[0];
+                kernel[17] = kernel[0];
+                kernel[18] = kernel[0];
+                kernel[19] = kernel[0];
+                kernel[20] = kernel[0];
+                kernel[21] = kernel[0];
+                kernel[22] = kernel[0];
+                kernel[23] = kernel[0];
+                kernel[24] = kernel[0];
+                kernel[25] = kernel[0];
+                kernel[26] = kernel[0];
+            }
+            this.set_kernel(kernel);
+            sim.update_kernel(kernel);
         }
     }
 
@@ -309,7 +457,161 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
             menu.value = 'custom';
         }
         else if (sim.mode === SimMode.Sim3D) {
-            // TODO
+            // symmetry toggles
+            var xp_sym = document.getElementById('x_plane_sym') as HTMLInputElement;
+            var x1_sym = document.getElementById('x_diag_1_sym') as HTMLInputElement;
+            var x2_sym = document.getElementById('x_diag_2_sym') as HTMLInputElement;
+            var yp_sym = document.getElementById('y_plane_sym') as HTMLInputElement;
+            var y1_sym = document.getElementById('y_diag_1_sym') as HTMLInputElement;
+            var y2_sym = document.getElementById('y_diag_2_sym') as HTMLInputElement;
+            var zp_sym = document.getElementById('z_plane_sym') as HTMLInputElement;
+            var z1_sym = document.getElementById('z_diag_1_sym') as HTMLInputElement;
+            var z2_sym = document.getElementById('z_diag_2_sym') as HTMLInputElement;
+            let full_sym = document.getElementById('full_sym') as HTMLInputElement;
+            // devise kernel array
+            let kernel = new Float32Array([
+                0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+                0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+                0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+            ]);
+            // devise kernel array
+            let rng = new Rand();
+            for (let i = 0; i < 27; i++) {
+                kernel[i] = rng.next()*2-1;
+            }
+            // apply symmetries
+            if (xp_sym.checked) {
+                kernel[2] = kernel[0];
+                kernel[5] = kernel[3];
+                kernel[8] = kernel[6];
+                kernel[11] = kernel[9];
+                kernel[14] = kernel[12];
+                kernel[17] = kernel[15];
+                kernel[20] = kernel[18];
+                kernel[23] = kernel[21];
+                kernel[26] = kernel[24];
+            }
+            if (x1_sym.checked) {
+                kernel[24] = kernel[0];
+                kernel[25] = kernel[1];
+                kernel[26] = kernel[2];
+                kernel[15] = kernel[3];
+                kernel[16] = kernel[4];
+                kernel[17] = kernel[5];
+                kernel[21] = kernel[9];
+                kernel[22] = kernel[10];
+                kernel[23] = kernel[11];
+            }
+            if (x2_sym.checked) {
+                kernel[9] = kernel[3];
+                kernel[10] = kernel[4];
+                kernel[11] = kernel[5];
+                kernel[18] = kernel[6];
+                kernel[19] = kernel[7];
+                kernel[20] = kernel[8];
+                kernel[21] = kernel[15];
+                kernel[22] = kernel[16];
+                kernel[23] = kernel[17];
+            }
+            if (yp_sym.checked) {
+                kernel[6] = kernel[0];
+                kernel[7] = kernel[1];
+                kernel[8] = kernel[2];
+                kernel[15] = kernel[9];
+                kernel[16] = kernel[10];
+                kernel[17] = kernel[11];
+                kernel[24] = kernel[18];
+                kernel[25] = kernel[19];
+                kernel[26] = kernel[20];
+            }
+            if (y1_sym.checked) {
+                kernel[18] = kernel[2];
+                kernel[21] = kernel[5];
+                kernel[24] = kernel[8];
+                kernel[9] = kernel[1];
+                kernel[12] = kernel[4];
+                kernel[15] = kernel[7];
+                kernel[19] = kernel[11];
+                kernel[22] = kernel[14];
+                kernel[25] = kernel[17];
+            }
+            if (y2_sym.checked) {
+                kernel[20] = kernel[0];
+                kernel[23] = kernel[3];
+                kernel[26] = kernel[6];
+                kernel[11] = kernel[1];
+                kernel[14] = kernel[4];
+                kernel[17] = kernel[7];
+                kernel[19] = kernel[9];
+                kernel[22] = kernel[12];
+                kernel[25] = kernel[15];
+            }
+            if (zp_sym.checked) {
+                kernel[18] = kernel[0];
+                kernel[19] = kernel[1];
+                kernel[20] = kernel[2];
+                kernel[21] = kernel[3];
+                kernel[22] = kernel[4];
+                kernel[23] = kernel[5];
+                kernel[24] = kernel[6];
+                kernel[25] = kernel[7];
+                kernel[26] = kernel[8];
+            }
+            if (z1_sym.checked) {
+                kernel[8] = kernel[0];
+                kernel[17] = kernel[9];
+                kernel[26] = kernel[18];
+                kernel[5] = kernel[1];
+                kernel[14] = kernel[10];
+                kernel[23] = kernel[19];
+                kernel[7] = kernel[3];
+                kernel[16] = kernel[12];
+                kernel[25] = kernel[21];
+            }
+            if (z2_sym.checked) {
+                kernel[6] = kernel[2];
+                kernel[15] = kernel[11];
+                kernel[24] = kernel[20];
+                kernel[3] = kernel[1];
+                kernel[12] = kernel[10];
+                kernel[21] = kernel[19];
+                kernel[7] = kernel[5];
+                kernel[16] = kernel[14];
+                kernel[25] = kernel[23];
+            }
+            if (full_sym.checked) {
+                kernel[1] = kernel[0];
+                kernel[2] = kernel[0];
+                kernel[3] = kernel[0];
+                kernel[4] = kernel[0];
+                kernel[5] = kernel[0];
+                kernel[6] = kernel[0];
+                kernel[7] = kernel[0];
+                kernel[8] = kernel[0];
+                kernel[9] = kernel[0];
+                kernel[10] = kernel[0];
+                kernel[11] = kernel[0];
+                kernel[12] = kernel[0];
+                kernel[14] = kernel[0];
+                kernel[15] = kernel[0];
+                kernel[16] = kernel[0];
+                kernel[17] = kernel[0];
+                kernel[18] = kernel[0];
+                kernel[19] = kernel[0];
+                kernel[20] = kernel[0];
+                kernel[21] = kernel[0];
+                kernel[22] = kernel[0];
+                kernel[23] = kernel[0];
+                kernel[24] = kernel[0];
+                kernel[25] = kernel[0];
+                kernel[26] = kernel[0];
+            }
+            // set kernel
+            this.set_kernel(kernel);
+            sim.update_kernel(kernel);
+            sim.custom_kernel();
+            let menu = document.getElementById('load_automata') as HTMLSelectElement;
+            menu.value = 'custom';
         }
     }
 
@@ -378,8 +680,113 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
             }
         }
         else if (sim.mode === SimMode.Sim3D) {
-            // TODO
+            // symmetry toggles
+            var xp_sym = document.getElementById('x_plane_sym') as HTMLInputElement;
+            var x1_sym = document.getElementById('x_diag_1_sym') as HTMLInputElement;
+            var x2_sym = document.getElementById('x_diag_2_sym') as HTMLInputElement;
+            var yp_sym = document.getElementById('y_plane_sym') as HTMLInputElement;
+            var y1_sym = document.getElementById('y_diag_1_sym') as HTMLInputElement;
+            var y2_sym = document.getElementById('y_diag_2_sym') as HTMLInputElement;
+            var zp_sym = document.getElementById('z_plane_sym') as HTMLInputElement;
+            var z1_sym = document.getElementById('z_diag_1_sym') as HTMLInputElement;
+            var z2_sym = document.getElementById('z_diag_2_sym') as HTMLInputElement;
+            let full_sym = document.getElementById('full_sym') as HTMLInputElement;
+            // reset kernel inputs
+            for (let i = 0; i < 27; i++) {
+                let j = document.getElementById('j'+i.toFixed(0).toString()) as HTMLInputElement;
+                j.style.background = 'rgba(255, 255, 255, 0.6)';
+                j.disabled = false;
+            }
+            // apply symmetries
+            if (xp_sym.checked) {
+                let sym = [2, 5, 8, 11, 14, 17, 20, 23, 26];
+                for (let i = 0; i < sym.length; i++) {
+                    let j = document.getElementById('j'+sym[i].toFixed(0).toString()) as HTMLInputElement;
+                    j.style.background = 'rgba(0, 119, 255, 0.6);';
+                    j.disabled = true;
+                }
+            }
+            if (x1_sym.checked) {
+                let sym = [24, 25, 26, 15, 16, 17, 21, 22, 23];
+                for (let i = 0; i < sym.length; i++) {
+                    let j = document.getElementById('j'+sym[i].toFixed(0).toString()) as HTMLInputElement;
+                    j.style.background = 'rgba(0, 119, 255, 0.6);';
+                    j.disabled = true;
+                }
+            }
+            if (x2_sym.checked) {
+                let sym = [9, 10, 11, 18, 19, 20, 21, 22, 23];
+                for (let i = 0; i < sym.length; i++) {
+                    let j = document.getElementById('j'+sym[i].toFixed(0).toString()) as HTMLInputElement;
+                    j.style.background = 'rgba(0, 119, 255, 0.6);';
+                    j.disabled = true;
+                }
+            }
+            if (yp_sym.checked) {
+                let sym = [6, 7, 8, 15, 16, 17, 24, 25, 26];
+                for (let i = 0; i < sym.length; i++) {
+                    let j = document.getElementById('j'+sym[i].toFixed(0).toString()) as HTMLInputElement;
+                    j.style.background = 'rgba(0, 119, 255, 0.6);';
+                    j.disabled = true;
+                }
+            }
+            if (y1_sym.checked) {
+                let sym = [18, 21, 24, 9, 12, 15, 19, 22, 25];
+                for (let i = 0; i < sym.length; i++) {
+                    let j = document.getElementById('j'+sym[i].toFixed(0).toString()) as HTMLInputElement;
+                    j.style.background = 'rgba(0, 119, 255, 0.6);';
+                    j.disabled = true;
+                }
+            }
+            if (y2_sym.checked) {
+                let sym = [20, 23, 26, 11, 14, 17, 19, 22, 25];
+                for (let i = 0; i < sym.length; i++) {
+                    let j = document.getElementById('j'+sym[i].toFixed(0).toString()) as HTMLInputElement;
+                    j.style.background = 'rgba(0, 119, 255, 0.6);';
+                    j.disabled = true;
+                }
+            }
+            if (zp_sym.checked) {
+                let sym = [18, 19, 20, 21, 22, 23, 24, 25, 26];
+                for (let i = 0; i < sym.length; i++) {
+                    let j = document.getElementById('j'+sym[i].toFixed(0).toString()) as HTMLInputElement;
+                    j.style.background = 'rgba(0, 119, 255, 0.6);';
+                    j.disabled = true;
+                }
+            }
+            if (z1_sym.checked) {
+                let sym = [8, 17, 26, 5, 14, 23, 7, 16, 25];
+                for (let i = 0; i < sym.length; i++) {
+                    let j = document.getElementById('j'+sym[i].toFixed(0).toString()) as HTMLInputElement;
+                    j.style.background = 'rgba(0, 119, 255, 0.6);';
+                    j.disabled = true;
+                }
+            }
+            if (z2_sym.checked) {
+                let sym = [6, 15, 24, 3, 12, 21, 7, 16, 25];
+                for (let i = 0; i < sym.length; i++) {
+                    let j = document.getElementById('j'+sym[i].toFixed(0).toString()) as HTMLInputElement;
+                    j.style.background = 'rgba(0, 119, 255, 0.6);';
+                    j.disabled = true;
+                }
+            }
+            if (full_sym.checked) {
+                let sym = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26];
+                for (let i = 0; i < sym.length; i++) {
+                    let j = document.getElementById('j'+sym[i].toFixed(0).toString()) as HTMLInputElement;
+                    j.style.background = 'rgba(0, 119, 255, 0.6);';
+                    j.disabled = true;
+                }
+            }
         }
+    }
+
+    update_region() {
+        var region_slider = document.getElementById('region_slider') as HTMLInputElement;
+        var region_text = document.getElementById('region_text') as HTMLElement;
+        region_text.innerHTML = region_slider.value;
+        let sim = this.props.sim;
+        sim.update_region(region_slider.valueAsNumber);
     }
 
     set_kernel(_kernel: Float32Array) {
@@ -421,6 +828,9 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
             break;
         case 'sin':
             act = 'return sin(x);';
+            break;
+        case 'cos':
+            act = 'return cos(x);';
             break;
         case 'pow':
             act = 'return pow(x,2.0);';
@@ -551,6 +961,15 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
                                     <input type='checkbox' id='toggle_reset_cam' className='ui_button'/>
                                     <h4 className='ctrl_module_sub_title'>reset camera</h4>
                                 </div>
+                                <h4 className='ctrl_module_sub_title'>fill region</h4>
+                                <div className='ui_row' style={{paddingBottom:'0.5em'}}>
+                                    <div className='slider_container'>
+                                        <input type='range' min='0' max='1.0' defaultValue='0.2' step='0.01' className='slider' id='region_slider' onChange={this.update_region}/>
+                                    </div>
+                                    <h4 style={{width:'24px', paddingLeft:'12px', textAlign:'center', color:'rgba(0, 0, 0, 0.5)'}} id='region_text'>0.2</h4>
+                                </div>
+
+
                                 <button id='reset_button' className='ui_button' onClick={this.reset_automata} style={{padding:'0.5em', width:'100%'}}>reset automata</button>
 
                                 {/* TODO export import automata using .json files 
@@ -580,92 +999,134 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
                                         <option value='green'>green</option>
                                     </select>
                                 </div>
+                            </div>
 
+                            <hr/>
+                            <div id='ctrl_module'>
+                                <h2 className='ctrl_module_title'>kernel 3x3x3</h2>
+                                <h4 className='ctrl_module_sub_title' style={{textAlign:'center'}}>layer 1</h4>
+                                <div className='ui_column' style={{justifyContent:'center'}}>
+                                    <div className='ui_row'>
+                                        <input id='j0' type='number'step='0.001' className='kernel_input_small' onChange={this.update_sim_kernel} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
+                                        <input id='j1' type='number'step='0.001' className='kernel_input_small' onChange={this.update_sim_kernel} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
+                                        <input id='j2' type='number'step='0.001' className='kernel_input_small' onChange={this.update_sim_kernel} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
+                                    </div>
+                                    <div className='ui_row'>
+                                        <input id='j3' type='number'step='0.001' className='kernel_input_small' onChange={this.update_sim_kernel} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
+                                        <input id='j4' type='number'step='0.001' className='kernel_input_small' onChange={this.update_sim_kernel} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
+                                        <input id='j5' type='number'step='0.001' className='kernel_input_small' onChange={this.update_sim_kernel} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
+                                    </div>
+                                    <div className='ui_row'>
+                                        <input id='j6' type='number'step='0.001' className='kernel_input_small' onChange={this.update_sim_kernel} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
+                                        <input id='j7' type='number'step='0.001' className='kernel_input_small' onChange={this.update_sim_kernel} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
+                                        <input id='j8' type='number'step='0.001' className='kernel_input_small' onChange={this.update_sim_kernel} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
+                                    </div>
+                                </div>
+                                
+                                <h4 className='ctrl_module_sub_title' style={{textAlign:'center'}}>layer 2</h4>
+                                <div className='ui_column' style={{justifyContent:'center'}}>
+                                    <div className='ui_row'>
+                                        <input id='j9' type='number'step='0.001' className='kernel_input_small' onChange={this.update_sim_kernel} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
+                                        <input id='j10' type='number'step='0.001' className='kernel_input_small' onChange={this.update_sim_kernel} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
+                                        <input id='j11' type='number'step='0.001' className='kernel_input_small' onChange={this.update_sim_kernel} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
+                                    </div>
+                                    <div className='ui_row'>
+                                        <input id='j12' type='number'step='0.001' className='kernel_input_small' onChange={this.update_sim_kernel} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
+                                        <input id='j13' type='number'step='0.001' className='kernel_input_small' onChange={this.update_sim_kernel} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
+                                        <input id='j14' type='number'step='0.001' className='kernel_input_small' onChange={this.update_sim_kernel} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
+                                    </div>
+                                    <div className='ui_row'>
+                                        <input id='j15' type='number'step='0.001' className='kernel_input_small' onChange={this.update_sim_kernel} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
+                                        <input id='j16' type='number'step='0.001' className='kernel_input_small' onChange={this.update_sim_kernel} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
+                                        <input id='j17' type='number'step='0.001' className='kernel_input_small' onChange={this.update_sim_kernel} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
+                                    </div>
+                                </div>
+                                
+                                <h4 className='ctrl_module_sub_title' style={{textAlign:'center'}}>layer 3</h4>
+                                <div className='ui_column' style={{justifyContent:'center'}}>
+                                    <div className='ui_row'>
+                                        <input id='j18' type='number'step='0.001' className='kernel_input_small' onChange={this.update_sim_kernel} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
+                                        <input id='j19' type='number'step='0.001' className='kernel_input_small' onChange={this.update_sim_kernel} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
+                                        <input id='j20' type='number'step='0.001' className='kernel_input_small' onChange={this.update_sim_kernel} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
+                                    </div>
+                                    <div className='ui_row'>
+                                        <input id='j21' type='number'step='0.001' className='kernel_input_small' onChange={this.update_sim_kernel} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
+                                        <input id='j22' type='number'step='0.001' className='kernel_input_small' onChange={this.update_sim_kernel} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
+                                        <input id='j23' type='number'step='0.001' className='kernel_input_small' onChange={this.update_sim_kernel} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
+                                    </div>
+                                    <div className='ui_row'>
+                                        <input id='j24' type='number'step='0.001' className='kernel_input_small' onChange={this.update_sim_kernel} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
+                                        <input id='j25' type='number'step='0.001' className='kernel_input_small' onChange={this.update_sim_kernel} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
+                                        <input id='j26' type='number'step='0.001' className='kernel_input_small' onChange={this.update_sim_kernel} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
+                                    </div>
+                                </div>
+
+                                <div style={{padding:'0.5em'}}>
+                                    <h4 className='ctrl_module_sub_title' style={{textAlign:'center'}}>symmetries</h4>
+                                    <div className='ui_row' style={{justifyContent:'center'}}>
+                                        <div className='ui_column'>
+                                            <div className='ui_row'>
+                                                <input type='checkbox' id='x_plane_sym' className='ui_button' onClick={this.update_kernel_symmetry}/>
+                                                <h4 className='ctrl_module_sub_title'>x-plane</h4>
+                                            </div>
+                                            <div className='ui_row'>
+                                                <input type='checkbox' id='x_diag_1_sym' className='ui_button' onClick={this.update_kernel_symmetry}/>
+                                                <h4 className='ctrl_module_sub_title'>x-diag 1</h4>
+                                            </div>
+                                            <div className='ui_row'>
+                                                <input type='checkbox' id='x_diag_2_sym' className='ui_button' onClick={this.update_kernel_symmetry}/>
+                                                <h4 className='ctrl_module_sub_title'>x-diag 2</h4>
+                                            </div>
+                                        </div>
+                                        <div className='ui_column' style={{width:'1em'}}/>
+                                        <div className='ui_column'>
+                                            <div className='ui_row'>
+                                                <input type='checkbox' id='y_plane_sym' className='ui_button' onClick={this.update_kernel_symmetry}/>
+                                                <h4 className='ctrl_module_sub_title'>y-plane</h4>
+                                            </div>
+                                            <div className='ui_row'>
+                                                <input type='checkbox' id='y_diag_1_sym' className='ui_button' onClick={this.update_kernel_symmetry}/>
+                                                <h4 className='ctrl_module_sub_title'>y-diag 1</h4>
+                                            </div>
+                                            <div className='ui_row'>
+                                                <input type='checkbox' id='y_diag_2_sym' className='ui_button' onClick={this.update_kernel_symmetry}/>
+                                                <h4 className='ctrl_module_sub_title'>y-diag 2</h4>
+                                            </div>
+                                        </div>
+                                        <div className='ui_column' style={{width:'1em'}}/>
+                                        <div className='ui_column'>
+                                            <div className='ui_row'>
+                                                <input type='checkbox' id='z_plane_sym' className='ui_button' onClick={this.update_kernel_symmetry}/>
+                                                <h4 className='ctrl_module_sub_title'>z-plane</h4>
+                                            </div>
+                                            <div className='ui_row'>
+                                                <input type='checkbox' id='z_diag_1_sym' className='ui_button' onClick={this.update_kernel_symmetry}/>
+                                                <h4 className='ctrl_module_sub_title'>z-diag 1</h4>
+                                            </div>
+                                            <div className='ui_row'>
+                                                <input type='checkbox' id='z_diag_2_sym' className='ui_button' onClick={this.update_kernel_symmetry}/>
+                                                <h4 className='ctrl_module_sub_title'>z-diag 2</h4>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className='ui_row' style={{justifyContent:'center'}}>
+                                        <input type='checkbox' id='full_sym' className='ui_button' onClick={this.update_kernel_symmetry}/>
+                                        <h4 className='ctrl_module_sub_title'>full</h4>
+                                    </div>
+                                    <div style={{height:'0.5em'}}/>
+                                    <button className='ui_button' onClick={this.randomize_kernel} style={{padding:'0.5em', width:'100%'}}>randomize kernel</button>
+                                </div>
+                            </div>
+
+                            <hr/>
+                            <div id='ctrl_module'>
+                                <h2 className='ctrl_module_title'>options</h2>
                                 <h4 className='ctrl_module_sub_title'>volume size</h4>
                                 <div className='ui_row'>
                                     <div className='slider_container'>
                                         <input type='range' min='1' max='256' defaultValue='64' className='slider' id='volume_size' onChange={this.update_volume_text} onMouseUp={this.update_volume_size}/>
                                     </div>
                                     <h4 style={{width:'24px', paddingLeft:'12px', textAlign:'center', color:'rgba(0, 0, 0, 0.5)'}} id='volume_size_text'>64</h4>
-                                </div>
-                            </div>
-
-                            <hr/>
-                            <div id='ctrl_module'>
-                                <h2 className='ctrl_module_title'>kernel</h2>
-                                <h4 className='ctrl_module_sub_title' style={{textAlign:'center'}}>layer 1</h4>
-                                <div className='ui_row' style={{justifyContent:'center'}}>
-                                    <div className='ui_column'>
-                                        <input id='j0' type='number'step='0.001' className='kernel_input' onChange={this.update_sim_kernel} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
-                                        <input id='j1' type='number'step='0.001' className='kernel_input' onChange={this.update_sim_kernel} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
-                                        <input id='j2' type='number'step='0.001' className='kernel_input' onChange={this.update_sim_kernel} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
-                                    </div>
-                                    <div className='ui_column'>
-                                        <input id='j3' type='number'step='0.001' className='kernel_input' onChange={this.update_sim_kernel} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
-                                        <input id='j4' type='number'step='0.001' className='kernel_input' onChange={this.update_sim_kernel} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
-                                        <input id='j5' type='number'step='0.001' className='kernel_input' onChange={this.update_sim_kernel} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
-                                    </div>
-                                    <div className='ui_column'>
-                                        <input id='j6' type='number'step='0.001' className='kernel_input' onChange={this.update_sim_kernel} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
-                                        <input id='j7' type='number'step='0.001' className='kernel_input' onChange={this.update_sim_kernel} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
-                                        <input id='j8' type='number'step='0.001' className='kernel_input' onChange={this.update_sim_kernel} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
-                                    </div>
-                                </div>
-                                
-                                <h4 className='ctrl_module_sub_title' style={{textAlign:'center'}}>layer 2</h4>
-                                <div className='ui_row' style={{justifyContent:'center'}}>
-                                    <div className='ui_column'>
-                                        <input id='j9' type='number'step='0.001' className='kernel_input' onChange={this.update_sim_kernel} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
-                                        <input id='j10' type='number'step='0.001' className='kernel_input' onChange={this.update_sim_kernel} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
-                                        <input id='j11' type='number'step='0.001' className='kernel_input' onChange={this.update_sim_kernel} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
-                                    </div>
-                                    <div className='ui_column'>
-                                        <input id='j12' type='number'step='0.001' className='kernel_input' onChange={this.update_sim_kernel} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
-                                        <input id='j13' type='number'step='0.001' className='kernel_input' onChange={this.update_sim_kernel} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
-                                        <input id='j14' type='number'step='0.001' className='kernel_input' onChange={this.update_sim_kernel} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
-                                    </div>
-                                    <div className='ui_column'>
-                                        <input id='j15' type='number'step='0.001' className='kernel_input' onChange={this.update_sim_kernel} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
-                                        <input id='j16' type='number'step='0.001' className='kernel_input' onChange={this.update_sim_kernel} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
-                                        <input id='j17' type='number'step='0.001' className='kernel_input' onChange={this.update_sim_kernel} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
-                                    </div>
-                                </div>
-                                
-                                <h4 className='ctrl_module_sub_title' style={{textAlign:'center'}}>layer 3</h4>
-                                <div className='ui_row' style={{justifyContent:'center'}}>
-                                    <div className='ui_column'>
-                                        <input id='j18' type='number'step='0.001' className='kernel_input' onChange={this.update_sim_kernel} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
-                                        <input id='j19' type='number'step='0.001' className='kernel_input' onChange={this.update_sim_kernel} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
-                                        <input id='j20' type='number'step='0.001' className='kernel_input' onChange={this.update_sim_kernel} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
-                                    </div>
-                                    <div className='ui_column'>
-                                        <input id='j21' type='number'step='0.001' className='kernel_input' onChange={this.update_sim_kernel} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
-                                        <input id='j22' type='number'step='0.001' className='kernel_input' onChange={this.update_sim_kernel} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
-                                        <input id='j23' type='number'step='0.001' className='kernel_input' onChange={this.update_sim_kernel} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
-                                    </div>
-                                    <div className='ui_column'>
-                                        <input id='j24' type='number'step='0.001' className='kernel_input' onChange={this.update_sim_kernel} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
-                                        <input id='j25' type='number'step='0.001' className='kernel_input' onChange={this.update_sim_kernel} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
-                                        <input id='j26' type='number'step='0.001' className='kernel_input' onChange={this.update_sim_kernel} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
-                                    </div>
-                                </div>
-
-                                <div style={{padding:'0.5em'}}>
-                                    {/* <div className='ui_column'>
-                                        <div className='ui_row'>
-                                            <input type='checkbox' id='x_sym' className='ui_button' onClick={this.update_kernel_symmetry}/>
-                                            <h4 className='ctrl_module_sub_title'>x symmetry</h4>
-                                        </div>
-                                        <div className='ui_row'>
-                                            <input type='checkbox' id='y_sym' className='ui_button' onClick={this.update_kernel_symmetry}/>
-                                            <h4 className='ctrl_module_sub_title'>y symmetry</h4>
-                                        </div>
-                                        <div className='ui_row' style={{paddingBottom:'0.5em'}}>
-                                            <input type='checkbox' id='z_sym' className='ui_button' onClick={this.update_kernel_symmetry}/>
-                                            <h4 className='ctrl_module_sub_title'>z symmetry</h4>
-                                        </div>
-                                    </div> */}
-                                    <button className='ui_button' onClick={this.randomize_kernel} style={{padding:'0.5em', width:'100%'}}>randomize kernel</button>
                                 </div>
                             </div>
                         </div>
@@ -735,7 +1196,7 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
                             
                             <hr/>
                             <div id='ctrl_module'>
-                                <h2 className='ctrl_module_title'>kernel</h2>
+                                <h2 className='ctrl_module_title'>kernel 3x3</h2>
                                 <div className='ui_column' style={{justifyContent:'center'}}>
                                     <div className='ui_row'>
                                         <input id='k0' type='number'step='0.001' className='kernel_input' onChange={this.update_sim_kernel} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
@@ -780,26 +1241,6 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
                                     <button className='ui_button' onClick={this.randomize_kernel} style={{padding:'0.5em', width:'100%'}}>randomize kernel</button>
                                 </div>
                             </div>
-                            
-                            <hr/>
-                            <div id='ctrl_module'>
-                                <h2 className='ctrl_module_title'>activation function</h2>
-                                <div>
-                                    <textarea id='af' className='activation_input' onChange={this.update_sim_activation}/>
-                                </div>
-                                <h4 className='ctrl_module_sub_title'>load activation function</h4>
-                                <div>
-                                    <select className='dropdown_input' name='automata' id='load_activation' onChange={this.load_activation}>
-                                        <option value='id'>identity</option>
-                                        <option value='sin'>sin</option>
-                                        <option value='pow'>power</option>
-                                        <option value='abs'>absolute value</option>
-                                        <option value='tanh'>tanh</option>
-                                        <option value='inv_gaus'>inverse gaussian</option>
-                                        <option value='custom' disabled>custom 🛠️</option>
-                                    </select>
-                                </div>
-                            </div>
 
                             <hr/>
                             <div id='ctrl_module'>
@@ -819,6 +1260,27 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
                                     </div>
                                     <h4 style={{width:'24px', paddingLeft:'12px', textAlign:'center', color:'rgba(0, 0, 0, 0.5)'}} id='zoom_text'>2.0</h4>
                                 </div>
+                            </div>
+                        </div>
+
+                        <hr/>
+                        <div id='ctrl_module'>
+                            <h2 className='ctrl_module_title'>activation function</h2>
+                            <div>
+                                <textarea id='af' className='activation_input' onChange={this.update_sim_activation}/>
+                            </div>
+                            <h4 className='ctrl_module_sub_title'>load activation function</h4>
+                            <div>
+                                <select className='dropdown_input' name='automata' id='load_activation' onChange={this.load_activation}>
+                                    <option value='id'>identity</option>
+                                    <option value='sin'>sin</option>
+                                    <option value='cos'>cos</option>
+                                    <option value='pow'>power</option>
+                                    <option value='abs'>absolute value</option>
+                                    <option value='tanh'>tanh</option>
+                                    <option value='inv_gaus'>inverse gaussian</option>
+                                    <option value='custom' disabled>custom 🛠️</option>
+                                </select>
                             </div>
                         </div>
                                                 

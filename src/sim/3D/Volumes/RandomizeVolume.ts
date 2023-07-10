@@ -15,6 +15,7 @@ class RandomizeVolume {
     vbo: WebGLBuffer | null;
     vao: WebGLVertexArrayObject | null;
     programs: { [key: number]: PRGM_LOC } = {};
+    region: number = 0.2;
 
     constructor(_sim: Sim) {
         this.sim = _sim;
@@ -155,8 +156,7 @@ class RandomizeVolume {
     render(_vol: VolumeData, _seed: string) {
         let gl = this.sim.context as WebGL2RenderingContext;
         let density = 0.25;
-        let region = new Vec3([1.0, 1.0, 1.0]);
-        //let region = new Vec3([0.5, 0.5, 0.5]);
+        let region = new Vec3([this.region, this.region, this.region]);
         
         _vol.set_wrap(false);
         let s = _vol.size;
@@ -190,5 +190,12 @@ class RandomizeVolume {
             gl.drawBuffers(lfb.layers);
             gl.drawElements(gl.TRIANGLES, this.mesh.index_data.length, gl.UNSIGNED_INT, 0);
         }
+    }
+
+
+    set_region(_region: number) {
+        // return if region is out of range
+        if (_region < 0.0 || _region > 1.0) return;
+        this.region = _region;
     }
 }

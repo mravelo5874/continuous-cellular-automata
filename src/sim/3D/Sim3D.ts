@@ -105,17 +105,20 @@ class Sim3D {
         let h = canvas.height;
 
         // compute single step
-        //console.log('kernel: ' + this.kernel);
-        this.compute_volume.render(
-            this.volume_old, 
-            this.volume_new, 
-            this.kernel,
-            this.activation);
+        if (!this.sim.paused) {
+            this.compute_volume.render(
+                this.volume_old, 
+                this.volume_new, 
+                this.kernel,
+                this.activation);
 
-        // swap volume buffers
-        let tmp = this.volume_old;
-        this.volume_old = this.volume_new;
-        this.volume_new = tmp;
+            // swap volume buffers
+            let tmp = this.volume_old;
+            this.volume_old = this.volume_new;
+            this.volume_new = tmp;
+        }
+        
+        
 
         // draw to screen
         this.render_volume.render(w, h, this.volume_old);
@@ -149,5 +152,10 @@ class Sim3D {
             this.kernel = _kernel;
             this.reset(this.seed, false);
         }
+    }
+
+    set_activation(_activation: string) {
+        this.activation = _activation;
+        this.reset();
     }
 }

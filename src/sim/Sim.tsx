@@ -350,7 +350,6 @@ class Sim {
     } 
 
     update_kernel(_kernel: Float32Array) {
-        // special mode updates
         switch (this.mode) {
         default: break;
         case SimMode.Sim2D:
@@ -363,7 +362,20 @@ class Sim {
     }
 
     update_activation(_activation: string) {
-        this.sim2D?.set_activation(_activation);
+        switch (this.mode) {
+        default: break;
+        case SimMode.Sim2D:
+            if (this.sim2D) this.sim2D?.set_activation(_activation);
+            break;
+        case SimMode.Sim3D:
+            if (this.sim3D) this.sim3D?.set_activation(_activation);
+            break;
+        }
+        
+    }
+
+    update_region(_region: number) {
+        this.sim3D?.randomize_volume.set_region(_region);
     }
 
     update_brush(_brush: number) {

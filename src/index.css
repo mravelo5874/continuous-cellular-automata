@@ -192,6 +192,7 @@ h1, h2, h3, h4 {
   width: 5em;
   height: 4em;
   text-align: center;
+  background-color: rgba(255, 255, 255, 0.6);
   /* border */
   border-width: 0.5em;
   border-radius: 2%;
@@ -200,6 +201,26 @@ h1, h2, h3, h4 {
 }
 
 .kernel_input:disabled {
+  opacity: 25%;
+  color: rgba(0, 0, 0, 0.8);
+  /* border */
+  border-width: 0.5em;
+  border-color: rgba(0, 0, 0, 0);
+}
+
+.kernel_input_small {
+  width: 5em;
+  height: 1.5em;
+  text-align: center;
+  background-color: rgba(255, 255, 255, 0.6);
+  /* border */
+  border-width: 0.5em;
+  border-radius: 2%;
+  border-color: rgb(255, 255, 255);
+  border-style: ridge;
+}
+
+.kernel_input_small:disabled {
   opacity: 25%;
   color: rgba(0, 0, 0, 0.8);
   /* border */
