@@ -32,6 +32,8 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
         this.update_volume_text = this.update_volume_text.bind(this);
         this.update_kernel_symmetry = this.update_kernel_symmetry.bind(this);
         this.update_region = this.update_region.bind(this);
+        this.update_compute_text = this.update_compute_text.bind(this);
+        this.update_compute_delay = this.update_compute_delay.bind(this);
 
         this.load_automata = this.load_automata.bind(this);
         this.load_shader = this.load_shader.bind(this);
@@ -49,6 +51,9 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
 
         this.reset_automata = this.reset_automata.bind(this);
         this.pause_sim = this.pause_sim.bind(this);
+        this.export_automata = this.export_automata.bind(this);
+        this.import_automata = this.import_automata.bind(this);
+        this.get_symmetries_list = this.get_symmetries_list.bind(this);
         
     }
 
@@ -202,6 +207,18 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
         var volume_size = document.getElementById('volume_size') as HTMLInputElement;
         var volume_text = document.getElementById('volume_size_text') as HTMLElement;
         volume_text.innerHTML = volume_size.value;
+    }
+
+    update_compute_text() {
+        var compute_delay = document.getElementById('compute_delay') as HTMLInputElement;
+        var compute_text = document.getElementById('compute_text') as HTMLElement;
+        compute_text.innerHTML = compute_delay.value;
+    }
+
+    update_compute_delay() {
+        var compute_delay = document.getElementById('compute_delay') as HTMLInputElement;
+        let sim = this.props.sim;
+        sim.update_compute_delay(compute_delay.valueAsNumber);
     }
 
     update_sim_kernel() {
@@ -911,6 +928,98 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
         sim.reset(seed_field.value, reset_cam.checked);
     }
 
+    get_symmetries_list() {
+        let sim = this.props.sim;
+        if (sim.mode === SimMode.Sim2D) {
+            var v_sym = document.getElementById('v_sym') as HTMLInputElement;
+            var h_sym = document.getElementById('h_sym') as HTMLInputElement;
+            var f_sym = document.getElementById('f_sym') as HTMLInputElement;
+            var b_sym = document.getElementById('b_sym') as HTMLInputElement;
+            var full_sym = document.getElementById('x_sym') as HTMLInputElement;
+            let list = {
+                'v_sym': v_sym.checked,
+                'h_sym': h_sym.checked,
+                'f_sym': f_sym.checked,
+                'b_sym': b_sym.checked,
+                'full_sym': full_sym.checked
+            };
+            return list;
+        }
+        else if (sim.mode === SimMode.Sim3D) {
+            var xp_sym = document.getElementById('x_plane_sym') as HTMLInputElement;
+            var x1_sym = document.getElementById('x_diag_1_sym') as HTMLInputElement;
+            var x2_sym = document.getElementById('x_diag_2_sym') as HTMLInputElement;
+            var yp_sym = document.getElementById('y_plane_sym') as HTMLInputElement;
+            var y1_sym = document.getElementById('y_diag_1_sym') as HTMLInputElement;
+            var y2_sym = document.getElementById('y_diag_2_sym') as HTMLInputElement;
+            var zp_sym = document.getElementById('z_plane_sym') as HTMLInputElement;
+            var z1_sym = document.getElementById('z_diag_1_sym') as HTMLInputElement;
+            var z2_sym = document.getElementById('z_diag_2_sym') as HTMLInputElement;
+            var full_sym = document.getElementById('full_sym') as HTMLInputElement;
+            let list = {
+                'xp_sym': xp_sym.checked,
+                'x1_sym': x1_sym.checked,
+                'x2_sym': x2_sym.checked,
+                'yp_sym': yp_sym.checked,
+                'y1_sym': y1_sym.checked,
+                'y2_sym': y2_sym.checked,
+                'zp_sym': zp_sym.checked,
+                'z1_sym': z1_sym.checked,
+                'z2_sym': z2_sym.checked,
+                'full_sym': full_sym.checked
+            };
+            return list;
+        }
+    }
+
+    download(content: string, fileName: string, contentType: string) {
+        const a = document.createElement("a");
+        const file = new Blob([content], { type: contentType });
+        a.href = URL.createObjectURL(file);
+        a.download = fileName;
+        a.click();
+    }
+
+    export_automata() {
+        let sim = this.props.sim;
+        let name_input = document.getElementById('name') as HTMLInputElement;
+        if (name_input.value.toString().length <= 0) {
+            window.alert('Please name your automata before exporting.');
+            return;
+        }
+        // different json exports for both modes
+        if (sim.mode === SimMode.Sim2D) {
+            let data = {
+                'sim': sim.mode.toString(),
+                'seed': this.seed,
+                'shader': sim.sim2D?.shader.toString(),
+                'kernel': Array.from(sim.sim2D?.kernel as Float32Array),
+                'symmetries': this.get_symmetries_list(),
+                'activation': sim.sim2D?.activation,
+            };
+            this.download(JSON.stringify(data), `${name_input.value.toString()}.json`, 'text/plain');
+        }
+        else if (sim.mode === SimMode.Sim3D) {
+            let wrap = document.getElementById('toggle_wrap') as HTMLInputElement;
+            let size = document.getElementById('volume_size') as HTMLInputElement;
+            let data = {
+                'sim': sim.mode,
+                'seed': this.seed,
+                'colormap': sim.sim3D?.colormap,
+                'kernel': Array.from(sim.sim3D?.kernel as Float32Array),
+                'symmetries': this.get_symmetries_list(),
+                'activation': sim.sim3D?.activation,
+                'wrap': wrap.checked,
+                'size': size.valueAsNumber,
+            }
+            this.download(JSON.stringify(data), `${name_input.value.toString()}.json`, 'text/plain');
+        }
+    }
+
+    import_automata() {
+
+    }
+
     render() {
         return(
             <>
@@ -951,15 +1060,31 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
 
 
                         <div id='_3D' style={{scale:'0%', height:'0px'}}>
-                            
-                        <div id='ctrl_module'>
-                            <div className='ui_row'>
-                                <input type='checkbox' id='toggle_wrap' className='ui_button' onClick={this.toggle_wrap}/>
-                                <h4 className='ctrl_module_sub_title'>wrap</h4>
+
+                            <hr/>
+                            <div id='ctrl_module'>
+                                <h2 className='ctrl_module_title'>options</h2>
+                                <div className='ui_row'>
+                                    <input type='checkbox' id='toggle_wrap' className='ui_button' onClick={this.toggle_wrap}/>
+                                    <h4 className='ctrl_module_sub_title'>wrap</h4>
+                                </div>
+                                <h4 className='ctrl_module_sub_title'>volume size</h4>
+                                <div className='ui_row'>
+                                    <div className='slider_container'>
+                                        <input type='range' min='1' max='256' defaultValue='64' className='slider' id='volume_size' onChange={this.update_volume_text} onMouseUp={this.update_volume_size}/>
+                                    </div>
+                                    <h4 style={{width:'24px', paddingLeft:'12px', textAlign:'center', color:'rgba(0, 0, 0, 0.5)'}} id='volume_size_text'>64</h4>
+                                </div>
+                                <h4 className='ctrl_module_sub_title'>compute delay</h4>
+                                <div className='ui_row'>
+                                    <div className='slider_container'>
+                                        <input type='range' min='1' max='64' defaultValue='1' className='slider' id='compute_delay' onChange={this.update_compute_text} onMouseUp={this.update_compute_delay}/>
+                                    </div>
+                                    <h4 style={{width:'24px', paddingLeft:'12px', textAlign:'center', color:'rgba(0, 0, 0, 0.5)'}} id='compute_text'>1</h4>
+                                </div>
                             </div>
-                        </div>
                             
-                        <hr/>
+                            <hr/>
                             <div id='ctrl_module'>
                                 <h2 className='ctrl_module_title'>automata</h2>
                                 <div style={{paddingBottom:'0.5em'}}>
@@ -968,7 +1093,6 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
                                         <option value='custom' disabled>custom 🛠️</option>
                                     </select>
                                 </div>
-        
                                 <div style={{paddingBottom:'1em'}}>
                                     <h4 className='ctrl_module_sub_title'>seed</h4>
                                     <div className='ui_row'>
@@ -977,7 +1101,6 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
                                         <button id='randomize_seed' className='ui_button' style={{width:'35%'}} onClick={this.randomize_seed}>new seed</button>
                                     </div>
                                 </div>
-
                                 <div className='ui_row'>
                                     <input type='checkbox' id='toggle_reset_cam' className='ui_button'/>
                                     <h4 className='ctrl_module_sub_title'>reset camera</h4>
@@ -989,16 +1112,7 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
                                     </div>
                                     <h4 style={{width:'24px', paddingLeft:'12px', textAlign:'center', color:'rgba(0, 0, 0, 0.5)'}} id='region_text'>0.2</h4>
                                 </div>
-
-
                                 <button id='reset_button' className='ui_button' onClick={this.reset_automata} style={{padding:'0.5em', width:'100%'}}>reset automata</button>
-
-                                {/* TODO export import automata using .json files 
-                                <div style={{paddingTop:'0.5em'}}>
-                                    <button id='export_button' className='ui_button' style={{width:'50%'}}>export</button>
-                                    <button id='import_button' className='ui_button' style={{width:'50%'}}>import</button>
-                                </div>
-                                */}
                             </div>
 
                             <hr/>
@@ -1138,30 +1252,30 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
                                     <button className='ui_button' onClick={this.randomize_kernel} style={{padding:'0.5em', width:'100%'}}>randomize kernel</button>
                                 </div>
                             </div>
-
-                            <hr/>
-                            <div id='ctrl_module'>
-                                <h2 className='ctrl_module_title'>options</h2>
-                                <h4 className='ctrl_module_sub_title'>volume size</h4>
-                                <div className='ui_row'>
-                                    <div className='slider_container'>
-                                        <input type='range' min='1' max='256' defaultValue='64' className='slider' id='volume_size' onChange={this.update_volume_text} onMouseUp={this.update_volume_size}/>
-                                    </div>
-                                    <h4 style={{width:'24px', paddingLeft:'12px', textAlign:'center', color:'rgba(0, 0, 0, 0.5)'}} id='volume_size_text'>64</h4>
-                                </div>
-                            </div>
                         </div>
 
 
                         <div id='_2D' style={{scale:'100%', height:'100%'}}>
-                            {/* TODO
+                            
                             <hr/>
                             <div id='ctrl_module'>
-                                <h4 className='ctrl_module_sub_title'>how it works:</h4>
-                                <div>
- 
+                                <h2 className='ctrl_module_title'>options</h2>
+                                <h4 className='ctrl_module_sub_title'>brush size</h4>
+                                <div className='ui_row'>
+                                    <div className='slider_container'>
+                                        <input type='range' min='1' max='256' defaultValue='64' className='slider' id='brush_slider' onChange={this.update_sim_brush}/>
+                                    </div>
+                                    <h4 style={{width:'24px', paddingLeft:'12px', textAlign:'center', color:'rgba(0, 0, 0, 0.5)'}} id='brush_text'>64</h4>
                                 </div>
-                            </div> */}
+
+                                <h4 className='ctrl_module_sub_title'>zoom level</h4>
+                                <div className='ui_row' style={{paddingBottom:'0.5em'}}>
+                                    <div className='slider_container'>
+                                        <input type='range' min='0.6' max='16.0' defaultValue='2.0' step='0.2' className='slider' id='zoom_slider' onChange={this.update_zoom_text} onMouseUp={this.update_sim_zoom}/>
+                                    </div>
+                                    <h4 style={{width:'24px', paddingLeft:'12px', textAlign:'center', color:'rgba(0, 0, 0, 0.5)'}} id='zoom_text'>2.0</h4>
+                                </div>
+                            </div>
 
                             <hr/>
                             <div id='ctrl_module'>
@@ -1193,13 +1307,6 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
                                 </div>
 
                                 <button id='reset_button' className='ui_button' onClick={this.reset_automata} style={{padding:'0.5em', width:'100%'}}>reset automata</button>
-
-                                {/* TODO export import automata using .json files 
-                                <div style={{paddingTop:'0.5em'}}>
-                                    <button id='export_button' className='ui_button' style={{width:'50%'}}>export</button>
-                                    <button id='import_button' className='ui_button' style={{width:'50%'}}>import</button>
-                                </div>
-                                */}
                             </div>
                             
                             <hr/>
@@ -1263,25 +1370,6 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
                                 </div>
                             </div>
 
-                            <hr/>
-                            <div id='ctrl_module'>
-                                <h2 className='ctrl_module_title'>options</h2>
-                                <h4 className='ctrl_module_sub_title'>brush size</h4>
-                                <div className='ui_row'>
-                                    <div className='slider_container'>
-                                        <input type='range' min='1' max='256' defaultValue='64' className='slider' id='brush_slider' onChange={this.update_sim_brush}/>
-                                    </div>
-                                    <h4 style={{width:'24px', paddingLeft:'12px', textAlign:'center', color:'rgba(0, 0, 0, 0.5)'}} id='brush_text'>64</h4>
-                                </div>
-
-                                <h4 className='ctrl_module_sub_title'>zoom level</h4>
-                                <div className='ui_row' style={{paddingBottom:'0.5em'}}>
-                                    <div className='slider_container'>
-                                        <input type='range' min='0.6' max='16.0' defaultValue='2.0' step='0.2' className='slider' id='zoom_slider' onChange={this.update_zoom_text} onMouseUp={this.update_sim_zoom}/>
-                                    </div>
-                                    <h4 style={{width:'24px', paddingLeft:'12px', textAlign:'center', color:'rgba(0, 0, 0, 0.5)'}} id='zoom_text'>2.0</h4>
-                                </div>
-                            </div>
                         </div>
 
                         <hr/>
@@ -1302,6 +1390,21 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
                                     <option value='inv_gaus'>inverse gaussian</option>
                                     <option value='custom' disabled>custom 🛠️</option>
                                 </select>
+                            </div>
+                        </div>
+
+                        <hr/>
+                        <div id='ctrl_module'>
+                            <h2 className='ctrl_module_title'>save & load automata</h2>
+                            <h4 className='ctrl_module_sub_title'>automata name</h4>
+                            <div className='ui_row'>
+                                <input id='name' className='ui_text_field' defaultValue={'my_automata'}/>
+                            </div>
+                            <div style={{height:'0.5em'}}/>
+                            <div className='ui_row'>
+                                <button className='ui_button' onClick={this.export_automata} style={{padding:'0.5em', width:'100%'}}>export</button>
+                                <div style={{width:'0.5em'}}/>
+                                <button className='ui_button' onClick={this.import_automata} style={{padding:'0.5em', width:'100%'}}>import</button>
                             </div>
                         </div>
                                                 

@@ -1,5 +1,4 @@
 import { Sim } from '../Sim';
-
 import { VolumeData } from './Volumes/VolumeData';
 import { ClearVolume } from './Volumes/ClearVolume';
 import { RandomizeVolume } from './Volumes/RandomizeVolume';
@@ -26,6 +25,10 @@ class Sim3D {
     volume_old: VolumeData | null = null;
     volume_new: VolumeData | null = null;
     seed: string = '';
+
+    // compute
+    compute_delay: number = 1;
+    current_delay: number = 0;
 
     // renderables
     size: number = Sim3D.START_SIZE;
@@ -104,22 +107,26 @@ class Sim3D {
         let w = canvas.width;
         let h = canvas.height;
 
-        // compute single step
-        if (!this.sim.paused) {
-            this.compute_volume.render(
-                this.volume_old, 
-                this.volume_new, 
-                this.kernel,
-                this.activation);
+        // add one to compute delay
+        this.current_delay++;
+        if (this.current_delay >= this.compute_delay) {
+            // compute single step
+            if (!this.sim.paused) {
+                this.compute_volume.render(
+                    this.volume_old, 
+                    this.volume_new, 
+                    this.kernel,
+                    this.activation);
 
-            // swap volume buffers
-            let tmp = this.volume_old;
-            this.volume_old = this.volume_new;
-            this.volume_new = tmp;
+                // swap volume buffers
+                let tmp = this.volume_old;
+                this.volume_old = this.volume_new;
+                this.volume_new = tmp;
+            }
+            // reset delay
+            this.current_delay = 0;
         }
         
-        
-
         // draw to screen
         this.render_volume.render(w, h, this.volume_old);
     }

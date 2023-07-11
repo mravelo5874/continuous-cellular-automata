@@ -394,6 +394,11 @@ class Sim {
         this.sim2D?.set_brush(_brush);
     }
 
+    update_compute_delay(_delay: number) {
+        if (_delay <= 0) return;
+        if (this.sim3D) this.sim3D.compute_delay = _delay;
+    }
+
     update_zoom(_zoom: number) {
         Sim.zoom = _zoom;
         CanvasResize.update_canvas = true;
