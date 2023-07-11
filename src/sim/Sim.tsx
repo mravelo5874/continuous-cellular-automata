@@ -283,6 +283,18 @@ class Sim {
         }
     }
 
+    toggle_wrap() {
+        switch (this.mode) {
+        default: break;
+        case SimMode.Sim2D:
+            break;
+        case SimMode.Sim3D:
+            let wrap = this.sim3D?.compute_volume.wrap;
+            if (this.sim3D) this.sim3D.compute_volume.wrap = !wrap;
+            break;
+        }
+    }
+
     load_colormap(_colormap: string) {
         switch (this.mode) {
         default: break;

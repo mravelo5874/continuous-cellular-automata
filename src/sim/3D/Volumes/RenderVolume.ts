@@ -24,7 +24,7 @@ class RenderVolume {
     max_zoom: number = 8.0;
 
     // visuals
-    blend_volume: boolean = false;
+    blend_volume: boolean = true;
 
     constructor(_sim: Sim) {
         this.sim = _sim;

@@ -15,6 +15,7 @@ class ComputeVolume {
     vbo: WebGLBuffer | null;
     vao: WebGLVertexArrayObject | null;
     programs: { [key: string]: PRGM_LOC } = {};
+    wrap: boolean = false;
 
     constructor(_sim: Sim) {
         this.sim = _sim;
@@ -178,8 +179,8 @@ class ComputeVolume {
     }
 
     render(_vol_in: VolumeData, _vol_out: VolumeData, _kernel: Float32Array, _activation: string) {
-        _vol_in.set_wrap(true);
-        _vol_out.set_wrap(true);
+        _vol_in.set_wrap(this.wrap);
+        _vol_out.set_wrap(this.wrap);
         let s = _vol_in.size;
         let texture = _vol_in.texture;
         let fbs = _vol_out.frame_buffers;

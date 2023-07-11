@@ -42,6 +42,7 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
         this.toggle_blend = this.toggle_blend.bind(this);
         this.toggle_sim = this.toggle_sim.bind(this);
         this.toggle_aa = this.toggle_aa.bind(this);
+        this.toggle_wrap = this.toggle_wrap.bind(this);
 
         this.randomize_kernel = this.randomize_kernel.bind(this);
         this.randomize_seed = this.randomize_seed.bind(this);
@@ -81,9 +82,22 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
             full_sym.checked = false;
             this.update_kernel_symmetry();
 
+            // set 3d wrap
+            let toggle_wrap = document.getElementById('toggle_wrap') as HTMLInputElement;
+            toggle_wrap.checked = false;
+
+            // set 3d wrap
+            let toggle_blend = document.getElementById('toggle_blend') as HTMLInputElement;
+            toggle_blend.checked = true;
+
             // keyboard input
             window.addEventListener('keydown', (key: KeyboardEvent) => this.on_key_down(key))
         }
+    }
+
+    toggle_wrap() {
+        let sim = this.props.sim;
+        sim.toggle_wrap();
     }
 
     toggle_blend() {
@@ -937,7 +951,14 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
 
 
                         <div id='_3D' style={{scale:'0%', height:'0px'}}>
-
+                            
+                        <div id='ctrl_module'>
+                            <div className='ui_row'>
+                                <input type='checkbox' id='toggle_wrap' className='ui_button' onClick={this.toggle_wrap}/>
+                                <h4 className='ctrl_module_sub_title'>wrap</h4>
+                            </div>
+                        </div>
+                            
                         <hr/>
                             <div id='ctrl_module'>
                                 <h2 className='ctrl_module_title'>automata</h2>
