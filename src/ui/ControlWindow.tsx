@@ -1002,6 +1002,7 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
         else if (sim.mode === SimMode.Sim3D) {
             let wrap = document.getElementById('toggle_wrap') as HTMLInputElement;
             let size = document.getElementById('volume_size') as HTMLInputElement;
+            let comp = document.getElementById('compute_delay') as HTMLInputElement;
             let data = {
                 'sim': sim.mode,
                 'seed': this.seed,
@@ -1011,13 +1012,37 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
                 'activation': sim.sim3D?.activation,
                 'wrap': wrap.checked,
                 'size': size.valueAsNumber,
+                'compute': comp.valueAsNumber
             }
             this.download(JSON.stringify(data), `${name_input.value.toString()}.json`, 'text/plain');
         }
     }
 
     import_automata() {
-
+        var input = document.createElement('input');
+        input.type = 'file';
+        input.onchange = (e) => { 
+            let target = e.currentTarget as HTMLInputElement;
+            let files = target.files;
+            let file = files?.item(0) as File;
+            var reader = new FileReader();
+            reader.readAsText(file, 'UTF-8');
+            reader.onload = readerEvent => {
+                var content = readerEvent.target?.result;
+                
+                let data = JSON.parse(content as string);
+                let sim = this.props.sim;
+                if (sim.mode === SimMode.Sim2D) {
+                    if (data.sim !== SimMode.Sim2D) return;
+                    console.log('content: ' + content);
+                }
+                else if (sim.mode === SimMode.Sim3D) {
+                    if (data.sim !== SimMode.Sim3D) return;
+                    console.log('content: ' + content);
+                }
+            }
+        }
+        input.click();
     }
 
     render() {
@@ -1404,8 +1429,11 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
                             <div className='ui_row'>
                                 <button className='ui_button' onClick={this.export_automata} style={{padding:'0.5em', width:'100%'}}>export</button>
                                 <div style={{width:'0.5em'}}/>
-                                <button className='ui_button' onClick={this.import_automata} style={{padding:'0.5em', width:'100%'}}>import</button>
+                                <button className='ui_button' onChange={(e) => this.import_automata} style={{padding:'0.5em', width:'100%'}}>import</button>
+                                {/* <input className='ui_button' type="file" style={{padding:'0.5em', width:'100%'}} onChange={(e) => this.import_automata(e.target.files)}/> */}
                             </div>
+
+                            
                         </div>
                                                 
                         {/* extra padding at the bottom of the window */}
