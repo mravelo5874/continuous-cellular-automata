@@ -27,6 +27,7 @@ class Sim3D {
     seed: string = '';
 
     // compute
+    skip_every_other: boolean = true;
     compute_delay: number = 1;
     current_delay: number = 0;
 
@@ -110,18 +111,29 @@ class Sim3D {
         // add one to compute delay
         this.current_delay++;
         if (this.current_delay >= this.compute_delay) {
-            // compute single step
+            // compute two steps
             if (!this.sim.paused) {
                 this.compute_volume.render(
                     this.volume_old, 
                     this.volume_new, 
                     this.kernel,
                     this.activation);
-
                 // swap volume buffers
                 let tmp = this.volume_old;
                 this.volume_old = this.volume_new;
                 this.volume_new = tmp;
+                // skip render
+                if (this.skip_every_other) {
+                    this.compute_volume.render(
+                        this.volume_old, 
+                        this.volume_new, 
+                        this.kernel,
+                        this.activation);
+                    // swap volume buffers
+                    let tmp = this.volume_old;
+                    this.volume_old = this.volume_new;
+                    this.volume_new = tmp;
+                }
             }
             // reset delay
             this.current_delay = 0;

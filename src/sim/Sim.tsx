@@ -11,7 +11,6 @@ export { Sim, SimMode }
 enum SimMode { Sim2D, Sim3D }
 
 class Sim {
-
     mode: SimMode;
     canvas: HTMLCanvasElement | null;
     context: WebGL2RenderingContext | null;
@@ -20,24 +19,24 @@ class Sim {
     resize: CanvasResize | null;
 
     static zoom: number = 2.0;
-    public paused: boolean;
-    public bg_color: Vec4;
+    paused: boolean;
+    bg_color: Vec4;
 
     // user input
-    public is_input: boolean = false;
-    public mouse_button: number = 0;
+    is_input: boolean = false;
+    mouse_button: number = 0;
 
     // used to calculate time and fps
-    private fps: number;
-    private start_time: number;
-    private prev_time: number;
-    private curr_delta_time: number;
-    private prev_fps_time: number;
-    private frame_count: number = 0;
+    fps: number;
+    start_time: number;
+    prev_time: number;
+    curr_delta_time: number;
+    prev_fps_time: number;
+    frame_count: number = 0;
 
     // ui nodes
-    public fps_node: Text | null;
-    public res_node: Text | null;
+    fps_node: Text | null;
+    res_node: Text | null;
 
     constructor() {
         // initialize all variables
@@ -271,28 +270,31 @@ class Sim {
         }
     }
 
+    set_blend(_blend: boolean) {
+        if (this.sim3D) this.sim3D.render_volume.blend_volume = _blend;
+    }
+
     toggle_blend() {
-        switch (this.mode) {
-        default: break;
-        case SimMode.Sim2D:
-            break;
-        case SimMode.Sim3D:
-            let blend = this.sim3D?.render_volume.blend_volume;
-            if (this.sim3D) this.sim3D.render_volume.blend_volume = !blend;
-            break;
-        }
+        let blend = this.sim3D?.render_volume.blend_volume;
+        if (this.sim3D) this.sim3D.render_volume.blend_volume = !blend;
+    }
+
+    set_wrap(_wrap: boolean) {
+        if (this.sim3D) this.sim3D.compute_volume.wrap = _wrap;
     }
 
     toggle_wrap() {
-        switch (this.mode) {
-        default: break;
-        case SimMode.Sim2D:
-            break;
-        case SimMode.Sim3D:
-            let wrap = this.sim3D?.compute_volume.wrap;
-            if (this.sim3D) this.sim3D.compute_volume.wrap = !wrap;
-            break;
-        }
+        let wrap = this.sim3D?.compute_volume.wrap;
+        if (this.sim3D) this.sim3D.compute_volume.wrap = !wrap;
+    }
+
+    toggle_skip_frames() {
+        let skip = this.sim3D?.skip_every_other;
+        if (this.sim3D) this.sim3D.skip_every_other = !skip;
+    }
+
+    set_skip_frames(_skip: boolean) {
+        if (this.sim3D) this.sim3D.skip_every_other = _skip;
     }
 
     load_colormap(_colormap: string) {
