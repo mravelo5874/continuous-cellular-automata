@@ -109,7 +109,7 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
     load_automata() {
         let sim = this.props.sim;
         if (sim.mode === SimMode.Sim2D) {
-            let menu = document.getElementById('load_automata') as HTMLSelectElement;
+            let menu = document.getElementById('load_automata_2d') as HTMLSelectElement;
             const value = menu.value;
             sim.load_automata(value);
             // update ui
@@ -891,7 +891,7 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
             this.update_kernel(kernel);
             sim.set_kernel(kernel);
             sim.custom_kernel();
-            let menu = document.getElementById('load_automata') as HTMLSelectElement;
+            let menu = document.getElementById('load_automata_2d') as HTMLSelectElement;
             menu.value = 'custom';
         }
         else if (sim.mode === SimMode.Sim3D) {
@@ -1048,7 +1048,7 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
             this.update_kernel(kernel);
             sim.set_kernel(kernel);
             sim.custom_kernel();
-            let menu = document.getElementById('load_automata') as HTMLSelectElement;
+            let menu = document.getElementById('load_automata_2d') as HTMLSelectElement;
             menu.value = 'custom';
         }
     }
@@ -1181,7 +1181,7 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
                     this.update_activation(data.activation, true);
                     this.update_sim_activation();
                     // custom automata
-                    let menu = document.getElementById('load_automata') as HTMLSelectElement;
+                    let menu = document.getElementById('load_automata_2d') as HTMLSelectElement;
                     menu.value = 'custom';
                 }
                 else if (sim.mode === SimMode.Sim3D) {
