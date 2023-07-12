@@ -22,6 +22,7 @@ class RenderVolume {
     zoom_speed: number = 0.002;
     min_zoom: number = 0.0;
     max_zoom: number = 8.0;
+    orbit: boolean = true;
 
     // visuals
     blend_volume: boolean = true;
@@ -96,7 +97,7 @@ class RenderVolume {
         let bg = this.sim.bg_color;
 
         // rotate cube if there is no user input
-        if (!this.sim.paused) {
+        if (!this.sim.paused && this.orbit) {
             if (!this.sim.is_input) {
                 this.camera.orbitTarget(this.camera.up().normalize(), this.rot_speed * 0.05);
             }

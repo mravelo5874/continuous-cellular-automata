@@ -55,6 +55,7 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
         this.toggle_sim_mode = this.toggle_sim_mode.bind(this);
         this.toggle_sim_aa = this.toggle_sim_aa.bind(this);
         this.toggle_sim_wrap = this.toggle_sim_wrap.bind(this);
+        this.toggle_sim_orbit = this.toggle_sim_orbit.bind(this);
         this.toggle_sim_skip_frames = this.toggle_sim_skip_frames.bind(this);
         // randomize
         this.randomize_kernel = this.randomize_kernel.bind(this);
@@ -73,6 +74,12 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
             // generate seed
             this.seed = sim.generate_seed(ControlWindow.SEED_LEN);
             this.update_seed(this.seed);
+            // orbit 3D simulation
+            var orbit = document.getElementById('toggle_orbit') as HTMLInputElement;
+            orbit.checked = true;
+            // skip frames 3D simulation
+            var skip = document.getElementById('toggle_skip') as HTMLInputElement;
+            skip.checked = true;
             // load in initial preset
             this.load_automata();
         }
@@ -558,6 +565,10 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
         sim.toggle_blend();
     }
 
+    toggle_sim_orbit() {
+        let sim = this.props.sim;
+        sim.toggle_orbit();
+    }
     
     /*****************************************************************
         SIM FUNCTIONS
@@ -1258,6 +1269,10 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
                                     <input type='checkbox' id='toggle_skip' className='ui_button' onClick={this.toggle_sim_skip_frames}/>
                                     <h4 className='ctrl_module_sub_title'>skip frames</h4>
                                 </div>
+                                <div className='ui_row'>
+                                    <input type='checkbox' id='toggle_orbit' className='ui_button' onClick={this.toggle_sim_orbit}/>
+                                    <h4 className='ctrl_module_sub_title'>orbit</h4>
+                                </div>
                                 <h4 className='ctrl_module_sub_title'>volume size</h4>
                                 <div className='ui_row'>
                                     <div className='slider_container'>
@@ -1604,7 +1619,7 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
                         </div>
                                                 
                         {/* extra padding at the bottom of the window */}
-                        <div style={{height:'12em'}}/>
+                        <div style={{height:'4em'}}/>
 
                         <div id='ctrl_module'>
                             <div className='ui_info'>

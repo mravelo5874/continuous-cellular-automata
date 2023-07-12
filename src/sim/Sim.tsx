@@ -367,6 +367,11 @@ class Sim {
         if (this.sim3D) this.sim3D.render_volume.blend_volume = !blend;
     }
 
+    toggle_orbit() {
+        let orbit = this.sim3D?.render_volume.orbit;
+        if (this.sim3D) this.sim3D.render_volume.orbit = !orbit;
+    }
+
     /*****************************************************************
         GET FUNCTIONS
     *****************************************************************/
