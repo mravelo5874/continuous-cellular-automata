@@ -45,6 +45,7 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
         this.update_kernel_symmetry = this.update_kernel_symmetry.bind(this);
         this.update_compute_text = this.update_compute_text.bind(this);
         // load
+        this.load_automata_json = this.load_automata_json.bind(this);
         this.load_automata = this.load_automata.bind(this);
         this.load_shader = this.load_shader.bind(this);
         this.load_colormap = this.load_colormap.bind(this);
@@ -69,36 +70,11 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
         if (!this.ui_init) {
             this.ui_init = true;
             let sim = this.props.sim;
-            // update seed
+            // generate seed
             this.seed = sim.generate_seed(ControlWindow.SEED_LEN);
             this.update_seed(this.seed);
-            // update kernel and activation
-            this.update_kernel(sim.get_kernel() as Float32Array);
-            this.update_activation(sim.get_activation() as string, true);
-            // update kernel ui
-            let v_sym = document.getElementById('v_sym') as HTMLInputElement;
-            let h_sym = document.getElementById('h_sym') as HTMLInputElement;
-            let f_sym = document.getElementById('f_sym') as HTMLInputElement;
-            let b_sym = document.getElementById('b_sym') as HTMLInputElement;
-            let full_sym = document.getElementById('x_sym') as HTMLInputElement;
-            v_sym.checked = true;
-            h_sym.checked = true;
-            f_sym.checked = true;
-            b_sym.checked = true;
-            full_sym.checked = false;
-            this.update_kernel_symmetry();
-
-            // set 3d wrap
-            let toggle_wrap = document.getElementById('toggle_wrap') as HTMLInputElement;
-            toggle_wrap.checked = false;
-
-            // set 3d blend
-            let toggle_blend = document.getElementById('toggle_blend') as HTMLInputElement;
-            toggle_blend.checked = true;
-
-            // set 3d blend
-            let toggle_skip = document.getElementById('toggle_skip') as HTMLInputElement;
-            toggle_skip.checked = true;
+            // load in initial preset
+            this.load_automata();
         }
     }
 
@@ -106,26 +82,97 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
         LOAD FUNCTIONS
     *****************************************************************/
 
+    load_automata_json(data: any, is_custom: boolean, _seed?: string) {
+        let sim = this.props.sim;
+        // seed
+        if (_seed) {
+            this.seed = _seed;
+        }
+        else {
+            this.seed = data.seed;
+        }
+        this.update_seed(this.seed);
+        if (sim.mode === SimMode.Sim2D) {
+            if (data.sim !== SimMode.Sim2D) return;
+            // shader
+            this.load_shader(data.shader as Shader2D);
+            // symmetries
+            this.update_symmetries(data.symmetries, SimMode.Sim2D);
+            this.update_kernel_symmetry();
+            // kernel
+            this.update_kernel(new Float32Array(data.kernel));
+            this.set_sim_kernel();
+            // activation
+            this.update_activation(data.activation, true);
+            this.update_sim_activation();
+            // custom automata
+            if (is_custom) {
+                let menu = document.getElementById('load_automata_2d') as HTMLSelectElement;
+                menu.value = 'custom';
+            }
+        }
+        else if (sim.mode === SimMode.Sim3D) {
+            if (data.sim !== SimMode.Sim3D) return;
+            // blend
+            let blend = document.getElementById('toggle_blend') as HTMLInputElement;
+            blend.checked = data.blend;
+            this.set_sim_blend(data.blend);
+            // wrap
+            let wrap = document.getElementById('toggle_wrap') as HTMLInputElement;
+            wrap.checked = data.wrap;
+            this.set_sim_wrap(data.wrap);
+            // size
+            let size = document.getElementById('volume_size') as HTMLInputElement;
+            let size_txt = document.getElementById('volume_size_text') as HTMLInputElement;
+            size.valueAsNumber = data.size;
+            size_txt.innerHTML = data.size.toString();
+            this.set_sim_volume_size();
+            // compute
+            let comp = document.getElementById('compute_delay') as HTMLInputElement;
+            let comp_txt = document.getElementById('compute_text') as HTMLInputElement;
+            comp.valueAsNumber = data.compute;
+            comp_txt.innerHTML = data.compute.toString();
+            this.set_sim_compute_delay();
+            // skip frames
+            let skip = document.getElementById('toggle_skip') as HTMLInputElement;
+            skip.checked = data.skip;
+            this.set_sim_skip_frames(data.skip);
+            // colormap
+            this.load_colormap(data.colormap as Colormap3D);
+            // symmetries
+            this.update_symmetries(data.symmetries, SimMode.Sim3D);
+            this.update_kernel_symmetry();
+            // kernel
+            this.update_kernel(new Float32Array(data.kernel));
+            this.set_sim_kernel();
+            // activation
+            this.update_activation(data.activation, true);
+            this.update_sim_activation();
+            // custom automata
+            if (is_custom) {
+                let menu = document.getElementById('load_automata_3d') as HTMLSelectElement;
+                menu.value = 'custom';
+            }
+        }
+    }
+
+    async fetch_json_file(path: string) {
+        const response = await fetch(path);
+        const json = await response.json();
+        return json;
+    }
+
     load_automata() {
         let sim = this.props.sim;
         if (sim.mode === SimMode.Sim2D) {
             let menu = document.getElementById('load_automata_2d') as HTMLSelectElement;
-            const value = menu.value;
-            sim.load_automata(value);
-            // update ui
-            let v_sym = document.getElementById('v_sym') as HTMLInputElement;
-            let h_sym = document.getElementById('h_sym') as HTMLInputElement;
-            let f_sym = document.getElementById('f_sym') as HTMLInputElement;
-            let b_sym = document.getElementById('b_sym') as HTMLInputElement;
-            let full_sym = document.getElementById('x_sym') as HTMLInputElement;
-            v_sym.checked = true;
-            h_sym.checked = true;
-            f_sym.checked = true;
-            b_sym.checked = true;
-            full_sym.checked = false;
-            this.update_kernel_symmetry();
-            this.update_kernel(sim.get_kernel() as Float32Array);
-            this.update_activation(sim.get_activation() as string, true);
+            let res = this.fetch_json_file(`../automata/2D/${menu.value}_2D.json`);
+            let seed = sim.generate_seed(ControlWindow.SEED_LEN);
+            res.then((data) => {this.load_automata_json(data, false, seed)});
+
+            // special case for 'game_of_life' automata
+            sim.set_game_of_life_mode(menu.value === 'game_of_life');
+            
         }
         else if (sim.mode === SimMode.Sim3D) {
             // TODO find and load interesting 3d automata
@@ -890,7 +937,6 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
             // set kernel
             this.update_kernel(kernel);
             sim.set_kernel(kernel);
-            sim.custom_kernel();
             let menu = document.getElementById('load_automata_2d') as HTMLSelectElement;
             menu.value = 'custom';
         }
@@ -1047,7 +1093,6 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
             // set kernel
             this.update_kernel(kernel);
             sim.set_kernel(kernel);
-            sim.custom_kernel();
             let menu = document.getElementById('load_automata_2d') as HTMLSelectElement;
             menu.value = 'custom';
         }
@@ -1163,69 +1208,7 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
             reader.onload = readerEvent => {
                 var content = readerEvent.target?.result;
                 let data = JSON.parse(content as string);
-                let sim = this.props.sim;
-                if (sim.mode === SimMode.Sim2D) {
-                    if (data.sim !== SimMode.Sim2D) return;
-                    // seed
-                    this.seed = data.seed;
-                    this.update_seed(this.seed);
-                    // shader
-                    this.load_shader(data.shader as Shader2D);
-                    // symmetries
-                    this.update_symmetries(data.symmetries, SimMode.Sim2D);
-                    this.update_kernel_symmetry();
-                    // kernel
-                    this.update_kernel(new Float32Array(data.kernel));
-                    this.set_sim_kernel();
-                    // activation
-                    this.update_activation(data.activation, true);
-                    this.update_sim_activation();
-                    // custom automata
-                    let menu = document.getElementById('load_automata_2d') as HTMLSelectElement;
-                    menu.value = 'custom';
-                }
-                else if (sim.mode === SimMode.Sim3D) {
-                    if (data.sim !== SimMode.Sim3D) return;
-                    console.log('content: ' + content);
-                    // seed
-                    this.seed = data.seed;
-                    this.update_seed(this.seed);
-                    // blend
-                    let blend = document.getElementById('toggle_blend') as HTMLInputElement;
-                    blend.checked = data.blend;
-                    this.set_sim_blend(data.blend);
-                    // wrap
-                    let wrap = document.getElementById('toggle_wrap') as HTMLInputElement;
-                    wrap.checked = data.wrap;
-                    this.set_sim_wrap(data.wrap);
-                    // size
-                    let size = document.getElementById('volume_size') as HTMLInputElement;
-                    let size_txt = document.getElementById('volume_size_text') as HTMLInputElement;
-                    size.valueAsNumber = data.size;
-                    size_txt.innerHTML = data.size.toString();
-                    this.set_sim_volume_size();
-                    // compute
-                    let comp = document.getElementById('compute_delay') as HTMLInputElement;
-                    let comp_txt = document.getElementById('compute_text') as HTMLInputElement;
-                    comp.valueAsNumber = data.compute;
-                    comp_txt.innerHTML = data.compute.toString();
-                    this.set_sim_compute_delay();
-                    // skip frames
-                    let skip = document.getElementById('toggle_skip') as HTMLInputElement;
-                    skip.checked = data.skip;
-                    this.set_sim_skip_frames(data.skip);
-                    // colormap
-                    this.load_colormap(data.colormap as Colormap3D);
-                    // symmetries
-                    this.update_symmetries(data.symmetries, SimMode.Sim3D);
-                    this.update_kernel_symmetry();
-                    // kernel
-                    this.update_kernel(new Float32Array(data.kernel));
-                    this.set_sim_kernel();
-                    // activation
-                    this.update_activation(data.activation, true);
-                    this.update_sim_activation();
-                }
+                this.load_automata_json(data, true);
             }
         }
         input.click();
@@ -1239,14 +1222,6 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
                         {/* extra padding at the top of the window */}
                         <div style={{height:'0em'}}/>
 
-                        <div id='ctrl_module'>
-                            <div className='ui_info'>
-                                <h4 className='ctrl_module_sub_title'>fps: <span id='fps'/></h4>
-                                <h4 className='ctrl_module_sub_title'>res: <span id='res'/></h4>
-                            </div>
-                        </div>
-
-                        <hr/>
                         <div id='ctrl_module'>
                             <h4 className='ctrl_module_sub_title'>simulation mode</h4>
                             <div className='ui_row'>
@@ -1497,17 +1472,20 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
                                 <h2 className='ctrl_module_title'>automata</h2>
                                 <div style={{paddingBottom:'0.5em'}}>
                                     <h4 className='ctrl_module_sub_title'>load preset</h4>
-                                    <select className='dropdown_input' name='automata' id='load_automata_2d' onChange={this.load_automata}>
-                                        <option className='dropdown_option' value='worms'>worms 🐍</option>
-                                        <option value='drops'>drops 💧</option>
-                                        <option value='waves'>waves 🌊</option>
+                                    <select className='dropdown_input' defaultValue={'worms'} id='load_automata_2d' onChange={this.load_automata}>
+                                        <option value='cells'>cells 🦠</option>
+                                        <option value='circuit'>circuit 💻</option>
+                                        <option value='comets'>comets ☄️</option>
+                                        <option value='game_of_life'>game of life ♟️</option>
+                                        <option value='lands'>lands 🌍</option>
+                                        <option value='mold'>mold 🧫</option>
+                                        <option value='mystic'>mystic ✨</option>
                                         <option value='paths'>paths 🚪</option>
                                         <option value='stars'>stars ⭐</option>
-                                        <option value='cells'>cells 🦠</option>
-                                        <option value='slime'>slime 🧫</option>
-                                        <option value='lands'>lands 🗺️</option>
-                                        <option value='circuit'>circuit 💻</option>
-                                        <option value='cgol'>game of life ♟️</option>
+                                        <option value='smoke'>smoke ☁️</option>
+                                        <option value='surf'>surf 🏄</option>
+                                        <option value='waves'>waves 🌊</option>
+                                        <option value='worms'>worms 🐍</option>
                                         <option value='custom' disabled>custom 🛠️</option>
                                     </select>
                                 </div>
@@ -1627,6 +1605,13 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
                                                 
                         {/* extra padding at the bottom of the window */}
                         <div style={{height:'12em'}}/>
+
+                        <div id='ctrl_module'>
+                            <div className='ui_info'>
+                                <h4 className='ctrl_module_sub_title'>fps: <span id='fps'/></h4>
+                                <h4 className='ctrl_module_sub_title'>res: <span id='res'/></h4>
+                            </div>
+                        </div>
                     </div>
                 </div>
 

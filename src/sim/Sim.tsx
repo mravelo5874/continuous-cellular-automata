@@ -1,6 +1,6 @@
 import { webgl_util } from "./WebGL-Util";
 import { CanvasResize } from "./CanvasResize";
-import { Sim2D, Automata2D, Shader2D } from "./2D/Sim2D";
+import { Sim2D, Shader2D } from "./2D/Sim2D";
 import { Colormap3D, Sim3D } from "./3D/Sim3D";
 import { Vec4 } from "../lib/TSM";
 import { delay } from "./Gen-Util"; 
@@ -199,43 +199,6 @@ class Sim {
         LOAD FUNCTIONS
     *****************************************************************/
 
-    load_automata(value: string) {
-        // load 2D simulation based on string value
-        switch(value) {
-        default: return;
-        case 'worms':
-            this.sim2D?.load_automata(Automata2D.worms);
-            break;
-        case 'drops':
-            this.sim2D?.load_automata(Automata2D.drops);
-            break;
-        case 'waves':
-            this.sim2D?.load_automata(Automata2D.waves);
-            break;
-        case 'paths':
-            this.sim2D?.load_automata(Automata2D.paths);
-            break;
-        case 'stars':
-            this.sim2D?.load_automata(Automata2D.stars);
-            break;
-        case 'cells':
-            this.sim2D?.load_automata(Automata2D.cells);
-            break;
-        case 'slime':
-            this.sim2D?.load_automata(Automata2D.slime);
-            break;
-        case 'lands':
-            this.sim2D?.load_automata(Automata2D.lands);
-            break;
-        case 'circuit':
-            this.sim2D?.load_automata(Automata2D.circuit);
-            break;
-        case 'cgol':
-            this.sim2D?.load_automata(Automata2D.cgol);
-            break;
-        }
-    }
-
     load_shader(value: string) {
         // load 2D shader based on string value
         switch(value) {
@@ -311,6 +274,10 @@ class Sim {
         }
     }
 
+    set_game_of_life_mode(_on: boolean) {
+        if (this.sim2D) this.sim2D.use_cgol = _on;
+    }
+
     set_blend(_blend: boolean) {
         if (this.sim3D) this.sim3D.render_volume.blend_volume = _blend;
     }
@@ -379,10 +346,6 @@ class Sim {
         case SimMode.Sim3D:
             break;
         }
-    }
-
-    custom_kernel() {
-        this.sim2D?.custom_kernel();
     }
 
     /*****************************************************************

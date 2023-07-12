@@ -1,7 +1,4 @@
 import { Sim } from '../Sim';
-import { kernels_2d } from './Kernels2D';
-import { activations_2d } from './Activations2D';
-import { CanvasResize } from '../CanvasResize';
 import { 
     default_vert,
     rgb_frag, bnw_frag, alpha_frag, acid_frag } from './Shaders2D';
@@ -12,19 +9,18 @@ import {
     generate_empty_state } from './Util2D';
 import Rand from 'src/lib/rand-seed';
 
-export { Sim2D, Automata2D, Shader2D };
+export { Sim2D, Shader2D };
 
 enum Shader2D { rgb, alpha, bnw, acid, END }
-enum Automata2D { custom, worms, drops, waves, paths, stars, cells, slime, lands, circuit, cgol, END }
 
 class Sim2D {
 
     // automata variables
     sim: Sim;
-    kernel: Float32Array;
-    activation: string;
+    kernel: Float32Array = new Float32Array([0.68, -0.90, 0.68, -0.90, -0.66, -0.90, 0.68, -0.90, 0.68]);
+    activation: string = 'return -1.0/pow(2.0,(0.6*pow(x, 2.0)))+1.0;';
     shader: Shader2D;
-    automata: Automata2D;
+    use_cgol: boolean = false;
 
     // render variables
     program: WebGLProgram | null;
@@ -41,10 +37,7 @@ class Sim2D {
   
     constructor(_sim: Sim) {
         this.sim = _sim;
-        this.kernel = kernels_2d.worms_kernel();
-        this.activation = activations_2d.worms_activation();
         this.shader = Shader2D.bnw;
-        this.automata = Automata2D.worms;
 
         this.program = null;
         this.buffer = null;
@@ -70,69 +63,8 @@ class Sim2D {
         this.reset();
     }
 
-    load_automata(auto: Automata2D) {
-        switch (auto) {
-            // ignore load
-            default:
-            case Automata2D.END:
-            case Automata2D.custom:
-                return;
-            case Automata2D.cells:
-                this.kernel = kernels_2d.cells_kernel();
-                this.activation = activations_2d.cells_activation();
-                break;
-            case Automata2D.cgol:
-                this.kernel = kernels_2d.gol_kernel();
-                this.activation = activations_2d.gol_activation();
-                break;
-            case Automata2D.drops:
-                this.kernel = kernels_2d.drops_kernel();
-                this.activation = activations_2d.drops_activation();
-                break;
-            case Automata2D.lands:
-                this.kernel = kernels_2d.lands_kernel();
-                this.activation = activations_2d.lands_activation();
-                break;
-            case Automata2D.paths:
-                this.kernel = kernels_2d.paths_kernel();
-                this.activation = activations_2d.paths_activation();
-                break;
-            case Automata2D.slime:
-                this.kernel = kernels_2d.slime_kernel();
-                this.activation = activations_2d.slime_activation();
-                break;
-            case Automata2D.stars:
-                this.kernel = kernels_2d.stars_kernel();
-                this.activation = activations_2d.stars_activation();
-                break;
-            case Automata2D.lands:
-                this.kernel = kernels_2d.lands_kernel();
-                this.activation = activations_2d.lands_activation();
-                break;
-            case Automata2D.waves:
-                this.kernel = kernels_2d.waves_kernel();
-                this.activation = activations_2d.waves_activation();
-                break;
-            case Automata2D.worms:
-                this.kernel = kernels_2d.worms_kernel();
-                this.activation = activations_2d.worms_activation();
-                break;
-            case Automata2D.circuit:
-                this.kernel = kernels_2d.circuit_kernel();
-                this.activation = activations_2d.circuit_activation();
-                break;
-        }
-        this.automata = auto;
-        this.reset();
-    }
-
     load_shader(shade: Shader2D) {
         this.shader = shade;
-        this.reset();
-    }
-
-    custom_kernel() {
-        this.automata = Automata2D.custom;
         this.reset();
     }
 
@@ -200,7 +132,7 @@ class Sim2D {
             seed = _seed;
         }
         let pixels: Uint8Array = new Uint8Array(0)
-        if (this.automata == Automata2D.cgol) {
+        if (this.use_cgol) {
             pixels = generate_empty_state(w, h);
         }
         else {
@@ -411,7 +343,7 @@ class Sim2D {
 		this.brush_0 = new Uint8Array(arr_size);
         let rng = new Rand();
 		for (let i=0; i < arr_size; i++) {
-            if (this.automata == Automata2D.cgol)
+            if (this.use_cgol)
 			    this.brush_1[i] = 255;
             else this.brush_1[i] = rng.next() * 255;
 			this.brush_0[i] = 0;
@@ -424,7 +356,7 @@ class Sim2D {
         let rng = new Rand();
         for (let i=0; i < arr_size; i++) {
             var value = rng.next();
-            if (this.automata == Automata2D.cgol) {
+            if (this.use_cgol) {
                 if (value > 0.5) this.brush_1[i] = 255;
             }
             else {

@@ -205,27 +205,21 @@ class RenderVolume {
         switch (_color) {
             case Colormap3D.cool_warm:
                 this.func = this.load_colormap('../colormaps/cool-warm-paraview.png')
-                //this.neural_app.option_ui.shade_node.nodeValue = 'cool-warm'
                 break
             case Colormap3D.green:
                 this.func = this.load_colormap('../colormaps/samsel-linear-green.png')
-                //this.neural_app.option_ui.shade_node.nodeValue = 'green'
                 break
             case Colormap3D.plasma:
                 this.func = this.load_colormap('../colormaps/matplotlib-plasma.png')
-                //this.neural_app.option_ui.shade_node.nodeValue = 'plasma'
                 break
             case Colormap3D.rainbow:
                 this.func = this.load_colormap('../colormaps/rainbow.png')
-                //this.neural_app.option_ui.shade_node.nodeValue = 'rainbow'
                 break
             case Colormap3D.virdis:
                 this.func = this.load_colormap('../colormaps/matplotlib-virdis.png')
-                //this.neural_app.option_ui.shade_node.nodeValue = 'virdis'
                 break
             case Colormap3D.ygb:
                 this.func = this.load_colormap('../colormaps/samsel-linear-ygb-1211g.png')
-                //this.neural_app.option_ui.shade_node.nodeValue = 'ygb'
                 break
         }
     }
@@ -240,7 +234,6 @@ class RenderVolume {
         // add image after load
         const img = new Image() 
         img.onload = () => {
-            console.log('colormap loaded!');
             gl.bindTexture(gl.TEXTURE_2D, transfer_function)
             gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img)
         }
