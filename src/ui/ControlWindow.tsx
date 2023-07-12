@@ -27,6 +27,8 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
 
         // bind 'this' for class functions
         // set_sim
+        this.reset_sim_automata = this.reset_sim_automata.bind(this);
+        this.pause_sim = this.pause_sim.bind(this);
         this.set_sim_kernel = this.set_sim_kernel.bind(this);
         this.set_sim_brush = this.set_sim_brush.bind(this);
         this.set_sim_zoom = this.set_sim_zoom.bind(this);
@@ -57,8 +59,6 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
         this.randomize_kernel = this.randomize_kernel.bind(this);
         this.randomize_seed = this.randomize_seed.bind(this);
         // others
-        this.reset_sim_automata = this.reset_sim_automata.bind(this);
-        this.pause_sim = this.pause_sim.bind(this);
         this.export_automata = this.export_automata.bind(this);
         this.import_automata = this.import_automata.bind(this);
         this.get_symmetries_list = this.get_symmetries_list.bind(this);
@@ -99,6 +99,36 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
             // set 3d blend
             let toggle_skip = document.getElementById('toggle_skip') as HTMLInputElement;
             toggle_skip.checked = true;
+        }
+    }
+
+    /*****************************************************************
+        LOAD FUNCTIONS
+    *****************************************************************/
+
+    load_automata() {
+        let sim = this.props.sim;
+        if (sim.mode === SimMode.Sim2D) {
+            let menu = document.getElementById('load_automata') as HTMLSelectElement;
+            const value = menu.value;
+            sim.load_automata(value);
+            // update ui
+            let v_sym = document.getElementById('v_sym') as HTMLInputElement;
+            let h_sym = document.getElementById('h_sym') as HTMLInputElement;
+            let f_sym = document.getElementById('f_sym') as HTMLInputElement;
+            let b_sym = document.getElementById('b_sym') as HTMLInputElement;
+            let full_sym = document.getElementById('x_sym') as HTMLInputElement;
+            v_sym.checked = true;
+            h_sym.checked = true;
+            f_sym.checked = true;
+            b_sym.checked = true;
+            full_sym.checked = false;
+            this.update_kernel_symmetry();
+            this.update_kernel(sim.get_kernel() as Float32Array);
+            this.update_activation(sim.get_activation() as string, true);
+        }
+        else if (sim.mode === SimMode.Sim3D) {
+            // TODO find and load interesting 3d automata
         }
     }
 
@@ -148,6 +178,10 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
         this.set_sim_shader();
     }
 
+    /*****************************************************************
+        UPDATE FUNCTIONS
+    *****************************************************************/
+
     update_symmetries(_syms: any, _mode: SimMode) {
         if (_mode === SimMode.Sim2D) {
             var v_sym = document.getElementById('v_sym') as HTMLInputElement;
@@ -192,35 +226,222 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
         seed_field_3d.value = _seed;
     }
 
-    toggle_sim_skip_frames() {
-        let sim = this.props.sim;
-        sim.toggle_skip_frames();
+    update_zoom_text() {
+        var zoom_slider = document.getElementById('zoom_slider') as HTMLInputElement;
+        var zoom_text = document.getElementById('zoom_text') as HTMLElement;
+        zoom_text.innerHTML = zoom_slider.value;
     }
 
-    toggle_sim_wrap() {
-        let sim = this.props.sim;
-        sim.toggle_wrap();
+    update_volume_text() {
+        var volume_size = document.getElementById('volume_size') as HTMLInputElement;
+        var volume_text = document.getElementById('volume_size_text') as HTMLElement;
+        volume_text.innerHTML = volume_size.value;
     }
 
-    toggle_sim_blend() {
-        let sim = this.props.sim;
-        sim.toggle_blend();
+    update_compute_text() {
+        var compute_delay = document.getElementById('compute_delay') as HTMLInputElement;
+        var compute_text = document.getElementById('compute_text') as HTMLElement;
+        compute_text.innerHTML = compute_delay.value;
     }
 
-    set_sim_blend(_blend: boolean) {
+    update_sim_activation() {
+        let af = document.getElementById('af') as HTMLTextAreaElement;
+        this.update_activation(af.value, true);
         let sim = this.props.sim;
-        sim.set_blend(_blend);
+        sim.update_activation(af.value);
     }
 
-    set_sim_wrap(_wrap: boolean) {
+    update_kernel(_kernel: Float32Array) {
         let sim = this.props.sim;
-        sim.set_wrap(_wrap);
+        if (sim.mode === SimMode.Sim2D) {
+            // assert _kernel is correct length
+            if (_kernel.length !== 9) return;
+            for (let i = 0; i < _kernel.length; i++) {
+                let k = document.getElementById('k'+i.toFixed(0).toString()) as HTMLInputElement;
+                k.value = _kernel[i].toFixed(3).toString();
+            }
+        }
+        else if (sim.mode === SimMode.Sim3D) {
+            // assert _kernel is correct length
+            if (_kernel.length !== 27) return;
+            for (let i = 0; i < _kernel.length; i++) {
+                let j = document.getElementById('j'+i.toFixed(0).toString()) as HTMLInputElement;
+                j.value = _kernel[i].toFixed(3).toString();
+            }
+        }
     }
 
-    set_sim_skip_frames(_skip: boolean) {
-        let sim = this.props.sim;
-        sim.set_skip_frames(_skip);
+    update_activation(_activation: string, is_custom: boolean) {
+        let af = document.getElementById('af') as HTMLTextAreaElement;
+        af.value = _activation;
+        if (is_custom) {
+            let menu = document.getElementById('load_activation') as HTMLSelectElement;
+            menu.value = 'custom';
+        }
     }
+
+    update_kernel_symmetry() {
+        let sim = this.props.sim;
+        if (sim.mode === SimMode.Sim2D) {
+            // symmetry toggles
+            let v_sym = document.getElementById('v_sym') as HTMLInputElement;
+            let h_sym = document.getElementById('h_sym') as HTMLInputElement;
+            let f_sym = document.getElementById('f_sym') as HTMLInputElement;
+            let b_sym = document.getElementById('b_sym') as HTMLInputElement;
+            let full_sym = document.getElementById('x_sym') as HTMLInputElement;
+            // reset kernel inputs
+            for (let i = 0; i < 9; i++) {
+                let k = document.getElementById('k'+i.toFixed(0).toString()) as HTMLInputElement;
+                k.style.background = 'rgba(255, 255, 255, 0.6)';
+                k.disabled = false;
+            }
+            // apply symmetries
+            if (h_sym.checked) {
+                let sym = [6, 7, 8];
+                for (let i = 0; i < sym.length; i++) {
+                    let k = document.getElementById('k'+sym[i].toFixed(0).toString()) as HTMLInputElement;
+                    k.style.background = 'rgba(0, 119, 255, 0.6);';
+                    k.disabled = true;
+                }
+            }
+            if (v_sym.checked) {
+                let sym = [2, 5, 8];
+                for (let i = 0; i < sym.length; i++) {
+                    let k = document.getElementById('k'+sym[i].toFixed(0).toString()) as HTMLInputElement;
+                    k.style.background = 'rgba(0, 119, 255, 0.6);';
+                    k.disabled = true;
+                }
+            }
+            if (f_sym.checked) {
+                let sym = [5, 7, 8];
+                for (let i = 0; i < sym.length; i++) {
+                    let k = document.getElementById('k'+sym[i].toFixed(0).toString()) as HTMLInputElement;
+                    k.style.background = 'rgba(0, 119, 255, 0.6);';
+                    k.disabled = true;
+                }
+            }
+            if (b_sym.checked) {
+                let sym = [3, 6, 7];
+                for (let i = 0; i < sym.length; i++) {
+                    let k = document.getElementById('k'+sym[i].toFixed(0).toString()) as HTMLInputElement;
+                    k.style.background = 'rgba(0, 119, 255, 0.6);';
+                    k.disabled = true;
+                }
+            }
+            if (full_sym.checked) {
+                let sym = [1, 2, 3, 5, 6, 7, 8];
+                for (let i = 0; i < sym.length; i++) {
+                    let k = document.getElementById('k'+sym[i].toFixed(0).toString()) as HTMLInputElement;
+                    k.style.background = 'rgba(0, 119, 255, 0.6);';
+                    k.disabled = true;
+                }
+            }
+        }
+        else if (sim.mode === SimMode.Sim3D) {
+            // symmetry toggles
+            var xp_sym = document.getElementById('x_plane_sym') as HTMLInputElement;
+            var x1_sym = document.getElementById('x_diag_1_sym') as HTMLInputElement;
+            var x2_sym = document.getElementById('x_diag_2_sym') as HTMLInputElement;
+            var yp_sym = document.getElementById('y_plane_sym') as HTMLInputElement;
+            var y1_sym = document.getElementById('y_diag_1_sym') as HTMLInputElement;
+            var y2_sym = document.getElementById('y_diag_2_sym') as HTMLInputElement;
+            var zp_sym = document.getElementById('z_plane_sym') as HTMLInputElement;
+            var z1_sym = document.getElementById('z_diag_1_sym') as HTMLInputElement;
+            var z2_sym = document.getElementById('z_diag_2_sym') as HTMLInputElement;
+            let full_sym = document.getElementById('full_sym') as HTMLInputElement;
+            // reset kernel inputs
+            for (let i = 0; i < 27; i++) {
+                let j = document.getElementById('j'+i.toFixed(0).toString()) as HTMLInputElement;
+                j.style.background = 'rgba(255, 255, 255, 0.6)';
+                j.disabled = false;
+            }
+            // apply symmetries
+            if (xp_sym.checked) {
+                let sym = [2, 5, 8, 11, 14, 17, 20, 23, 26];
+                for (let i = 0; i < sym.length; i++) {
+                    let j = document.getElementById('j'+sym[i].toFixed(0).toString()) as HTMLInputElement;
+                    j.style.background = 'rgba(0, 119, 255, 0.6);';
+                    j.disabled = true;
+                }
+            }
+            if (x1_sym.checked) {
+                let sym = [24, 25, 26, 15, 16, 17, 21, 22, 23];
+                for (let i = 0; i < sym.length; i++) {
+                    let j = document.getElementById('j'+sym[i].toFixed(0).toString()) as HTMLInputElement;
+                    j.style.background = 'rgba(0, 119, 255, 0.6);';
+                    j.disabled = true;
+                }
+            }
+            if (x2_sym.checked) {
+                let sym = [9, 10, 11, 18, 19, 20, 21, 22, 23];
+                for (let i = 0; i < sym.length; i++) {
+                    let j = document.getElementById('j'+sym[i].toFixed(0).toString()) as HTMLInputElement;
+                    j.style.background = 'rgba(0, 119, 255, 0.6);';
+                    j.disabled = true;
+                }
+            }
+            if (yp_sym.checked) {
+                let sym = [6, 7, 8, 15, 16, 17, 24, 25, 26];
+                for (let i = 0; i < sym.length; i++) {
+                    let j = document.getElementById('j'+sym[i].toFixed(0).toString()) as HTMLInputElement;
+                    j.style.background = 'rgba(0, 119, 255, 0.6);';
+                    j.disabled = true;
+                }
+            }
+            if (y1_sym.checked) {
+                let sym = [18, 21, 24, 9, 12, 15, 19, 22, 25];
+                for (let i = 0; i < sym.length; i++) {
+                    let j = document.getElementById('j'+sym[i].toFixed(0).toString()) as HTMLInputElement;
+                    j.style.background = 'rgba(0, 119, 255, 0.6);';
+                    j.disabled = true;
+                }
+            }
+            if (y2_sym.checked) {
+                let sym = [20, 23, 26, 11, 14, 17, 19, 22, 25];
+                for (let i = 0; i < sym.length; i++) {
+                    let j = document.getElementById('j'+sym[i].toFixed(0).toString()) as HTMLInputElement;
+                    j.style.background = 'rgba(0, 119, 255, 0.6);';
+                    j.disabled = true;
+                }
+            }
+            if (zp_sym.checked) {
+                let sym = [18, 19, 20, 21, 22, 23, 24, 25, 26];
+                for (let i = 0; i < sym.length; i++) {
+                    let j = document.getElementById('j'+sym[i].toFixed(0).toString()) as HTMLInputElement;
+                    j.style.background = 'rgba(0, 119, 255, 0.6);';
+                    j.disabled = true;
+                }
+            }
+            if (z1_sym.checked) {
+                let sym = [8, 17, 26, 5, 14, 23, 7, 16, 25];
+                for (let i = 0; i < sym.length; i++) {
+                    let j = document.getElementById('j'+sym[i].toFixed(0).toString()) as HTMLInputElement;
+                    j.style.background = 'rgba(0, 119, 255, 0.6);';
+                    j.disabled = true;
+                }
+            }
+            if (z2_sym.checked) {
+                let sym = [6, 15, 24, 3, 12, 21, 7, 16, 25];
+                for (let i = 0; i < sym.length; i++) {
+                    let j = document.getElementById('j'+sym[i].toFixed(0).toString()) as HTMLInputElement;
+                    j.style.background = 'rgba(0, 119, 255, 0.6);';
+                    j.disabled = true;
+                }
+            }
+            if (full_sym.checked) {
+                let sym = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26];
+                for (let i = 0; i < sym.length; i++) {
+                    let j = document.getElementById('j'+sym[i].toFixed(0).toString()) as HTMLInputElement;
+                    j.style.background = 'rgba(0, 119, 255, 0.6);';
+                    j.disabled = true;
+                }
+            }
+        }
+    }
+
+    /*****************************************************************
+        TOGGLE FUNCTIONS
+    *****************************************************************/
 
     toggle_sim_mode() {
         var _2D_modules = document.getElementById('_2D') as HTMLDivElement;
@@ -244,9 +465,20 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
         this.update_activation(sim.get_activation() as string, true);
     }
 
-    pause_sim() {
-        let sim = this.props.sim;
-        sim.paused = !sim.paused
+    toggle_window() {
+        this.ui_open = !this.ui_open;
+        var ui_window = document.getElementById('ctrl_window') as HTMLDivElement;
+        var ui_button = document.getElementById('ctrl_button') as HTMLButtonElement;
+        if (this.ui_open) {
+            ui_window.style.cssText='scale:100%;';
+            ui_button.style.cssText='background-color:white;color:rgba(0, 0, 0, 0.85);border-color:black;border: solid 2px black';
+            ui_button.innerHTML = 'close';
+        }
+        else {
+            ui_window.style.cssText='scale:0%;';
+            ui_button.style.cssText='';
+            ui_button.innerHTML = 'open';
+        }
     }
 
     toggle_sim_aa() {
@@ -264,20 +496,51 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
         }
     }
 
-    toggle_window() {
-        this.ui_open = !this.ui_open;
-        var ui_window = document.getElementById('ctrl_window') as HTMLDivElement;
-        var ui_button = document.getElementById('ctrl_button') as HTMLButtonElement;
-        if (this.ui_open) {
-            ui_window.style.cssText='scale:100%;';
-            ui_button.style.cssText='background-color:white;color:rgba(0, 0, 0, 0.85);border-color:black;border: solid 2px black';
-            ui_button.innerHTML = 'close';
-        }
-        else {
-            ui_window.style.cssText='scale:0%;';
-            ui_button.style.cssText='';
-            ui_button.innerHTML = 'open';
-        }
+    toggle_sim_skip_frames() {
+        let sim = this.props.sim;
+        sim.toggle_skip_frames();
+    }
+
+    toggle_sim_wrap() {
+        let sim = this.props.sim;
+        sim.toggle_wrap();
+    }
+
+    toggle_sim_blend() {
+        let sim = this.props.sim;
+        sim.toggle_blend();
+    }
+
+    
+    /*****************************************************************
+        SIM FUNCTIONS
+    *****************************************************************/
+
+    reset_sim_automata() {
+        let seed_field = document.getElementById('seed_field') as HTMLInputElement;
+        let reset_cam = document.getElementById('toggle_reset_cam') as HTMLInputElement;
+        let sim = this.props.sim;
+        sim.reset(seed_field.value, reset_cam.checked);
+    }
+
+    pause_sim() {
+        let sim = this.props.sim;
+        sim.paused = !sim.paused
+    }
+
+    set_sim_blend(_blend: boolean) {
+        let sim = this.props.sim;
+        sim.set_blend(_blend);
+    }
+
+    set_sim_wrap(_wrap: boolean) {
+        let sim = this.props.sim;
+        sim.set_wrap(_wrap);
+    }
+
+    set_sim_skip_frames(_skip: boolean) {
+        let sim = this.props.sim;
+        sim.set_skip_frames(_skip);
     }
 
     set_sim_brush() {
@@ -294,34 +557,71 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
         sim.update_zoom(zoom_slider.valueAsNumber);
     }
 
-    update_zoom_text() {
-        var zoom_slider = document.getElementById('zoom_slider') as HTMLInputElement;
-        var zoom_text = document.getElementById('zoom_text') as HTMLElement;
-        zoom_text.innerHTML = zoom_slider.value;
-    }
-
     set_sim_volume_size() {
         var volume_size = document.getElementById('volume_size') as HTMLInputElement;
         let sim = this.props.sim;
         sim.update_volume_size(volume_size.valueAsNumber);
     }
 
-    update_volume_text() {
-        var volume_size = document.getElementById('volume_size') as HTMLInputElement;
-        var volume_text = document.getElementById('volume_size_text') as HTMLElement;
-        volume_text.innerHTML = volume_size.value;
-    }
-
-    update_compute_text() {
-        var compute_delay = document.getElementById('compute_delay') as HTMLInputElement;
-        var compute_text = document.getElementById('compute_text') as HTMLElement;
-        compute_text.innerHTML = compute_delay.value;
-    }
-
     set_sim_compute_delay() {
         var compute_delay = document.getElementById('compute_delay') as HTMLInputElement;
         let sim = this.props.sim;
         sim.update_compute_delay(compute_delay.valueAsNumber);
+    }
+
+    set_sim_colormap() {
+        let menu = document.getElementById('load_colormap') as HTMLSelectElement;
+        const value = menu.value;
+        let sim = this.props.sim;
+        sim.load_colormap(value);
+    }
+
+    set_sim_shader() {
+        let menu = document.getElementById('load_shader') as HTMLSelectElement;
+        const value = menu.value;
+        let sim = this.props.sim;
+        sim.load_shader(value);
+    }
+
+    set_sim_region() {
+        var region_slider = document.getElementById('region_slider') as HTMLInputElement;
+        var region_text = document.getElementById('region_text') as HTMLElement;
+        region_text.innerHTML = region_slider.value;
+        let sim = this.props.sim;
+        sim.update_region(region_slider.valueAsNumber);
+    }
+
+    set_sim_activation() {
+        let menu = document.getElementById('load_activation') as HTMLSelectElement;
+        let act = '';
+        switch(menu.value) {
+        default: return;
+        case 'id':
+            act = 'return x;';
+            break;
+        case 'sin':
+            act = 'return sin(x);';
+            break;
+        case 'cos':
+            act = 'return cos(x);';
+            break;
+        case 'pow':
+            act = 'return pow(x,2.0);';
+            break;
+        case 'abs':
+            act = 'return abs(x);';
+            break;
+        case 'tanh':
+            act = 'return (exp(2.0*x)-1.0)/(exp(2.0*x)+1.0);';
+            break;
+        case 'inv_gaus':
+            act = 'return -1.0/pow(2.0,(pow(x,2.0)))+1.0;';
+            break;
+        }
+
+        let sim = this.props.sim;
+        sim.update_activation(act);
+        this.update_activation(act, false);
     }
 
     set_sim_kernel() {
@@ -527,6 +827,10 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
             sim.update_kernel(kernel);
         }
     }
+
+    /*****************************************************************
+        RANDOMIZE FUNCTIONS
+    *****************************************************************/
 
     randomize_seed() {
         // set seed
@@ -749,288 +1053,9 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
         }
     }
 
-    update_sim_activation() {
-        let af = document.getElementById('af') as HTMLTextAreaElement;
-        this.update_activation(af.value, true);
-        let sim = this.props.sim;
-        sim.update_activation(af.value);
-    }
-
-    update_kernel_symmetry() {
-        let sim = this.props.sim;
-        if (sim.mode === SimMode.Sim2D) {
-            // symmetry toggles
-            let v_sym = document.getElementById('v_sym') as HTMLInputElement;
-            let h_sym = document.getElementById('h_sym') as HTMLInputElement;
-            let f_sym = document.getElementById('f_sym') as HTMLInputElement;
-            let b_sym = document.getElementById('b_sym') as HTMLInputElement;
-            let full_sym = document.getElementById('x_sym') as HTMLInputElement;
-            // reset kernel inputs
-            for (let i = 0; i < 9; i++) {
-                let k = document.getElementById('k'+i.toFixed(0).toString()) as HTMLInputElement;
-                k.style.background = 'rgba(255, 255, 255, 0.6)';
-                k.disabled = false;
-            }
-            // apply symmetries
-            if (h_sym.checked) {
-                let sym = [6, 7, 8];
-                for (let i = 0; i < sym.length; i++) {
-                    let k = document.getElementById('k'+sym[i].toFixed(0).toString()) as HTMLInputElement;
-                    k.style.background = 'rgba(0, 119, 255, 0.6);';
-                    k.disabled = true;
-                }
-            }
-            if (v_sym.checked) {
-                let sym = [2, 5, 8];
-                for (let i = 0; i < sym.length; i++) {
-                    let k = document.getElementById('k'+sym[i].toFixed(0).toString()) as HTMLInputElement;
-                    k.style.background = 'rgba(0, 119, 255, 0.6);';
-                    k.disabled = true;
-                }
-            }
-            if (f_sym.checked) {
-                let sym = [5, 7, 8];
-                for (let i = 0; i < sym.length; i++) {
-                    let k = document.getElementById('k'+sym[i].toFixed(0).toString()) as HTMLInputElement;
-                    k.style.background = 'rgba(0, 119, 255, 0.6);';
-                    k.disabled = true;
-                }
-            }
-            if (b_sym.checked) {
-                let sym = [3, 6, 7];
-                for (let i = 0; i < sym.length; i++) {
-                    let k = document.getElementById('k'+sym[i].toFixed(0).toString()) as HTMLInputElement;
-                    k.style.background = 'rgba(0, 119, 255, 0.6);';
-                    k.disabled = true;
-                }
-            }
-            if (full_sym.checked) {
-                let sym = [1, 2, 3, 5, 6, 7, 8];
-                for (let i = 0; i < sym.length; i++) {
-                    let k = document.getElementById('k'+sym[i].toFixed(0).toString()) as HTMLInputElement;
-                    k.style.background = 'rgba(0, 119, 255, 0.6);';
-                    k.disabled = true;
-                }
-            }
-        }
-        else if (sim.mode === SimMode.Sim3D) {
-            // symmetry toggles
-            var xp_sym = document.getElementById('x_plane_sym') as HTMLInputElement;
-            var x1_sym = document.getElementById('x_diag_1_sym') as HTMLInputElement;
-            var x2_sym = document.getElementById('x_diag_2_sym') as HTMLInputElement;
-            var yp_sym = document.getElementById('y_plane_sym') as HTMLInputElement;
-            var y1_sym = document.getElementById('y_diag_1_sym') as HTMLInputElement;
-            var y2_sym = document.getElementById('y_diag_2_sym') as HTMLInputElement;
-            var zp_sym = document.getElementById('z_plane_sym') as HTMLInputElement;
-            var z1_sym = document.getElementById('z_diag_1_sym') as HTMLInputElement;
-            var z2_sym = document.getElementById('z_diag_2_sym') as HTMLInputElement;
-            let full_sym = document.getElementById('full_sym') as HTMLInputElement;
-            // reset kernel inputs
-            for (let i = 0; i < 27; i++) {
-                let j = document.getElementById('j'+i.toFixed(0).toString()) as HTMLInputElement;
-                j.style.background = 'rgba(255, 255, 255, 0.6)';
-                j.disabled = false;
-            }
-            // apply symmetries
-            if (xp_sym.checked) {
-                let sym = [2, 5, 8, 11, 14, 17, 20, 23, 26];
-                for (let i = 0; i < sym.length; i++) {
-                    let j = document.getElementById('j'+sym[i].toFixed(0).toString()) as HTMLInputElement;
-                    j.style.background = 'rgba(0, 119, 255, 0.6);';
-                    j.disabled = true;
-                }
-            }
-            if (x1_sym.checked) {
-                let sym = [24, 25, 26, 15, 16, 17, 21, 22, 23];
-                for (let i = 0; i < sym.length; i++) {
-                    let j = document.getElementById('j'+sym[i].toFixed(0).toString()) as HTMLInputElement;
-                    j.style.background = 'rgba(0, 119, 255, 0.6);';
-                    j.disabled = true;
-                }
-            }
-            if (x2_sym.checked) {
-                let sym = [9, 10, 11, 18, 19, 20, 21, 22, 23];
-                for (let i = 0; i < sym.length; i++) {
-                    let j = document.getElementById('j'+sym[i].toFixed(0).toString()) as HTMLInputElement;
-                    j.style.background = 'rgba(0, 119, 255, 0.6);';
-                    j.disabled = true;
-                }
-            }
-            if (yp_sym.checked) {
-                let sym = [6, 7, 8, 15, 16, 17, 24, 25, 26];
-                for (let i = 0; i < sym.length; i++) {
-                    let j = document.getElementById('j'+sym[i].toFixed(0).toString()) as HTMLInputElement;
-                    j.style.background = 'rgba(0, 119, 255, 0.6);';
-                    j.disabled = true;
-                }
-            }
-            if (y1_sym.checked) {
-                let sym = [18, 21, 24, 9, 12, 15, 19, 22, 25];
-                for (let i = 0; i < sym.length; i++) {
-                    let j = document.getElementById('j'+sym[i].toFixed(0).toString()) as HTMLInputElement;
-                    j.style.background = 'rgba(0, 119, 255, 0.6);';
-                    j.disabled = true;
-                }
-            }
-            if (y2_sym.checked) {
-                let sym = [20, 23, 26, 11, 14, 17, 19, 22, 25];
-                for (let i = 0; i < sym.length; i++) {
-                    let j = document.getElementById('j'+sym[i].toFixed(0).toString()) as HTMLInputElement;
-                    j.style.background = 'rgba(0, 119, 255, 0.6);';
-                    j.disabled = true;
-                }
-            }
-            if (zp_sym.checked) {
-                let sym = [18, 19, 20, 21, 22, 23, 24, 25, 26];
-                for (let i = 0; i < sym.length; i++) {
-                    let j = document.getElementById('j'+sym[i].toFixed(0).toString()) as HTMLInputElement;
-                    j.style.background = 'rgba(0, 119, 255, 0.6);';
-                    j.disabled = true;
-                }
-            }
-            if (z1_sym.checked) {
-                let sym = [8, 17, 26, 5, 14, 23, 7, 16, 25];
-                for (let i = 0; i < sym.length; i++) {
-                    let j = document.getElementById('j'+sym[i].toFixed(0).toString()) as HTMLInputElement;
-                    j.style.background = 'rgba(0, 119, 255, 0.6);';
-                    j.disabled = true;
-                }
-            }
-            if (z2_sym.checked) {
-                let sym = [6, 15, 24, 3, 12, 21, 7, 16, 25];
-                for (let i = 0; i < sym.length; i++) {
-                    let j = document.getElementById('j'+sym[i].toFixed(0).toString()) as HTMLInputElement;
-                    j.style.background = 'rgba(0, 119, 255, 0.6);';
-                    j.disabled = true;
-                }
-            }
-            if (full_sym.checked) {
-                let sym = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26];
-                for (let i = 0; i < sym.length; i++) {
-                    let j = document.getElementById('j'+sym[i].toFixed(0).toString()) as HTMLInputElement;
-                    j.style.background = 'rgba(0, 119, 255, 0.6);';
-                    j.disabled = true;
-                }
-            }
-        }
-    }
-
-    set_sim_region() {
-        var region_slider = document.getElementById('region_slider') as HTMLInputElement;
-        var region_text = document.getElementById('region_text') as HTMLElement;
-        region_text.innerHTML = region_slider.value;
-        let sim = this.props.sim;
-        sim.update_region(region_slider.valueAsNumber);
-    }
-
-    update_kernel(_kernel: Float32Array) {
-        let sim = this.props.sim;
-        if (sim.mode === SimMode.Sim2D) {
-            // assert _kernel is correct length
-            if (_kernel.length !== 9) return;
-            for (let i = 0; i < _kernel.length; i++) {
-                let k = document.getElementById('k'+i.toFixed(0).toString()) as HTMLInputElement;
-                k.value = _kernel[i].toFixed(3).toString();
-            }
-        }
-        else if (sim.mode === SimMode.Sim3D) {
-            // assert _kernel is correct length
-            if (_kernel.length !== 27) return;
-            for (let i = 0; i < _kernel.length; i++) {
-                let j = document.getElementById('j'+i.toFixed(0).toString()) as HTMLInputElement;
-                j.value = _kernel[i].toFixed(3).toString();
-            }
-        }
-    }
-
-    update_activation(_activation: string, is_custom: boolean) {
-        let af = document.getElementById('af') as HTMLTextAreaElement;
-        af.value = _activation;
-        if (is_custom) {
-            let menu = document.getElementById('load_activation') as HTMLSelectElement;
-            menu.value = 'custom';
-        }
-    }
-
-    set_sim_activation() {
-        let menu = document.getElementById('load_activation') as HTMLSelectElement;
-        let act = '';
-        switch(menu.value) {
-        default: return;
-        case 'id':
-            act = 'return x;';
-            break;
-        case 'sin':
-            act = 'return sin(x);';
-            break;
-        case 'cos':
-            act = 'return cos(x);';
-            break;
-        case 'pow':
-            act = 'return pow(x,2.0);';
-            break;
-        case 'abs':
-            act = 'return abs(x);';
-            break;
-        case 'tanh':
-            act = 'return (exp(2.0*x)-1.0)/(exp(2.0*x)+1.0);';
-            break;
-        case 'inv_gaus':
-            act = 'return -1.0/pow(2.0,(pow(x,2.0)))+1.0;';
-            break;
-        }
-
-        let sim = this.props.sim;
-        sim.update_activation(act);
-        this.update_activation(act, false);
-    }
-
-    load_automata() {
-        let sim = this.props.sim;
-        if (sim.mode === SimMode.Sim2D) {
-            let menu = document.getElementById('load_automata') as HTMLSelectElement;
-            const value = menu.value;
-            sim.load_automata(value);
-            // update ui
-            let v_sym = document.getElementById('v_sym') as HTMLInputElement;
-            let h_sym = document.getElementById('h_sym') as HTMLInputElement;
-            let f_sym = document.getElementById('f_sym') as HTMLInputElement;
-            let b_sym = document.getElementById('b_sym') as HTMLInputElement;
-            let full_sym = document.getElementById('x_sym') as HTMLInputElement;
-            v_sym.checked = true;
-            h_sym.checked = true;
-            f_sym.checked = true;
-            b_sym.checked = true;
-            full_sym.checked = false;
-            this.update_kernel_symmetry();
-            this.update_kernel(sim.get_kernel() as Float32Array);
-            this.update_activation(sim.get_activation() as string, true);
-        }
-        else if (sim.mode === SimMode.Sim3D) {
-            // TODO find and load interesting 3d automata
-        }
-    }
-
-    set_sim_colormap() {
-        let menu = document.getElementById('load_colormap') as HTMLSelectElement;
-        const value = menu.value;
-        let sim = this.props.sim;
-        sim.load_colormap(value);
-    }
-
-    set_sim_shader() {
-        let menu = document.getElementById('load_shader') as HTMLSelectElement;
-        const value = menu.value;
-        let sim = this.props.sim;
-        sim.load_shader(value);
-    }
-
-    reset_sim_automata() {
-        let seed_field = document.getElementById('seed_field') as HTMLInputElement;
-        let reset_cam = document.getElementById('toggle_reset_cam') as HTMLInputElement;
-        let sim = this.props.sim;
-        sim.reset(seed_field.value, reset_cam.checked);
-    }
+    /*****************************************************************
+        OTHER FUNCTIONS
+    *****************************************************************/
 
     get_symmetries_list() {
         let sim = this.props.sim;
