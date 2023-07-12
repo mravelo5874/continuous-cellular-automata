@@ -248,7 +248,7 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
         let af = document.getElementById('af') as HTMLTextAreaElement;
         this.update_activation(af.value, true);
         let sim = this.props.sim;
-        sim.update_activation(af.value);
+        sim.set_activation(af.value);
     }
 
     update_kernel(_kernel: Float32Array) {
@@ -548,25 +548,25 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
         var brush_text = document.getElementById('brush_text') as HTMLElement;
         brush_text.innerHTML = brush_slider.value;
         let sim = this.props.sim;
-        sim.update_brush(brush_slider.valueAsNumber);
+        sim.set_brush(brush_slider.valueAsNumber);
     }
 
     set_sim_zoom() {
         var zoom_slider = document.getElementById('zoom_slider') as HTMLInputElement;
         let sim = this.props.sim;
-        sim.update_zoom(zoom_slider.valueAsNumber);
+        sim.set_zoom(zoom_slider.valueAsNumber);
     }
 
     set_sim_volume_size() {
         var volume_size = document.getElementById('volume_size') as HTMLInputElement;
         let sim = this.props.sim;
-        sim.update_volume_size(volume_size.valueAsNumber);
+        sim.set_volume_size(volume_size.valueAsNumber);
     }
 
     set_sim_compute_delay() {
         var compute_delay = document.getElementById('compute_delay') as HTMLInputElement;
         let sim = this.props.sim;
-        sim.update_compute_delay(compute_delay.valueAsNumber);
+        sim.set_compute_delay(compute_delay.valueAsNumber);
     }
 
     set_sim_colormap() {
@@ -588,7 +588,7 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
         var region_text = document.getElementById('region_text') as HTMLElement;
         region_text.innerHTML = region_slider.value;
         let sim = this.props.sim;
-        sim.update_region(region_slider.valueAsNumber);
+        sim.set_region(region_slider.valueAsNumber);
     }
 
     set_sim_activation() {
@@ -620,7 +620,7 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
         }
 
         let sim = this.props.sim;
-        sim.update_activation(act);
+        sim.set_activation(act);
         this.update_activation(act, false);
     }
 
@@ -672,7 +672,7 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
                 kernel[8] = kernel[0];
             }
             this.update_kernel(kernel);
-            sim.update_kernel(kernel);
+            sim.set_kernel(kernel);
         }
         else if (sim.mode === SimMode.Sim3D) {
             // symmetry toggles
@@ -824,7 +824,7 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
                 kernel[26] = kernel[0];
             }
             this.update_kernel(kernel);
-            sim.update_kernel(kernel);
+            sim.set_kernel(kernel);
         }
     }
 
@@ -889,7 +889,7 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
             }
             // set kernel
             this.update_kernel(kernel);
-            sim.update_kernel(kernel);
+            sim.set_kernel(kernel);
             sim.custom_kernel();
             let menu = document.getElementById('load_automata') as HTMLSelectElement;
             menu.value = 'custom';
@@ -1046,7 +1046,7 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
             }
             // set kernel
             this.update_kernel(kernel);
-            sim.update_kernel(kernel);
+            sim.set_kernel(kernel);
             sim.custom_kernel();
             let menu = document.getElementById('load_automata') as HTMLSelectElement;
             menu.value = 'custom';

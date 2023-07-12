@@ -12,11 +12,11 @@ enum SimMode { Sim2D, Sim3D }
 
 class Sim {
     mode: SimMode;
-    canvas: HTMLCanvasElement | null;
-    context: WebGL2RenderingContext | null;
-    sim2D: Sim2D | null;
-    sim3D: Sim3D | null;
-    resize: CanvasResize | null;
+    canvas: HTMLCanvasElement | null = null;
+    context: WebGL2RenderingContext | null = null;
+    sim2D: Sim2D | null = null;
+    sim3D: Sim3D | null = null;
+    resize: CanvasResize | null = null;
 
     static zoom: number = 2.0;
     paused: boolean;
@@ -27,37 +27,24 @@ class Sim {
     mouse_button: number = 0;
 
     // used to calculate time and fps
-    fps: number;
-    start_time: number;
-    prev_time: number;
-    curr_delta_time: number;
-    prev_fps_time: number;
+    fps: number = 0;
+    start_time: number = 0;
+    prev_time: number = 0;
+    curr_delta_time: number = 0;
+    prev_fps_time: number = 0;
     frame_count: number = 0;
 
     // ui nodes
-    fps_node: Text | null;
-    res_node: Text | null;
+    fps_node: Text | null = null;
+    res_node: Text | null = null;
 
     constructor() {
         // initialize all variables
         this.mode = SimMode.Sim2D;
-        this.canvas = null;
-        this.context = null;
-        this.sim2D = null;
-        this.sim3D = null;
-        this.resize = null;
-        this.fps_node = null;
-        this.res_node = null;
-
-
-        this.fps = 0;
-        this.start_time = 0;
-        this.prev_time = 0;
-        this.curr_delta_time = 0;
-        this.prev_fps_time = 0;
         this.paused = false;
-        this.bg_color = new Vec4([0.0, 0.0, 0.0, 1.0])
-    
+        this.bg_color = new Vec4([0.0, 0.0, 0.0, 1.0]);
+
+        // sim constructed message
         console.log('simulation constructed.');
     }
 
@@ -80,6 +67,7 @@ class Sim {
         res_element?.appendChild(this.res_node);
         this.res_node.nodeValue = '';
 
+        // sim initialized message
         console.log('simulation initialized.');
     }
 
@@ -88,7 +76,29 @@ class Sim {
         this.sim3D?.start();
         window.requestAnimationFrame(() => this.render_loop());
 
+        // sim started message
         console.log('simulation started.');
+    }
+
+    generate_seed(_length: number): string {
+        let seed = '';
+        let rng = new Rand();
+        for (let i = 0; i < _length; i++) {
+            seed += (rng.next() * 9).toFixed(0).toString();
+        }   
+        return seed;
+    }
+
+    reset(_seed: string, _reset_cam: boolean) {
+        switch (this.mode) {
+        default: break;
+        case SimMode.Sim2D:
+            this.sim2D?.reset(_seed);
+            break;
+        case SimMode.Sim3D:
+            this.sim3D?.reset(_seed, _reset_cam);
+            break;
+        }
     }
 
     render_loop() {
@@ -145,6 +155,10 @@ class Sim {
         window.requestAnimationFrame(() => this.render_loop());
     }
 
+    /*****************************************************************
+        MOUSE INPUT FUNCTIONS
+    *****************************************************************/
+
     mouse_start(x: number, y: number, button: number) {
         this.is_input = true;
         this.mouse_button = button;
@@ -180,6 +194,10 @@ class Sim {
     mouse_wheel(dy: number) {
         if (this.mode === SimMode.Sim3D) this.sim3D?.camera_zoom(dy);
     }
+
+    /*****************************************************************
+        LOAD FUNCTIONS
+    *****************************************************************/
 
     load_automata(value: string) {
         // load 2D simulation based on string value
@@ -237,66 +255,6 @@ class Sim {
         }
     }
 
-    set_mode(_mode: SimMode) {
-        if (_mode === this.mode) return;
-        this.mode = _mode;
-
-        // clear canvas
-        let gl = this.context as WebGL2RenderingContext;
-        gl.bindFramebuffer(gl.FRAMEBUFFER, null);
-        gl.drawArrays(gl.TRIANGLES, 0, 6);
-
-        // special changes made when switching modes
-        switch (_mode) {
-        default: break;
-        case SimMode.Sim2D:
-            this.update_zoom(this.sim2D?.canvas_zoom as number);
-            break;
-        case SimMode.Sim3D:
-            this.update_zoom(1.0);
-            break;
-        }
-    }
-
-    reset(_seed: string, _reset_cam: boolean) {
-        switch (this.mode) {
-        default: break;
-        case SimMode.Sim2D:
-            this.sim2D?.reset(_seed);
-            break;
-        case SimMode.Sim3D:
-            this.sim3D?.reset(_seed, _reset_cam);
-            break;
-        }
-    }
-
-    set_blend(_blend: boolean) {
-        if (this.sim3D) this.sim3D.render_volume.blend_volume = _blend;
-    }
-
-    toggle_blend() {
-        let blend = this.sim3D?.render_volume.blend_volume;
-        if (this.sim3D) this.sim3D.render_volume.blend_volume = !blend;
-    }
-
-    set_wrap(_wrap: boolean) {
-        if (this.sim3D) this.sim3D.compute_volume.wrap = _wrap;
-    }
-
-    toggle_wrap() {
-        let wrap = this.sim3D?.compute_volume.wrap;
-        if (this.sim3D) this.sim3D.compute_volume.wrap = !wrap;
-    }
-
-    toggle_skip_frames() {
-        let skip = this.sim3D?.skip_every_other;
-        if (this.sim3D) this.sim3D.skip_every_other = !skip;
-    }
-
-    set_skip_frames(_skip: boolean) {
-        if (this.sim3D) this.sim3D.skip_every_other = _skip;
-    }
-
     load_colormap(_colormap: string) {
         switch (this.mode) {
         default: break;
@@ -328,9 +286,130 @@ class Sim {
         }
     }
 
+    /*****************************************************************
+        SET FUNCTIONS
+    *****************************************************************/
+
+    set_mode(_mode: SimMode) {
+        if (_mode === this.mode) return;
+        this.mode = _mode;
+
+        // clear canvas
+        let gl = this.context as WebGL2RenderingContext;
+        gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+        gl.drawArrays(gl.TRIANGLES, 0, 6);
+
+        // special changes made when switching modes
+        switch (_mode) {
+        default: break;
+        case SimMode.Sim2D:
+            this.set_zoom(this.sim2D?.canvas_zoom as number);
+            break;
+        case SimMode.Sim3D:
+            this.set_zoom(1.0);
+            break;
+        }
+    }
+
+    set_blend(_blend: boolean) {
+        if (this.sim3D) this.sim3D.render_volume.blend_volume = _blend;
+    }
+
+    set_wrap(_wrap: boolean) {
+        if (this.sim3D) this.sim3D.compute_volume.wrap = _wrap;
+    }
+
+    set_skip_frames(_skip: boolean) {
+        if (this.sim3D) this.sim3D.skip_every_other = _skip;
+    }
+
+    set_region(_region: number) {
+        this.sim3D?.randomize_volume.set_region(_region);
+    }
+
+    set_brush(_brush: number) {
+        this.sim2D?.set_brush(_brush);
+    }
+
+    set_compute_delay(_delay: number) {
+        if (_delay <= 0) return;
+        if (this.sim3D) this.sim3D.compute_delay = _delay;
+    }
+
+    set_volume_size(_size: number) {
+        if (this.mode == SimMode.Sim3D) {
+            this.sim3D?.set_size(_size);
+        } 
+    } 
+
+    set_kernel(_kernel: Float32Array) {
+        switch (this.mode) {
+        default: break;
+        case SimMode.Sim2D:
+            if (this.sim2D) this.sim2D?.set_kernel(_kernel);
+            break;
+        case SimMode.Sim3D:
+            if (this.sim3D) this.sim3D?.set_kernel(_kernel);
+            break;
+        }
+    }
+
+    set_activation(_activation: string) {
+        switch (this.mode) {
+        default: break;
+        case SimMode.Sim2D:
+            if (this.sim2D) this.sim2D?.set_activation(_activation);
+            break;
+        case SimMode.Sim3D:
+            if (this.sim3D) this.sim3D?.set_activation(_activation);
+            break;
+        }
+        
+    }
+
+    set_zoom(_zoom: number) {
+        Sim.zoom = _zoom;
+        CanvasResize.update_canvas = true;
+        // special mode updates
+        switch (this.mode) {
+        default: break;
+        case SimMode.Sim2D:
+            if (this.sim2D) this.sim2D.canvas_zoom = _zoom;
+            break;
+        case SimMode.Sim3D:
+            break;
+        }
+    }
+
     custom_kernel() {
         this.sim2D?.custom_kernel();
     }
+
+    /*****************************************************************
+        TOGGLE FUNCTIONS
+    *****************************************************************/
+
+    toggle_wrap() {
+        let wrap = this.sim3D?.compute_volume.wrap;
+        if (this.sim3D) this.sim3D.compute_volume.wrap = !wrap;
+    }
+
+    toggle_skip_frames() {
+        let skip = this.sim3D?.skip_every_other;
+        if (this.sim3D) this.sim3D.skip_every_other = !skip;
+    }
+
+    toggle_blend() {
+        let blend = this.sim3D?.render_volume.blend_volume;
+        if (this.sim3D) this.sim3D.render_volume.blend_volume = !blend;
+    }
+
+    /*****************************************************************
+        GET FUNCTIONS
+    *****************************************************************/
+    
+    get_delta_time(): number { return this.curr_delta_time; }
+    get_elapsed_time(): number { return Date.now() - this.start_time; }
 
     get_kernel() {
         switch (this.mode) {
@@ -355,84 +434,5 @@ class Sim {
             break;
         }
         return this.sim2D?.activation;
-    }
-
-    update_volume_size(_size: number) {
-        if (this.mode == SimMode.Sim3D) {
-            this.sim3D?.set_size(_size);
-        } 
-    } 
-
-    update_kernel(_kernel: Float32Array) {
-        switch (this.mode) {
-        default: break;
-        case SimMode.Sim2D:
-            if (this.sim2D) this.sim2D?.set_kernel(_kernel);
-            break;
-        case SimMode.Sim3D:
-            if (this.sim3D) this.sim3D?.set_kernel(_kernel);
-            break;
-        }
-    }
-
-    update_activation(_activation: string) {
-        switch (this.mode) {
-        default: break;
-        case SimMode.Sim2D:
-            if (this.sim2D) this.sim2D?.set_activation(_activation);
-            break;
-        case SimMode.Sim3D:
-            if (this.sim3D) this.sim3D?.set_activation(_activation);
-            break;
-        }
-        
-    }
-
-    update_region(_region: number) {
-        this.sim3D?.randomize_volume.set_region(_region);
-    }
-
-    update_brush(_brush: number) {
-        this.sim2D?.set_brush(_brush);
-    }
-
-    update_compute_delay(_delay: number) {
-        if (_delay <= 0) return;
-        if (this.sim3D) this.sim3D.compute_delay = _delay;
-    }
-
-    update_zoom(_zoom: number) {
-        Sim.zoom = _zoom;
-        CanvasResize.update_canvas = true;
-        // special mode updates
-        switch (this.mode) {
-        default: break;
-        case SimMode.Sim2D:
-            if (this.sim2D) this.sim2D.canvas_zoom = _zoom;
-            break;
-        case SimMode.Sim3D:
-            break;
-        }
-    }
-
-    mouse_draw(x: number, y: number) {
-        this.sim2D?.mouse_draw(x, y);
-    }
-
-    mouse_erase(x: number, y: number) {
-        this.sim2D?.mouse_erase(x, y);
-    }
-
-    public get_delta_time(): number { return this.curr_delta_time; }
-    public get_elapsed_time(): number { return Date.now() - this.start_time; }
-
-
-    generate_seed(_length: number): string {
-        let seed = '';
-        let rng = new Rand();
-        for (let i = 0; i < _length; i++) {
-            seed += (rng.next() * 9).toFixed(0).toString();
-        }   
-        return seed;
     }
 }
