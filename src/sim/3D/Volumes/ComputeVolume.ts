@@ -86,7 +86,7 @@ class ComputeVolume {
         // A = NONE
         uniform sampler3D volume_in;   
         uniform int z_offset;
-        uniform ivec3 size;
+        uniform ivec3 u_size;
         uniform float u_kernel[27];
 
         float activation(float x) {
@@ -101,54 +101,55 @@ class ComputeVolume {
             float sum = 0.0;
 
             // face 1
-            sum += get_state(vec3(pos.x - step.x, pos.y - step.y, pos.z - step.z)) * u_kernel[0];
-            sum += get_state(vec3(pos.x - step.x, pos.y         , pos.z - step.z)) * u_kernel[1];
-            sum += get_state(vec3(pos.x - step.x, pos.y + step.y, pos.z - step.z)) * u_kernel[2];
-            sum += get_state(vec3(pos.x         , pos.y - step.y, pos.z - step.z)) * u_kernel[3];
+            sum += get_state(vec3(pos.x - step.x, pos.y + step.y, pos.z - step.z)) * u_kernel[0];
+            sum += get_state(vec3(pos.x         , pos.y + step.y, pos.z - step.z)) * u_kernel[1];
+            sum += get_state(vec3(pos.x + step.x, pos.y + step.y, pos.z - step.z)) * u_kernel[2];
+            sum += get_state(vec3(pos.x - step.x, pos.y         , pos.z - step.z)) * u_kernel[3];
             sum += get_state(vec3(pos.x         , pos.y         , pos.z - step.z)) * u_kernel[4];
-            sum += get_state(vec3(pos.x         , pos.y + step.y, pos.z - step.z)) * u_kernel[5];
-            sum += get_state(vec3(pos.x + step.x, pos.y - step.y, pos.z - step.z)) * u_kernel[6];
-            sum += get_state(vec3(pos.x + step.x, pos.y         , pos.z - step.z)) * u_kernel[7];
-            sum += get_state(vec3(pos.x + step.x, pos.y + step.y, pos.z - step.z)) * u_kernel[8];
+            sum += get_state(vec3(pos.x + step.x, pos.y         , pos.z - step.z)) * u_kernel[5];
+            sum += get_state(vec3(pos.x - step.x, pos.y - step.y, pos.z - step.z)) * u_kernel[6];
+            sum += get_state(vec3(pos.x         , pos.y - step.y, pos.z - step.z)) * u_kernel[7];
+            sum += get_state(vec3(pos.x + step.x, pos.y - step.y, pos.z - step.z)) * u_kernel[8];
             // face 2
-            sum += get_state(vec3(pos.x - step.x, pos.y - step.y, pos.z         )) * u_kernel[9];
-            sum += get_state(vec3(pos.x - step.x, pos.y         , pos.z         )) * u_kernel[10];
-            sum += get_state(vec3(pos.x - step.x, pos.y + step.y, pos.z         )) * u_kernel[11];
-            sum += get_state(vec3(pos.x         , pos.y - step.y, pos.z         )) * u_kernel[12];
+            sum += get_state(vec3(pos.x - step.x, pos.y + step.y, pos.z         )) * u_kernel[9];
+            sum += get_state(vec3(pos.x         , pos.y + step.y, pos.z         )) * u_kernel[10];
+            sum += get_state(vec3(pos.x + step.x, pos.y + step.y, pos.z         )) * u_kernel[11];
+            sum += get_state(vec3(pos.x - step.x, pos.y         , pos.z         )) * u_kernel[12];
             sum += get_state(vec3(pos.x         , pos.y         , pos.z         )) * u_kernel[13];
-            sum += get_state(vec3(pos.x         , pos.y + step.y, pos.z         )) * u_kernel[14];
-            sum += get_state(vec3(pos.x + step.x, pos.y - step.y, pos.z         )) * u_kernel[15];
-            sum += get_state(vec3(pos.x + step.x, pos.y         , pos.z         )) * u_kernel[16];
-            sum += get_state(vec3(pos.x + step.x, pos.y + step.y, pos.z         )) * u_kernel[17];
+            sum += get_state(vec3(pos.x + step.x, pos.y         , pos.z         )) * u_kernel[14];
+            sum += get_state(vec3(pos.x - step.x, pos.y - step.y, pos.z         )) * u_kernel[15];
+            sum += get_state(vec3(pos.x         , pos.y - step.y, pos.z         )) * u_kernel[16];
+            sum += get_state(vec3(pos.x + step.x, pos.y - step.y, pos.z         )) * u_kernel[17];
             // face 3
-            sum += get_state(vec3(pos.x - step.x, pos.y - step.y, pos.z + step.z)) * u_kernel[18];
-            sum += get_state(vec3(pos.x - step.x, pos.y         , pos.z + step.z)) * u_kernel[19];
-            sum += get_state(vec3(pos.x - step.x, pos.y + step.y, pos.z + step.z)) * u_kernel[20];
-            sum += get_state(vec3(pos.x         , pos.y - step.y, pos.z + step.z)) * u_kernel[21];
+            sum += get_state(vec3(pos.x - step.x, pos.y + step.y, pos.z + step.z)) * u_kernel[18];
+            sum += get_state(vec3(pos.x         , pos.y + step.y, pos.z + step.z)) * u_kernel[19];
+            sum += get_state(vec3(pos.x + step.x, pos.y + step.y, pos.z + step.z)) * u_kernel[20];
+            sum += get_state(vec3(pos.x - step.x, pos.y         , pos.z + step.z)) * u_kernel[21];
             sum += get_state(vec3(pos.x         , pos.y         , pos.z + step.z)) * u_kernel[22];
-            sum += get_state(vec3(pos.x         , pos.y + step.y, pos.z + step.z)) * u_kernel[23];
-            sum += get_state(vec3(pos.x + step.x, pos.y - step.y, pos.z + step.z)) * u_kernel[24];
-            sum += get_state(vec3(pos.x + step.x, pos.y         , pos.z + step.z)) * u_kernel[25];
-            sum += get_state(vec3(pos.x + step.x, pos.y + step.y, pos.z + step.z)) * u_kernel[26];
+            sum += get_state(vec3(pos.x + step.x, pos.y         , pos.z + step.z)) * u_kernel[23];
+            sum += get_state(vec3(pos.x - step.x, pos.y - step.y, pos.z + step.z)) * u_kernel[24];
+            sum += get_state(vec3(pos.x         , pos.y - step.y, pos.z + step.z)) * u_kernel[25];
+            sum += get_state(vec3(pos.x + step.x, pos.y - step.y, pos.z + step.z)) * u_kernel[26];
 
             return sum;
         }
 
         vec4 process_layer(int z_, vec3 step, float delta) {
             int z = z_ + z_offset;
-            float z_norm = float(z) / float(size.z);
+            float z_norm = float(z) / float(u_size.z);
+
             // NOTE: We do this do prevent an off by one error
             // This occurs since the range (0...N-1) gets mapped to (0...N)
-            z_norm += 0.5 / float(size.z);
+            z_norm += 0.5 / float(u_size.z);
 
             vec3 pos = vec3(vPosition.xy, z_norm);
             float sum = get_sum(pos, step);
             float x = activation(sum);
-            return vec4(x, 0.0, 0.0, 1.0);
+            return vec4(x, 0.0, 0.0, 0.0);
         }
 
         void main() {
-            vec3 step = vec3(1.0)/vec3(size);
+            vec3 step = vec3(1.0)/vec3(u_size);
             float total_states = 27.0;
             float delta = 1.0 / (total_states-1.0);
 
@@ -206,7 +207,7 @@ class ComputeVolume {
 
             gl.uniform1i(location.find('volume_in'), texture_slot);
             gl.uniform1i(location.find('z_offset'), lfb.z_offset);
-            gl.uniform3i(location.find('size'), s, s, s);
+            gl.uniform3i(location.find('u_size'), s, s, s);
             gl.uniform1fv(location.find('u_kernel[0]'), _kernel)
             
             gl.bindFramebuffer(gl.FRAMEBUFFER, lfb.fb);

@@ -19,6 +19,8 @@ class Sim {
     resize: CanvasResize | null = null;
 
     static zoom: number = 2.0;
+    static SEED_LEN: number = 32;
+
     paused: boolean;
     bg_color: Vec4;
 
@@ -292,6 +294,10 @@ class Sim {
 
     set_region(_region: number) {
         this.sim3D?.randomize_volume.set_region(_region);
+    }
+
+    set_density(_density: number) {
+        this.sim3D?.randomize_volume.set_density(_density);
     }
 
     set_brush(_brush: number) {

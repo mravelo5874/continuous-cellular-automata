@@ -82,7 +82,7 @@ class Sim3D {
         this.clear_volume.render(this.volume_new);
 
         // customize randomize volume
-        this.seed = this.sim.generate_seed(32);
+        this.seed = this.sim.generate_seed(Sim.SEED_LEN);
         if (_seed) {
             this.seed = _seed;
         }
@@ -138,7 +138,6 @@ class Sim3D {
             // reset delay
             this.current_delay = 0;
         }
-        
         // draw to screen
         this.render_volume.render(w, h, this.volume_old);
     }

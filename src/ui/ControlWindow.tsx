@@ -16,7 +16,7 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
     anti_alias: boolean;
     seed: string;
 
-    static SEED_LEN: number = 32;
+
 
     constructor(props: ControlPanelInterface) {
         super(props);
@@ -39,6 +39,7 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
         this.set_sim_region = this.set_sim_region.bind(this);
         this.set_sim_compute_delay = this.set_sim_compute_delay.bind(this);
         this.set_sim_blend = this.set_sim_blend.bind(this);
+        this.set_sim_density = this.set_sim_density.bind(this);
         // update
         this.update_sim_activation = this.update_sim_activation.bind(this);
         this.update_volume_text = this.update_volume_text.bind(this);
@@ -72,7 +73,7 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
             this.ui_init = true;
             let sim = this.props.sim;
             // generate seed
-            this.seed = sim.generate_seed(ControlWindow.SEED_LEN);
+            this.seed = sim.generate_seed(Sim.SEED_LEN);
             this.update_seed(this.seed);
             // orbit 3D simulation
             var orbit = document.getElementById('toggle_orbit') as HTMLInputElement;
@@ -80,6 +81,9 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
             // skip frames 3D simulation
             var skip = document.getElementById('toggle_skip') as HTMLInputElement;
             skip.checked = true;
+            // blend 3D simulation
+            var blend = document.getElementById('toggle_blend') as HTMLInputElement;
+            blend.checked = true;
             // load in initial preset
             this.load_automata();
         }
@@ -174,7 +178,7 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
         if (sim.mode === SimMode.Sim2D) {
             let menu = document.getElementById('load_automata_2d') as HTMLSelectElement;
             let res = this.fetch_json_file(`../automata/2D/${menu.value}_2D.json`);
-            let seed = sim.generate_seed(ControlWindow.SEED_LEN);
+            let seed = sim.generate_seed(Sim.SEED_LEN);
             res.then((data) => {this.load_automata_json(data, false, seed)});
 
             // special case for 'game_of_life' automata
@@ -305,22 +309,26 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
         sim.set_activation(af.value);
     }
 
-    update_kernel(_kernel: Float32Array) {
+    update_kernel(_kernel: Float32Array, _curr_idx: number = -1) {
         let sim = this.props.sim;
         if (sim.mode === SimMode.Sim2D) {
             // assert _kernel is correct length
             if (_kernel.length !== 9) return;
             for (let i = 0; i < _kernel.length; i++) {
-                let k = document.getElementById('k'+i.toFixed(0).toString()) as HTMLInputElement;
-                k.value = _kernel[i].toFixed(3).toString();
+                if (i !== _curr_idx) {
+                    let k = document.getElementById('k'+i.toFixed(0).toString()) as HTMLInputElement;
+                    k.value = _kernel[i].toFixed(3).toString();
+                }
             }
         }
         else if (sim.mode === SimMode.Sim3D) {
             // assert _kernel is correct length
             if (_kernel.length !== 27) return;
             for (let i = 0; i < _kernel.length; i++) {
-                let j = document.getElementById('j'+i.toFixed(0).toString()) as HTMLInputElement;
-                j.value = _kernel[i].toFixed(3).toString();
+                if (i !== _curr_idx) {
+                    let j = document.getElementById('j'+i.toFixed(0).toString()) as HTMLInputElement;
+                    j.value = _kernel[i].toFixed(3).toString();
+                }
             }
         }
     }
@@ -649,6 +657,14 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
         sim.set_region(region_slider.valueAsNumber);
     }
 
+    set_sim_density() {
+        var density_slider = document.getElementById('density_slider') as HTMLInputElement;
+        var density_text = document.getElementById('density_text') as HTMLElement;
+        density_text.innerHTML = density_slider.value;
+        let sim = this.props.sim;
+        sim.set_density(density_slider.valueAsNumber);
+    }
+
     set_sim_activation() {
         let menu = document.getElementById('load_activation') as HTMLSelectElement;
         let act = '';
@@ -682,7 +698,7 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
         this.update_activation(act, false);
     }
 
-    set_sim_kernel() {
+    set_sim_kernel(_curr_idx?: number) {
         let sim = this.props.sim;
         if (sim.mode === SimMode.Sim2D) {
             // symmetry toggles
@@ -729,7 +745,7 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
                 kernel[7] = kernel[0];
                 kernel[8] = kernel[0];
             }
-            this.update_kernel(kernel);
+            this.update_kernel(kernel, _curr_idx);
             sim.set_kernel(kernel);
         }
         else if (sim.mode === SimMode.Sim3D) {
@@ -881,7 +897,7 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
                 kernel[25] = kernel[0];
                 kernel[26] = kernel[0];
             }
-            this.update_kernel(kernel);
+            this.update_kernel(kernel, _curr_idx);
             sim.set_kernel(kernel);
         }
     }
@@ -895,7 +911,7 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
         let sim = this.props.sim;
         let seed_field = document.getElementById('seed_field') as HTMLInputElement;
         let seed_field_3d = document.getElementById('seed_field_3d') as HTMLInputElement;
-        this.seed = sim.generate_seed(ControlWindow.SEED_LEN);
+        this.seed = sim.generate_seed(Sim.SEED_LEN);
         seed_field.value = this.seed.toString();
         seed_field_3d.value = this.seed.toString();
     }
@@ -1301,7 +1317,7 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
                                 <div style={{paddingBottom:'1em'}}>
                                     <h4 className='ctrl_module_sub_title'>seed</h4>
                                     <div className='ui_row'>
-                                        <input id='seed_field_3d' className='ui_text_field' maxLength={ControlWindow.SEED_LEN}></input>
+                                        <input id='seed_field_3d' className='ui_text_field' maxLength={Sim.SEED_LEN}></input>
                                         <div style={{paddingRight:'0.5em'}}/>
                                         <button id='randomize_seed' className='ui_button' style={{width:'35%'}} onClick={this.randomize_seed}>new seed</button>
                                     </div>
@@ -1311,11 +1327,18 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
                                     <h4 className='ctrl_module_sub_title'>reset camera</h4>
                                 </div>
                                 <h4 className='ctrl_module_sub_title'>fill region</h4>
-                                <div className='ui_row' style={{paddingBottom:'0.5em'}}>
+                                <div className='ui_row'>
                                     <div className='slider_container'>
                                         <input type='range' min='0' max='1.0' defaultValue='0.2' step='0.01' className='slider' id='region_slider' onChange={this.set_sim_region}/>
                                     </div>
                                     <h4 style={{width:'24px', paddingLeft:'12px', textAlign:'center', color:'rgba(0, 0, 0, 0.5)'}} id='region_text'>0.2</h4>
+                                </div>
+                                <h4 className='ctrl_module_sub_title'>fill density</h4>
+                                <div className='ui_row' style={{paddingBottom:'0.5em'}}>
+                                    <div className='slider_container'>
+                                        <input type='range' min='0' max='1.0' defaultValue='0.2' step='0.01' className='slider' id='density_slider' onChange={this.set_sim_density}/>
+                                    </div>
+                                    <h4 style={{width:'24px', paddingLeft:'12px', textAlign:'center', color:'rgba(0, 0, 0, 0.5)'}} id='density_text'>0.2</h4>
                                 </div>
                                 <button id='reset_button' className='ui_button' onClick={this.reset_sim_automata} style={{padding:'0.5em', width:'100%'}}>reset automata</button>
                             </div>
@@ -1347,57 +1370,57 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
                                 <h4 className='ctrl_module_sub_title' style={{textAlign:'center'}}>layer 1</h4>
                                 <div className='ui_column' style={{justifyContent:'center'}}>
                                     <div className='ui_row'>
-                                        <input id='j0' type='number'step='0.001' className='kernel_input_small' onChange={this.set_sim_kernel} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
-                                        <input id='j1' type='number'step='0.001' className='kernel_input_small' onChange={this.set_sim_kernel} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
-                                        <input id='j2' type='number'step='0.001' className='kernel_input_small' onChange={this.set_sim_kernel} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
+                                        <input id='j0' type='number'step='0.001' className='kernel_input_small' onChange={() => this.set_sim_kernel(0)} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
+                                        <input id='j1' type='number'step='0.001' className='kernel_input_small' onChange={() => this.set_sim_kernel(1)} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
+                                        <input id='j2' type='number'step='0.001' className='kernel_input_small' onChange={() => this.set_sim_kernel(2)} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
                                     </div>
                                     <div className='ui_row'>
-                                        <input id='j3' type='number'step='0.001' className='kernel_input_small' onChange={this.set_sim_kernel} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
-                                        <input id='j4' type='number'step='0.001' className='kernel_input_small' onChange={this.set_sim_kernel} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
-                                        <input id='j5' type='number'step='0.001' className='kernel_input_small' onChange={this.set_sim_kernel} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
+                                        <input id='j3' type='number'step='0.001' className='kernel_input_small' onChange={() => this.set_sim_kernel(3)} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
+                                        <input id='j4' type='number'step='0.001' className='kernel_input_small' onChange={() => this.set_sim_kernel(4)} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
+                                        <input id='j5' type='number'step='0.001' className='kernel_input_small' onChange={() => this.set_sim_kernel(5)} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
                                     </div>
                                     <div className='ui_row'>
-                                        <input id='j6' type='number'step='0.001' className='kernel_input_small' onChange={this.set_sim_kernel} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
-                                        <input id='j7' type='number'step='0.001' className='kernel_input_small' onChange={this.set_sim_kernel} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
-                                        <input id='j8' type='number'step='0.001' className='kernel_input_small' onChange={this.set_sim_kernel} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
+                                        <input id='j6' type='number'step='0.001' className='kernel_input_small' onChange={() => this.set_sim_kernel(6)} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
+                                        <input id='j7' type='number'step='0.001' className='kernel_input_small' onChange={() => this.set_sim_kernel(7)} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
+                                        <input id='j8' type='number'step='0.001' className='kernel_input_small' onChange={() => this.set_sim_kernel(8)} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
                                     </div>
                                 </div>
                                 
                                 <h4 className='ctrl_module_sub_title' style={{textAlign:'center'}}>layer 2</h4>
                                 <div className='ui_column' style={{justifyContent:'center'}}>
                                     <div className='ui_row'>
-                                        <input id='j9' type='number'step='0.001' className='kernel_input_small' onChange={this.set_sim_kernel} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
-                                        <input id='j10' type='number'step='0.001' className='kernel_input_small' onChange={this.set_sim_kernel} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
-                                        <input id='j11' type='number'step='0.001' className='kernel_input_small' onChange={this.set_sim_kernel} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
+                                        <input id='j9' type='number'step='0.001' className='kernel_input_small' onChange={() => this.set_sim_kernel(9)} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
+                                        <input id='j10' type='number'step='0.001' className='kernel_input_small' onChange={() => this.set_sim_kernel(10)} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
+                                        <input id='j11' type='number'step='0.001' className='kernel_input_small' onChange={() => this.set_sim_kernel(11)} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
                                     </div>
                                     <div className='ui_row'>
-                                        <input id='j12' type='number'step='0.001' className='kernel_input_small' onChange={this.set_sim_kernel} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
-                                        <input id='j13' type='number'step='0.001' className='kernel_input_small' onChange={this.set_sim_kernel} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
-                                        <input id='j14' type='number'step='0.001' className='kernel_input_small' onChange={this.set_sim_kernel} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
+                                        <input id='j12' type='number'step='0.001' className='kernel_input_small' onChange={() => this.set_sim_kernel(12)} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
+                                        <input id='j13' type='number'step='0.001' className='kernel_input_small' onChange={() => this.set_sim_kernel(13)} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
+                                        <input id='j14' type='number'step='0.001' className='kernel_input_small' onChange={() => this.set_sim_kernel(14)} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
                                     </div>
                                     <div className='ui_row'>
-                                        <input id='j15' type='number'step='0.001' className='kernel_input_small' onChange={this.set_sim_kernel} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
-                                        <input id='j16' type='number'step='0.001' className='kernel_input_small' onChange={this.set_sim_kernel} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
-                                        <input id='j17' type='number'step='0.001' className='kernel_input_small' onChange={this.set_sim_kernel} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
+                                        <input id='j15' type='number'step='0.001' className='kernel_input_small' onChange={() => this.set_sim_kernel(15)} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
+                                        <input id='j16' type='number'step='0.001' className='kernel_input_small' onChange={() => this.set_sim_kernel(16)} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
+                                        <input id='j17' type='number'step='0.001' className='kernel_input_small' onChange={() => this.set_sim_kernel(17)} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
                                     </div>
                                 </div>
                                 
                                 <h4 className='ctrl_module_sub_title' style={{textAlign:'center'}}>layer 3</h4>
                                 <div className='ui_column' style={{justifyContent:'center'}}>
                                     <div className='ui_row'>
-                                        <input id='j18' type='number'step='0.001' className='kernel_input_small' onChange={this.set_sim_kernel} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
-                                        <input id='j19' type='number'step='0.001' className='kernel_input_small' onChange={this.set_sim_kernel} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
-                                        <input id='j20' type='number'step='0.001' className='kernel_input_small' onChange={this.set_sim_kernel} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
+                                        <input id='j18' type='number'step='0.001' className='kernel_input_small' onChange={() => this.set_sim_kernel(18)} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
+                                        <input id='j19' type='number'step='0.001' className='kernel_input_small' onChange={() => this.set_sim_kernel(19)} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
+                                        <input id='j20' type='number'step='0.001' className='kernel_input_small' onChange={() => this.set_sim_kernel(20)} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
                                     </div>
                                     <div className='ui_row'>
-                                        <input id='j21' type='number'step='0.001' className='kernel_input_small' onChange={this.set_sim_kernel} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
-                                        <input id='j22' type='number'step='0.001' className='kernel_input_small' onChange={this.set_sim_kernel} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
-                                        <input id='j23' type='number'step='0.001' className='kernel_input_small' onChange={this.set_sim_kernel} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
+                                        <input id='j21' type='number'step='0.001' className='kernel_input_small' onChange={() => this.set_sim_kernel(21)} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
+                                        <input id='j22' type='number'step='0.001' className='kernel_input_small' onChange={() => this.set_sim_kernel(22)} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
+                                        <input id='j23' type='number'step='0.001' className='kernel_input_small' onChange={() => this.set_sim_kernel(23)} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
                                     </div>
                                     <div className='ui_row'>
-                                        <input id='j24' type='number'step='0.001' className='kernel_input_small' onChange={this.set_sim_kernel} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
-                                        <input id='j25' type='number'step='0.001' className='kernel_input_small' onChange={this.set_sim_kernel} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
-                                        <input id='j26' type='number'step='0.001' className='kernel_input_small' onChange={this.set_sim_kernel} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
+                                        <input id='j24' type='number'step='0.001' className='kernel_input_small' onChange={() => this.set_sim_kernel(24)} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
+                                        <input id='j25' type='number'step='0.001' className='kernel_input_small' onChange={() => this.set_sim_kernel(25)} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
+                                        <input id='j26' type='number'step='0.001' className='kernel_input_small' onChange={() => this.set_sim_kernel(26)} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
                                     </div>
                                 </div>
 
@@ -1508,7 +1531,7 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
                                 <div style={{paddingBottom:'1em'}}>
                                     <h4 className='ctrl_module_sub_title'>seed</h4>
                                     <div className='ui_row'>
-                                        <input id='seed_field' className='ui_text_field' maxLength={ControlWindow.SEED_LEN}></input>
+                                        <input id='seed_field' className='ui_text_field' maxLength={Sim.SEED_LEN}></input>
                                         <div style={{paddingRight:'0.5em'}}/>
                                         <button id='randomize_seed' className='ui_button' style={{width:'35%'}} onClick={this.randomize_seed}>new seed</button>
                                     </div>
@@ -1535,19 +1558,19 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
                                 <h2 className='ctrl_module_title'>kernel 3x3</h2>
                                 <div className='ui_column' style={{justifyContent:'center'}}>
                                     <div className='ui_row'>
-                                        <input id='k0' type='number'step='0.001' className='kernel_input' onChange={this.set_sim_kernel} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
-                                        <input id='k1' type='number'step='0.001' className='kernel_input' onChange={this.set_sim_kernel} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
-                                        <input id='k2' type='number'step='0.001' className='kernel_input' onChange={this.set_sim_kernel} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
+                                        <input id='k0' type='number'step='0.001' className='kernel_input' onChange={() => this.set_sim_kernel(0)} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
+                                        <input id='k1' type='number'step='0.001' className='kernel_input' onChange={() => this.set_sim_kernel(1)} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
+                                        <input id='k2' type='number'step='0.001' className='kernel_input' onChange={() => this.set_sim_kernel(2)} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
                                     </div>
                                     <div className='ui_row'>
-                                        <input id='k3' type='number'step='0.001' className='kernel_input' onChange={this.set_sim_kernel} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
-                                        <input id='k4' type='number'step='0.001' className='kernel_input' onChange={this.set_sim_kernel} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
-                                        <input id='k5' type='number'step='0.001' className='kernel_input' onChange={this.set_sim_kernel} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
+                                        <input id='k3' type='number'step='0.001' className='kernel_input' onChange={() => this.set_sim_kernel(3)} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
+                                        <input id='k4' type='number'step='0.001' className='kernel_input' onChange={() => this.set_sim_kernel(4)} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
+                                        <input id='k5' type='number'step='0.001' className='kernel_input' onChange={() => this.set_sim_kernel(5)} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
                                     </div>
                                     <div className='ui_row'>
-                                        <input id='k6' type='number'step='0.001' className='kernel_input' onChange={this.set_sim_kernel} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
-                                        <input id='k7' type='number'step='0.001' className='kernel_input' onChange={this.set_sim_kernel} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
-                                        <input id='k8' type='number'step='0.001' className='kernel_input' onChange={this.set_sim_kernel} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
+                                        <input id='k6' type='number'step='0.001' className='kernel_input' onChange={() => this.set_sim_kernel(6)} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
+                                        <input id='k7' type='number'step='0.001' className='kernel_input' onChange={() => this.set_sim_kernel(7)} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
+                                        <input id='k8' type='number'step='0.001' className='kernel_input' onChange={() => this.set_sim_kernel(8)} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
                                     </div>
                                 </div>
 
@@ -1614,8 +1637,6 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
                                 <div style={{width:'0.5em'}}/>
                                 <button className='ui_button' onClick={this.import_automata} style={{padding:'0.5em', width:'100%'}}>import</button>
                             </div>
-
-                            
                         </div>
                                                 
                         {/* extra padding at the bottom of the window */}

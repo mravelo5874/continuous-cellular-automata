@@ -18,7 +18,7 @@ class ClearVolume {
 
     constructor(_sim: Sim) {
         this.sim = _sim;
-        this.clear_color = new Vec4([0.0, 0.0, 0.0, 1.0])
+        this.clear_color = new Vec4([0.0, 0.0, 0.0, 0.0])
         this.ibo = null;
         this.vbo = null;
         this.vao = null;
@@ -64,7 +64,9 @@ class ClearVolume {
         let vert =
             `#version 300 es
             precision highp float;
+
             layout(location = 0) in vec2 position;
+
             void main() {
                 gl_Position = vec4(position.xy, 0.0, 1.0);
             }`;
@@ -72,8 +74,10 @@ class ClearVolume {
         let frag =
             `#version 300 es
             precision highp float;
+
             out vec4 vFragColor[${depth}];
             uniform vec4 u_clear_color;
+
             void main() {
                 ${
                     Array(depth)
@@ -123,7 +127,6 @@ class ClearVolume {
 
             gl.bindFramebuffer(gl.FRAMEBUFFER, lfb.fb);
             gl.drawBuffers(lfb.layers);
-
             gl.clearColor(c.r, c.g, c.b, c.a);
             gl.clear(gl.COLOR_BUFFER_BIT);
             gl.drawElements(gl.TRIANGLES, this.mesh.index_data.length, gl.UNSIGNED_INT, 0);

@@ -16,6 +16,7 @@ class RandomizeVolume {
     vao: WebGLVertexArrayObject | null;
     programs: { [key: number]: PRGM_LOC } = {};
     region: number = 0.2;
+    density: number = 0.2;
 
     constructor(_sim: Sim) {
         this.sim = _sim;
@@ -58,47 +59,115 @@ class RandomizeVolume {
     }
 
     create_program(depth: number) {
+        // let vert =
+        //    `#version 300 es
+        //     precision highp float;
+
+        //     layout(location = 0) in vec2 position;
+        //     out vec2 vPosition;
+        //     uniform vec3 u_region;
+
+        //     void main() {
+        //         vPosition = position;
+        //         gl_Position = vec4(position.xy*u_region.xy, 0.0, 1.0);
+        //     }`;
+
+        // let frag =
+        //    `#version 300 es
+        //     precision highp float;
+        //     precision highp sampler3D;
+
+        //     in vec2 vPosition;
+        //     out vec4 vFragColor[${depth}];
+
+        //     uniform float u_density;
+        //     uniform vec3 u_region; // Fill radius with 0...1 per dimension
+        //     uniform float u_external_rand;
+        //     uniform ivec3 u_size;
+        //     uniform int u_z_offset;
+
+        //     float rand_dep(vec3 co){
+        //         const vec3 rand_vec = vec3(12.9898, 78.233, 3.2345);
+        //         float a = dot(co, rand_vec) * u_external_rand;
+        //         float b = sin(a);
+        //         float c = b * 43758.5453;
+        //         return fract(c);
+        //     }
+
+        //     // return a random float value between 0 and 1
+        //     float random(vec2 pt, float seed) {
+        //         return fract(sin((seed+dot(pt.xy,vec2(12.9898,78.233))))*43758.5453123);
+        //     }
+
+        //     bool is_within_region(float z_norm) {
+        //         // Convert 0...1 fill radius to 0...1 texture coordinate
+        //         float z0 = 2.0*z_norm - 1.0;    // 0...1 to -1...+1
+        //         float z1 = u_region.z;          // 0...1
+
+        //         // Get distance from origin
+        //         z0 = abs(z0);              
+        //         return z0 <= z1;
+        //     }
+
+        //     vec4 process_layer(int z_) {
+        //         int z = z_ + u_z_offset;
+        //         float z_norm = float(z) / float(u_size.z); 
+
+        //         // NOTE: We do this do prevent an off by one error
+        //         // This occurs since the range (0...N-1) gets mapped to (0...N)
+        //         z_norm += 0.5 / float(u_size.z);
+
+        //         return vec4(z_norm, 0.0, 0.0, 0.0);
+
+        //         if (!is_within_region(z_norm)) {
+        //             return vec4(0);
+        //         }
+
+        //         vec3 pos = vec3(vPosition.xy, z_norm);
+        //         float value = random(pos.xy + z_norm, u_external_rand);
+        //         float chance = random(pos.xy - z_norm, u_external_rand);
+
+        //         if (chance > u_density) {
+        //             value = 0.0;
+        //         }
+
+        //         return vec4(value, 0.0, 0.0, 0.0);
+        //     }
+
+        //     void main() {
+        //         ${
+        //             Array(depth)
+        //                 .fill(0)
+        //                 .map((_,z) => `vFragColor[${z}] = process_layer(${z});`)
+        //                 .join('\n')
+        //         }
+        //     }`;
+
         let vert =
-           `#version 300 es
+            `#version 300 es
             precision highp float;
 
             layout(location = 0) in vec2 position;
-            out vec2 vPosition;
-            uniform vec3 u_region;
+            out vec2 v_pos;
 
             void main() {
-                vPosition = position;
-                gl_Position = vec4(position.xy * u_region.xy, 0.0, 1.0);
+                v_pos = position;
+                gl_Position = vec4(position.xy, 0.0, 1.0);
             }`;
 
         let frag =
-           `#version 300 es
+            `#version 300 es
             precision highp float;
-            precision highp sampler3D;
 
-            in vec2 vPosition;
+            in vec2 v_pos;
             out vec4 vFragColor[${depth}];
-
-            uniform float u_density;
-            uniform vec3 u_region; // Fill radius with 0...1 per dimension
             uniform float u_external_rand;
             uniform ivec3 u_size;
             uniform int u_z_offset;
 
-            // return a random float value between 0 and 1 (i think ???)
-            float random(vec2 pt, float seed)
-            {
+            // return a random float value between 0 and 1
+            float random(vec2 pt, float seed) {
                 return fract(sin((seed+dot(pt.xy,vec2(12.9898,78.233))))*43758.5453123);
-            }
-
-            bool is_within_region(float z_norm) {
-                // Convert 0...1 fill radius to 0...1 texture coordinate
-                float z0 = 2.0*z_norm - 1.0;    // 0...1 to -1...+1
-                float z1 = u_region.z;          // 0...1
-
-                // Get distance from origin
-                z0 = abs(z0);              
-                return z0 <= z1;
             }
 
             vec4 process_layer(int z_) {
@@ -109,16 +178,12 @@ class RandomizeVolume {
                 // This occurs since the range (0...N-1) gets mapped to (0...N)
                 z_norm += 0.5 / float(u_size.z);
 
-                if (!is_within_region(z_norm)) {
-                    return vec4(0);
-                }
+                vec3 pos = vec3(v_pos.xy, z_norm);
+                float value = random(pos.xy + z_norm, u_external_rand);
 
-                float value = random(vPosition.xy + z_norm, u_external_rand);
-                vec3 pos = vec3(vPosition.xy, z_norm);
-
-                return vec4(value, 0.0, 0.0, 1.0);
+                return vec4(value, 0.0, 0.0, 0.0);
             }
-
+            
             void main() {
                 ${
                     Array(depth)
@@ -127,7 +192,6 @@ class RandomizeVolume {
                         .join('\n')
                 }
             }`;
-
         let gl = this.sim.context as WebGL2RenderingContext;
         return compile_program(gl, vert, frag);
     }
@@ -155,23 +219,20 @@ class RandomizeVolume {
 
     render(_vol: VolumeData, _seed: string) {
         let gl = this.sim.context as WebGL2RenderingContext;
-        let density = 0.25;
         let region = new Vec3([this.region, this.region, this.region]);
         
         _vol.set_wrap(false);
         let s = _vol.size;
-        let fbs = _vol.frame_buffers;
+        let frame_buffers = _vol.frame_buffers;
 
         gl.viewport(0,0,s,s);
         gl.disable(gl.DEPTH_TEST);
         gl.disable(gl.CULL_FACE);
-        // NOTE: Enable basic blending for randomised fields to overlap (i guess?)
-        gl.enable(gl.BLEND);
-        gl.blendFunc(gl.ONE, gl.ONE);
+        gl.disable(gl.BLEND);
 
         let rng = new Rand(_seed);
 
-        for (let lfb of fbs) {
+        for (let lfb of frame_buffers) {
             let program_location = this.get_program(lfb.total_layers);
             let program = program_location.program;
             let location = program_location.location;
@@ -180,7 +241,7 @@ class RandomizeVolume {
             gl.bindVertexArray(this.vao);
             gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.ibo);
 
-            gl.uniform1f(location.find('u_density'), density);
+            gl.uniform1f(location.find('u_density'), this.density);
             gl.uniform3f(location.find('u_region'), region.x, region.y, region.z);
             gl.uniform1f(location.find('u_external_rand'), rng.next());
             gl.uniform3i(location.find('u_size'), s, s, s);
@@ -192,10 +253,15 @@ class RandomizeVolume {
         }
     }
 
-
     set_region(_region: number) {
         // return if region is out of range
         if (_region < 0.0 || _region > 1.0) return;
         this.region = _region;
+    }
+
+    set_density(_density: number) {
+        // return if region is out of range
+        if (_density < 0.0 || _density > 1.0) return;
+        this.density = _density;
     }
 }

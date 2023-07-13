@@ -127,7 +127,7 @@ class Sim2D {
         const h = canvas.height
 
         // generate state based on automata
-        let seed = this.sim.generate_seed(32);
+        let seed = this.sim.generate_seed(Sim.SEED_LEN);
         if (_seed) {
             seed = _seed;
         }

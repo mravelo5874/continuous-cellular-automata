@@ -29,8 +29,8 @@ class VolumeData {
         gl.texParameteri(gl.TEXTURE_3D, gl.TEXTURE_WRAP_R, gl.REPEAT);
         // NOTE: We pass in data parameter as null since we don't want it on the CPU
         // NOTE: We are using two channels: [state, total_neighbours]
-        // gl.pixelStorei(gl.UNPACK_ALIGNMENT, 4);
-        // gl.pixelStorei(gl.PACK_ALIGNMENT, 4);
+        gl.pixelStorei(gl.UNPACK_ALIGNMENT, 2);
+        gl.pixelStorei(gl.PACK_ALIGNMENT, 2);
         gl.texImage3D(gl.TEXTURE_3D, 0, gl.RGBA, s, s, s, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
 
         // create framebuffers for layers of volume
