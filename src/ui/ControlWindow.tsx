@@ -13,15 +13,15 @@ interface ControlPanelInterface {
 class ControlWindow extends React.Component<ControlPanelInterface, {}> {
     ui_init: boolean;
     ui_open: boolean;
+    customize_open: boolean;
     anti_alias: boolean;
     seed: string;
-
-
 
     constructor(props: ControlPanelInterface) {
         super(props);
         this.ui_init = false;
         this.ui_open = true;
+        this.customize_open = false;
         this.anti_alias = false;
         this.seed = 'seed';
 
@@ -52,6 +52,7 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
         this.load_colormap = this.load_colormap.bind(this);
         // toggle
         this.toggle_window = this.toggle_window.bind(this);
+        this.toggle_customize = this.toggle_customize.bind(this);
         this.toggle_sim_blend = this.toggle_sim_blend.bind(this);
         this.toggle_sim_mode = this.toggle_sim_mode.bind(this);
         this.toggle_sim_aa = this.toggle_sim_aa.bind(this);
@@ -309,7 +310,7 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
         sim.set_activation(af.value);
     }
 
-    update_kernel(_kernel: Float32Array, _curr_idx: number = -1) {
+    update_kernel(_kernel: Float32Array, _curr_idx: number=-1) {
         let sim = this.props.sim;
         if (sim.mode === SimMode.Sim2D) {
             // assert _kernel is correct length
@@ -543,13 +544,25 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
         }
     }
 
+    toggle_customize() {
+        this.customize_open = !this.customize_open;
+        var window = document.getElementById('customize_window') as HTMLDivElement;
+        var button = document.getElementById('toggle_customize') as HTMLButtonElement;
+        if (this.customize_open) {
+            window.style.cssText='height:100%;';
+            button.innerHTML = 'close customization';
+        }
+        else {
+            window.style.cssText='scale:0%;height:0px;';
+            button.innerHTML = 'customize automata!';
+        }
+    }
+
     toggle_sim_aa() {
         var aa_toggle = document.getElementById('toggle_aa') as HTMLInputElement;
         this.anti_alias = aa_toggle.checked;
-
         let sim = this.props.sim;
         let canvas = sim.canvas as HTMLCanvasElement;
-
         if (this.anti_alias) {
             canvas.style.imageRendering = 'auto';
         }
@@ -1261,393 +1274,395 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
                             </div>
 
                             <div className='ui_row'>
-                                <input type='checkbox' id='toggle_aa' className='ui_button' onClick={this.toggle_sim_aa}/>
-                                <h4 className='ctrl_module_sub_title'>anti-aliasing</h4>
-                            </div>
-
-                            <div className='ui_row'>
                                 <input type='checkbox' id='toggle_pause' className='ui_button' onClick={this.pause_sim}/>
                                 <h4 className='ctrl_module_sub_title'>paused</h4>
                             </div>
-                        </div>
 
-
-                        <div id='_3D' style={{scale:'0%', height:'0px'}}>
-
-                            <hr/>
-                            <div id='ctrl_module'>
-                                <h2 className='ctrl_module_title'>options</h2>
-                                <div className='ui_row'>
-                                    <input type='checkbox' id='toggle_wrap' className='ui_button' onClick={this.toggle_sim_wrap}/>
-                                    <h4 className='ctrl_module_sub_title'>wrap</h4>
-                                </div>
-                                <div className='ui_row'>
-                                    <input type='checkbox' id='toggle_skip' className='ui_button' onClick={this.toggle_sim_skip_frames}/>
-                                    <h4 className='ctrl_module_sub_title'>skip frames</h4>
-                                </div>
-                                <div className='ui_row'>
-                                    <input type='checkbox' id='toggle_orbit' className='ui_button' onClick={this.toggle_sim_orbit}/>
-                                    <h4 className='ctrl_module_sub_title'>orbit</h4>
-                                </div>
-                                <h4 className='ctrl_module_sub_title'>volume size</h4>
-                                <div className='ui_row'>
-                                    <div className='slider_container'>
-                                        <input type='range' min='1' max='256' defaultValue='64' className='slider' id='volume_size' onChange={this.update_volume_text} onMouseUp={this.set_sim_volume_size}/>
-                                    </div>
-                                    <h4 style={{width:'24px', paddingLeft:'12px', textAlign:'center', color:'rgba(0, 0, 0, 0.5)'}} id='volume_size_text'>64</h4>
-                                </div>
-                                <h4 className='ctrl_module_sub_title'>compute delay</h4>
-                                <div className='ui_row'>
-                                    <div className='slider_container'>
-                                        <input type='range' min='1' max='64' defaultValue='1' className='slider' id='compute_delay' onChange={this.update_compute_text} onMouseUp={this.set_sim_compute_delay}/>
-                                    </div>
-                                    <h4 style={{width:'24px', paddingLeft:'12px', textAlign:'center', color:'rgba(0, 0, 0, 0.5)'}} id='compute_text'>1</h4>
-                                </div>
-                            </div>
-                            
-                            <hr/>
-                            <div id='ctrl_module'>
-                                <h2 className='ctrl_module_title'>automata</h2>
-                                <div style={{paddingBottom:'0.5em'}}>
-                                    <h4 className='ctrl_module_sub_title'>load preset</h4>
-                                    <select className='dropdown_input' name='automata' id='load_automata_3d' onChange={this.load_automata}>
-                                        <option value='custom' disabled>custom 🛠️</option>
-                                    </select>
-                                </div>
-                                <div style={{paddingBottom:'1em'}}>
-                                    <h4 className='ctrl_module_sub_title'>seed</h4>
-                                    <div className='ui_row'>
-                                        <input id='seed_field_3d' className='ui_text_field' maxLength={Sim.SEED_LEN}></input>
-                                        <div style={{paddingRight:'0.5em'}}/>
-                                        <button id='randomize_seed' className='ui_button' style={{width:'35%'}} onClick={this.randomize_seed}>new seed</button>
-                                    </div>
-                                </div>
-                                <div className='ui_row'>
-                                    <input type='checkbox' id='toggle_reset_cam' className='ui_button'/>
-                                    <h4 className='ctrl_module_sub_title'>reset camera</h4>
-                                </div>
-                                <h4 className='ctrl_module_sub_title'>fill region</h4>
-                                <div className='ui_row'>
-                                    <div className='slider_container'>
-                                        <input type='range' min='0' max='1.0' defaultValue='0.2' step='0.01' className='slider' id='region_slider' onChange={this.set_sim_region}/>
-                                    </div>
-                                    <h4 style={{width:'24px', paddingLeft:'12px', textAlign:'center', color:'rgba(0, 0, 0, 0.5)'}} id='region_text'>0.2</h4>
-                                </div>
-                                <h4 className='ctrl_module_sub_title'>fill density</h4>
-                                <div className='ui_row' style={{paddingBottom:'0.5em'}}>
-                                    <div className='slider_container'>
-                                        <input type='range' min='0' max='1.0' defaultValue='0.2' step='0.01' className='slider' id='density_slider' onChange={this.set_sim_density}/>
-                                    </div>
-                                    <h4 style={{width:'24px', paddingLeft:'12px', textAlign:'center', color:'rgba(0, 0, 0, 0.5)'}} id='density_text'>0.2</h4>
-                                </div>
-                                <button id='reset_button' className='ui_button' onClick={this.reset_sim_automata} style={{padding:'0.5em', width:'100%'}}>reset automata</button>
-                            </div>
-
-                            <hr/>
-                            <div id='ctrl_module'>
-                                <h2 className='ctrl_module_title'>render</h2>
-                                <div className='ui_row'>
-                                    <input type='checkbox' id='toggle_blend' className='ui_button' onClick={this.toggle_sim_blend}/>
-                                    <h4 className='ctrl_module_sub_title'>blend</h4>
-                                </div>
-
-                                <div style={{paddingBottom:'0.5em'}}>
-                                    <h4 className='ctrl_module_sub_title'>colormap</h4>
-                                    <select className='dropdown_input' name='colormap' id='load_colormap' onChange={this.set_sim_colormap}>
-                                        <option className='dropdown_option' value='ygb'>yellow green blue</option>
-                                        <option value='cool_warm'>cool warm</option>
-                                        <option value='plasma'>plasma</option>
-                                        <option value='virdis'>virdis</option>
-                                        <option value='rainbow'>rainbow</option>
-                                        <option value='green'>green</option>
-                                    </select>
-                                </div>
-                            </div>
-
-                            <hr/>
-                            <div id='ctrl_module'>
-                                <h2 className='ctrl_module_title'>kernel 3x3x3</h2>
-                                <h4 className='ctrl_module_sub_title' style={{textAlign:'center'}}>layer 1</h4>
-                                <div className='ui_column' style={{justifyContent:'center'}}>
-                                    <div className='ui_row'>
-                                        <input id='j0' type='number'step='0.001' className='kernel_input_small' onChange={() => this.set_sim_kernel(0)} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
-                                        <input id='j1' type='number'step='0.001' className='kernel_input_small' onChange={() => this.set_sim_kernel(1)} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
-                                        <input id='j2' type='number'step='0.001' className='kernel_input_small' onChange={() => this.set_sim_kernel(2)} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
-                                    </div>
-                                    <div className='ui_row'>
-                                        <input id='j3' type='number'step='0.001' className='kernel_input_small' onChange={() => this.set_sim_kernel(3)} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
-                                        <input id='j4' type='number'step='0.001' className='kernel_input_small' onChange={() => this.set_sim_kernel(4)} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
-                                        <input id='j5' type='number'step='0.001' className='kernel_input_small' onChange={() => this.set_sim_kernel(5)} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
-                                    </div>
-                                    <div className='ui_row'>
-                                        <input id='j6' type='number'step='0.001' className='kernel_input_small' onChange={() => this.set_sim_kernel(6)} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
-                                        <input id='j7' type='number'step='0.001' className='kernel_input_small' onChange={() => this.set_sim_kernel(7)} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
-                                        <input id='j8' type='number'step='0.001' className='kernel_input_small' onChange={() => this.set_sim_kernel(8)} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
-                                    </div>
-                                </div>
-                                
-                                <h4 className='ctrl_module_sub_title' style={{textAlign:'center'}}>layer 2</h4>
-                                <div className='ui_column' style={{justifyContent:'center'}}>
-                                    <div className='ui_row'>
-                                        <input id='j9' type='number'step='0.001' className='kernel_input_small' onChange={() => this.set_sim_kernel(9)} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
-                                        <input id='j10' type='number'step='0.001' className='kernel_input_small' onChange={() => this.set_sim_kernel(10)} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
-                                        <input id='j11' type='number'step='0.001' className='kernel_input_small' onChange={() => this.set_sim_kernel(11)} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
-                                    </div>
-                                    <div className='ui_row'>
-                                        <input id='j12' type='number'step='0.001' className='kernel_input_small' onChange={() => this.set_sim_kernel(12)} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
-                                        <input id='j13' type='number'step='0.001' className='kernel_input_small' onChange={() => this.set_sim_kernel(13)} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
-                                        <input id='j14' type='number'step='0.001' className='kernel_input_small' onChange={() => this.set_sim_kernel(14)} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
-                                    </div>
-                                    <div className='ui_row'>
-                                        <input id='j15' type='number'step='0.001' className='kernel_input_small' onChange={() => this.set_sim_kernel(15)} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
-                                        <input id='j16' type='number'step='0.001' className='kernel_input_small' onChange={() => this.set_sim_kernel(16)} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
-                                        <input id='j17' type='number'step='0.001' className='kernel_input_small' onChange={() => this.set_sim_kernel(17)} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
-                                    </div>
-                                </div>
-                                
-                                <h4 className='ctrl_module_sub_title' style={{textAlign:'center'}}>layer 3</h4>
-                                <div className='ui_column' style={{justifyContent:'center'}}>
-                                    <div className='ui_row'>
-                                        <input id='j18' type='number'step='0.001' className='kernel_input_small' onChange={() => this.set_sim_kernel(18)} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
-                                        <input id='j19' type='number'step='0.001' className='kernel_input_small' onChange={() => this.set_sim_kernel(19)} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
-                                        <input id='j20' type='number'step='0.001' className='kernel_input_small' onChange={() => this.set_sim_kernel(20)} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
-                                    </div>
-                                    <div className='ui_row'>
-                                        <input id='j21' type='number'step='0.001' className='kernel_input_small' onChange={() => this.set_sim_kernel(21)} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
-                                        <input id='j22' type='number'step='0.001' className='kernel_input_small' onChange={() => this.set_sim_kernel(22)} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
-                                        <input id='j23' type='number'step='0.001' className='kernel_input_small' onChange={() => this.set_sim_kernel(23)} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
-                                    </div>
-                                    <div className='ui_row'>
-                                        <input id='j24' type='number'step='0.001' className='kernel_input_small' onChange={() => this.set_sim_kernel(24)} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
-                                        <input id='j25' type='number'step='0.001' className='kernel_input_small' onChange={() => this.set_sim_kernel(25)} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
-                                        <input id='j26' type='number'step='0.001' className='kernel_input_small' onChange={() => this.set_sim_kernel(26)} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
-                                    </div>
-                                </div>
-
-                                <div style={{padding:'0.5em'}}>
-                                    <h4 className='ctrl_module_sub_title' style={{textAlign:'center'}}>symmetries</h4>
-                                    <div className='ui_row' style={{justifyContent:'center'}}>
-                                        <div className='ui_column'>
-                                            <div className='ui_row'>
-                                                <input type='checkbox' id='x_plane_sym' className='ui_button' onClick={this.update_kernel_symmetry}/>
-                                                <h4 className='ctrl_module_sub_title'>x-plane</h4>
-                                            </div>
-                                            <div className='ui_row'>
-                                                <input type='checkbox' id='x_diag_1_sym' className='ui_button' onClick={this.update_kernel_symmetry}/>
-                                                <h4 className='ctrl_module_sub_title'>x-diag 1</h4>
-                                            </div>
-                                            <div className='ui_row'>
-                                                <input type='checkbox' id='x_diag_2_sym' className='ui_button' onClick={this.update_kernel_symmetry}/>
-                                                <h4 className='ctrl_module_sub_title'>x-diag 2</h4>
-                                            </div>
-                                        </div>
-                                        <div className='ui_column' style={{width:'1em'}}/>
-                                        <div className='ui_column'>
-                                            <div className='ui_row'>
-                                                <input type='checkbox' id='y_plane_sym' className='ui_button' onClick={this.update_kernel_symmetry}/>
-                                                <h4 className='ctrl_module_sub_title'>y-plane</h4>
-                                            </div>
-                                            <div className='ui_row'>
-                                                <input type='checkbox' id='y_diag_1_sym' className='ui_button' onClick={this.update_kernel_symmetry}/>
-                                                <h4 className='ctrl_module_sub_title'>y-diag 1</h4>
-                                            </div>
-                                            <div className='ui_row'>
-                                                <input type='checkbox' id='y_diag_2_sym' className='ui_button' onClick={this.update_kernel_symmetry}/>
-                                                <h4 className='ctrl_module_sub_title'>y-diag 2</h4>
-                                            </div>
-                                        </div>
-                                        <div className='ui_column' style={{width:'1em'}}/>
-                                        <div className='ui_column'>
-                                            <div className='ui_row'>
-                                                <input type='checkbox' id='z_plane_sym' className='ui_button' onClick={this.update_kernel_symmetry}/>
-                                                <h4 className='ctrl_module_sub_title'>z-plane</h4>
-                                            </div>
-                                            <div className='ui_row'>
-                                                <input type='checkbox' id='z_diag_1_sym' className='ui_button' onClick={this.update_kernel_symmetry}/>
-                                                <h4 className='ctrl_module_sub_title'>z-diag 1</h4>
-                                            </div>
-                                            <div className='ui_row'>
-                                                <input type='checkbox' id='z_diag_2_sym' className='ui_button' onClick={this.update_kernel_symmetry}/>
-                                                <h4 className='ctrl_module_sub_title'>z-diag 2</h4>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className='ui_row' style={{justifyContent:'center'}}>
-                                        <input type='checkbox' id='full_sym' className='ui_button' onClick={this.update_kernel_symmetry}/>
-                                        <h4 className='ctrl_module_sub_title'>full</h4>
-                                    </div>
-                                    <div style={{height:'0.5em'}}/>
-                                    <button className='ui_button' onClick={this.randomize_kernel} style={{padding:'0.5em', width:'100%'}}>randomize kernel</button>
-                                </div>
+                            <div className='ui_row'>
+                                <input type='checkbox' id='toggle_aa' className='ui_button' onClick={this.toggle_sim_aa}/>
+                                <h4 className='ctrl_module_sub_title'>anti-aliasing</h4>
                             </div>
                         </div>
 
-
-                        <div id='_2D' style={{scale:'100%', height:'100%'}}>
-                            
-                            <hr/>
-                            <div id='ctrl_module'>
-                                <h2 className='ctrl_module_title'>options</h2>
-                                <h4 className='ctrl_module_sub_title'>brush size</h4>
-                                <div className='ui_row'>
-                                    <div className='slider_container'>
-                                        <input type='range' min='1' max='256' defaultValue='64' className='slider' id='brush_slider' onChange={this.set_sim_brush}/>
+                        <div id='ctrl_module'>
+                            <button id='toggle_customize' className='ui_button' onClick={this.toggle_customize} style={{padding:'0.5em', width:'100%'}}>customize automata!</button>
+                        </div>
+                        
+                        <div id='customize_window' style={{scale:'0%', height:'0px'}}>
+                            <div id='_3D' style={{scale:'0%', height:'0px'}}>
+                                <hr/>
+                                <div id='ctrl_module'>
+                                    <h2 className='ctrl_module_title'>automata</h2>
+                                    <div style={{paddingBottom:'0.5em'}}>
+                                        <h4 className='ctrl_module_sub_title'>load preset</h4>
+                                        <select className='dropdown_input' name='automata' id='load_automata_3d' onChange={this.load_automata}>
+                                            <option value='custom' disabled>custom 🛠️</option>
+                                        </select>
                                     </div>
-                                    <h4 style={{width:'24px', paddingLeft:'12px', textAlign:'center', color:'rgba(0, 0, 0, 0.5)'}} id='brush_text'>64</h4>
-                                </div>
-
-                                <h4 className='ctrl_module_sub_title'>zoom level</h4>
-                                <div className='ui_row' style={{paddingBottom:'0.5em'}}>
-                                    <div className='slider_container'>
-                                        <input type='range' min='0.6' max='16.0' defaultValue='2.0' step='0.2' className='slider' id='zoom_slider' onChange={this.update_zoom_text} onMouseUp={this.set_sim_zoom}/>
+                                    <div style={{paddingBottom:'1em'}}>
+                                        <h4 className='ctrl_module_sub_title'>seed</h4>
+                                        <div className='ui_row'>
+                                            <input id='seed_field_3d' className='ui_text_field' maxLength={Sim.SEED_LEN}></input>
+                                            <div style={{paddingRight:'0.5em'}}/>
+                                            <button id='randomize_seed' className='ui_button' style={{width:'35%'}} onClick={this.randomize_seed}>new seed</button>
+                                        </div>
                                     </div>
-                                    <h4 style={{width:'24px', paddingLeft:'12px', textAlign:'center', color:'rgba(0, 0, 0, 0.5)'}} id='zoom_text'>2.0</h4>
-                                </div>
-                            </div>
-
-                            <hr/>
-                            <div id='ctrl_module'>
-                                <h2 className='ctrl_module_title'>automata</h2>
-                                <div style={{paddingBottom:'0.5em'}}>
-                                    <h4 className='ctrl_module_sub_title'>load preset</h4>
-                                    <select className='dropdown_input' defaultValue={'worms'} id='load_automata_2d' onChange={this.load_automata}>
-                                        <option value='cells'>cells 🦠</option>
-                                        <option value='circuit'>circuit 💻</option>
-                                        <option value='comets'>comets ☄️</option>
-                                        <option value='game_of_life'>game of life ♟️</option>
-                                        <option value='lands'>lands 🌍</option>
-                                        <option value='mold'>mold 🧫</option>
-                                        <option value='mystic'>mystic ✨</option>
-                                        <option value='paths'>paths 🚪</option>
-                                        <option value='stars'>stars ⭐</option>
-                                        <option value='smoke'>smoke ☁️</option>
-                                        <option value='surf'>surf 🏄</option>
-                                        <option value='waves'>waves 🌊</option>
-                                        <option value='worms'>worms 🐍</option>
-                                        <option value='custom' disabled>custom 🛠️</option>
-                                    </select>
-                                </div>
-        
-                                <div style={{paddingBottom:'1em'}}>
-                                    <h4 className='ctrl_module_sub_title'>seed</h4>
                                     <div className='ui_row'>
-                                        <input id='seed_field' className='ui_text_field' maxLength={Sim.SEED_LEN}></input>
-                                        <div style={{paddingRight:'0.5em'}}/>
-                                        <button id='randomize_seed' className='ui_button' style={{width:'35%'}} onClick={this.randomize_seed}>new seed</button>
+                                        <input type='checkbox' id='toggle_reset_cam' className='ui_button'/>
+                                        <h4 className='ctrl_module_sub_title'>reset camera</h4>
+                                    </div>
+                                    <h4 className='ctrl_module_sub_title'>fill region</h4>
+                                    <div className='ui_row'>
+                                        <div className='slider_container'>
+                                            <input type='range' min='0' max='1.0' defaultValue='0.2' step='0.01' className='slider' id='region_slider' onChange={this.set_sim_region}/>
+                                        </div>
+                                        <h4 style={{width:'24px', paddingLeft:'12px', textAlign:'center', color:'rgba(0, 0, 0, 0.5)'}} id='region_text'>0.2</h4>
+                                    </div>
+                                    <h4 className='ctrl_module_sub_title'>fill density</h4>
+                                    <div className='ui_row' style={{paddingBottom:'0.5em'}}>
+                                        <div className='slider_container'>
+                                            <input type='range' min='0' max='1.0' defaultValue='0.2' step='0.01' className='slider' id='density_slider' onChange={this.set_sim_density}/>
+                                        </div>
+                                        <h4 style={{width:'24px', paddingLeft:'12px', textAlign:'center', color:'rgba(0, 0, 0, 0.5)'}} id='density_text'>0.2</h4>
+                                    </div>
+                                    <button id='reset_button' className='ui_button' onClick={this.reset_sim_automata} style={{padding:'0.5em', width:'100%'}}>reset automata</button>
+                                </div>
+
+                                <hr/>
+                                <div id='ctrl_module'>
+                                    <h2 className='ctrl_module_title'>options</h2>
+                                    <div className='ui_row'>
+                                        <input type='checkbox' id='toggle_wrap' className='ui_button' onClick={this.toggle_sim_wrap}/>
+                                        <h4 className='ctrl_module_sub_title'>wrap</h4>
+                                    </div>
+                                    <div className='ui_row'>
+                                        <input type='checkbox' id='toggle_skip' className='ui_button' onClick={this.toggle_sim_skip_frames}/>
+                                        <h4 className='ctrl_module_sub_title'>skip frames</h4>
+                                    </div>
+                                    <div className='ui_row'>
+                                        <input type='checkbox' id='toggle_orbit' className='ui_button' onClick={this.toggle_sim_orbit}/>
+                                        <h4 className='ctrl_module_sub_title'>orbit</h4>
+                                    </div>
+                                    <h4 className='ctrl_module_sub_title'>volume size</h4>
+                                    <div className='ui_row'>
+                                        <div className='slider_container'>
+                                            <input type='range' min='1' max='256' defaultValue='64' className='slider' id='volume_size' onChange={this.update_volume_text} onMouseUp={this.set_sim_volume_size}/>
+                                        </div>
+                                        <h4 style={{width:'24px', paddingLeft:'12px', textAlign:'center', color:'rgba(0, 0, 0, 0.5)'}} id='volume_size_text'>64</h4>
+                                    </div>
+                                    <h4 className='ctrl_module_sub_title'>compute delay</h4>
+                                    <div className='ui_row'>
+                                        <div className='slider_container'>
+                                            <input type='range' min='1' max='64' defaultValue='1' className='slider' id='compute_delay' onChange={this.update_compute_text} onMouseUp={this.set_sim_compute_delay}/>
+                                        </div>
+                                        <h4 style={{width:'24px', paddingLeft:'12px', textAlign:'center', color:'rgba(0, 0, 0, 0.5)'}} id='compute_text'>1</h4>
                                     </div>
                                 </div>
 
-                                <button id='reset_button' className='ui_button' onClick={this.reset_sim_automata} style={{padding:'0.5em', width:'100%'}}>reset automata</button>
+                                <hr/>
+                                <div id='ctrl_module'>
+                                    <h2 className='ctrl_module_title'>render</h2>
+                                    <div className='ui_row'>
+                                        <input type='checkbox' id='toggle_blend' className='ui_button' onClick={this.toggle_sim_blend}/>
+                                        <h4 className='ctrl_module_sub_title'>blend</h4>
+                                    </div>
+
+                                    <div style={{paddingBottom:'0.5em'}}>
+                                        <h4 className='ctrl_module_sub_title'>colormap</h4>
+                                        <select className='dropdown_input' name='colormap' id='load_colormap' onChange={this.set_sim_colormap}>
+                                            <option className='dropdown_option' value='ygb'>yellow green blue</option>
+                                            <option value='cool_warm'>cool warm</option>
+                                            <option value='plasma'>plasma</option>
+                                            <option value='virdis'>virdis</option>
+                                            <option value='rainbow'>rainbow</option>
+                                            <option value='green'>green</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <hr/>
+                                <div id='ctrl_module'>
+                                    <h2 className='ctrl_module_title'>kernel 3x3x3</h2>
+                                    <h4 className='ctrl_module_sub_title' style={{textAlign:'center'}}>layer 1</h4>
+                                    <div className='ui_column' style={{justifyContent:'center'}}>
+                                        <div className='ui_row'>
+                                            <input id='j0' type='number'step='0.001' className='kernel_input_small' onChange={() => this.set_sim_kernel(0)} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
+                                            <input id='j1' type='number'step='0.001' className='kernel_input_small' onChange={() => this.set_sim_kernel(1)} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
+                                            <input id='j2' type='number'step='0.001' className='kernel_input_small' onChange={() => this.set_sim_kernel(2)} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
+                                        </div>
+                                        <div className='ui_row'>
+                                            <input id='j3' type='number'step='0.001' className='kernel_input_small' onChange={() => this.set_sim_kernel(3)} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
+                                            <input id='j4' type='number'step='0.001' className='kernel_input_small' onChange={() => this.set_sim_kernel(4)} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
+                                            <input id='j5' type='number'step='0.001' className='kernel_input_small' onChange={() => this.set_sim_kernel(5)} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
+                                        </div>
+                                        <div className='ui_row'>
+                                            <input id='j6' type='number'step='0.001' className='kernel_input_small' onChange={() => this.set_sim_kernel(6)} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
+                                            <input id='j7' type='number'step='0.001' className='kernel_input_small' onChange={() => this.set_sim_kernel(7)} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
+                                            <input id='j8' type='number'step='0.001' className='kernel_input_small' onChange={() => this.set_sim_kernel(8)} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
+                                        </div>
+                                    </div>
+                                    
+                                    <h4 className='ctrl_module_sub_title' style={{textAlign:'center'}}>layer 2</h4>
+                                    <div className='ui_column' style={{justifyContent:'center'}}>
+                                        <div className='ui_row'>
+                                            <input id='j9' type='number'step='0.001' className='kernel_input_small' onChange={() => this.set_sim_kernel(9)} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
+                                            <input id='j10' type='number'step='0.001' className='kernel_input_small' onChange={() => this.set_sim_kernel(10)} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
+                                            <input id='j11' type='number'step='0.001' className='kernel_input_small' onChange={() => this.set_sim_kernel(11)} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
+                                        </div>
+                                        <div className='ui_row'>
+                                            <input id='j12' type='number'step='0.001' className='kernel_input_small' onChange={() => this.set_sim_kernel(12)} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
+                                            <input id='j13' type='number'step='0.001' className='kernel_input_small' onChange={() => this.set_sim_kernel(13)} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
+                                            <input id='j14' type='number'step='0.001' className='kernel_input_small' onChange={() => this.set_sim_kernel(14)} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
+                                        </div>
+                                        <div className='ui_row'>
+                                            <input id='j15' type='number'step='0.001' className='kernel_input_small' onChange={() => this.set_sim_kernel(15)} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
+                                            <input id='j16' type='number'step='0.001' className='kernel_input_small' onChange={() => this.set_sim_kernel(16)} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
+                                            <input id='j17' type='number'step='0.001' className='kernel_input_small' onChange={() => this.set_sim_kernel(17)} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
+                                        </div>
+                                    </div>
+                                    
+                                    <h4 className='ctrl_module_sub_title' style={{textAlign:'center'}}>layer 3</h4>
+                                    <div className='ui_column' style={{justifyContent:'center'}}>
+                                        <div className='ui_row'>
+                                            <input id='j18' type='number'step='0.001' className='kernel_input_small' onChange={() => this.set_sim_kernel(18)} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
+                                            <input id='j19' type='number'step='0.001' className='kernel_input_small' onChange={() => this.set_sim_kernel(19)} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
+                                            <input id='j20' type='number'step='0.001' className='kernel_input_small' onChange={() => this.set_sim_kernel(20)} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
+                                        </div>
+                                        <div className='ui_row'>
+                                            <input id='j21' type='number'step='0.001' className='kernel_input_small' onChange={() => this.set_sim_kernel(21)} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
+                                            <input id='j22' type='number'step='0.001' className='kernel_input_small' onChange={() => this.set_sim_kernel(22)} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
+                                            <input id='j23' type='number'step='0.001' className='kernel_input_small' onChange={() => this.set_sim_kernel(23)} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
+                                        </div>
+                                        <div className='ui_row'>
+                                            <input id='j24' type='number'step='0.001' className='kernel_input_small' onChange={() => this.set_sim_kernel(24)} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
+                                            <input id='j25' type='number'step='0.001' className='kernel_input_small' onChange={() => this.set_sim_kernel(25)} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
+                                            <input id='j26' type='number'step='0.001' className='kernel_input_small' onChange={() => this.set_sim_kernel(26)} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
+                                        </div>
+                                    </div>
+
+                                    <div style={{padding:'0.5em'}}>
+                                        <h4 className='ctrl_module_sub_title' style={{textAlign:'center'}}>symmetries</h4>
+                                        <div className='ui_row' style={{justifyContent:'center'}}>
+                                            <div className='ui_column'>
+                                                <div className='ui_row'>
+                                                    <input type='checkbox' id='x_plane_sym' className='ui_button' onClick={this.update_kernel_symmetry}/>
+                                                    <h4 className='ctrl_module_sub_title'>x-plane</h4>
+                                                </div>
+                                                <div className='ui_row'>
+                                                    <input type='checkbox' id='x_diag_1_sym' className='ui_button' onClick={this.update_kernel_symmetry}/>
+                                                    <h4 className='ctrl_module_sub_title'>x-diag 1</h4>
+                                                </div>
+                                                <div className='ui_row'>
+                                                    <input type='checkbox' id='x_diag_2_sym' className='ui_button' onClick={this.update_kernel_symmetry}/>
+                                                    <h4 className='ctrl_module_sub_title'>x-diag 2</h4>
+                                                </div>
+                                            </div>
+                                            <div className='ui_column' style={{width:'1em'}}/>
+                                            <div className='ui_column'>
+                                                <div className='ui_row'>
+                                                    <input type='checkbox' id='y_plane_sym' className='ui_button' onClick={this.update_kernel_symmetry}/>
+                                                    <h4 className='ctrl_module_sub_title'>y-plane</h4>
+                                                </div>
+                                                <div className='ui_row'>
+                                                    <input type='checkbox' id='y_diag_1_sym' className='ui_button' onClick={this.update_kernel_symmetry}/>
+                                                    <h4 className='ctrl_module_sub_title'>y-diag 1</h4>
+                                                </div>
+                                                <div className='ui_row'>
+                                                    <input type='checkbox' id='y_diag_2_sym' className='ui_button' onClick={this.update_kernel_symmetry}/>
+                                                    <h4 className='ctrl_module_sub_title'>y-diag 2</h4>
+                                                </div>
+                                            </div>
+                                            <div className='ui_column' style={{width:'1em'}}/>
+                                            <div className='ui_column'>
+                                                <div className='ui_row'>
+                                                    <input type='checkbox' id='z_plane_sym' className='ui_button' onClick={this.update_kernel_symmetry}/>
+                                                    <h4 className='ctrl_module_sub_title'>z-plane</h4>
+                                                </div>
+                                                <div className='ui_row'>
+                                                    <input type='checkbox' id='z_diag_1_sym' className='ui_button' onClick={this.update_kernel_symmetry}/>
+                                                    <h4 className='ctrl_module_sub_title'>z-diag 1</h4>
+                                                </div>
+                                                <div className='ui_row'>
+                                                    <input type='checkbox' id='z_diag_2_sym' className='ui_button' onClick={this.update_kernel_symmetry}/>
+                                                    <h4 className='ctrl_module_sub_title'>z-diag 2</h4>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className='ui_row' style={{justifyContent:'center'}}>
+                                            <input type='checkbox' id='full_sym' className='ui_button' onClick={this.update_kernel_symmetry}/>
+                                            <h4 className='ctrl_module_sub_title'>full</h4>
+                                        </div>
+                                        <div style={{height:'0.5em'}}/>
+                                        <button className='ui_button' onClick={this.randomize_kernel} style={{padding:'0.5em', width:'100%'}}>randomize kernel</button>
+                                    </div>
+                                </div>
                             </div>
-                            
+
+
+                            <div id='_2D' style={{scale:'100%', height:'100%'}}>
+                                <hr/>
+                                <div id='ctrl_module'>
+                                    <h2 className='ctrl_module_title'>automata</h2>
+                                    <div style={{paddingBottom:'0.5em'}}>
+                                        <h4 className='ctrl_module_sub_title'>load preset</h4>
+                                        <select className='dropdown_input' defaultValue={'worms'} id='load_automata_2d' onChange={this.load_automata}>
+                                            <option value='cells'>cells 🦠</option>
+                                            <option value='circuit'>circuit 💻</option>
+                                            <option value='comets'>comets ☄️</option>
+                                            <option value='game_of_life'>game of life ♟️</option>
+                                            <option value='lands'>lands 🌍</option>
+                                            <option value='mold'>mold 🧫</option>
+                                            <option value='mystic'>mystic ✨</option>
+                                            <option value='paths'>paths 🚪</option>
+                                            <option value='stars'>stars ⭐</option>
+                                            <option value='smoke'>smoke ☁️</option>
+                                            <option value='surf'>surf 🏄</option>
+                                            <option value='waves'>waves 🌊</option>
+                                            <option value='worms'>worms 🐍</option>
+                                            <option value='custom' disabled>custom 🛠️</option>
+                                        </select>
+                                    </div>
+
+                                    <div style={{paddingBottom:'1em'}}>
+                                        <h4 className='ctrl_module_sub_title'>seed</h4>
+                                        <div className='ui_row'>
+                                            <input id='seed_field' className='ui_text_field' maxLength={Sim.SEED_LEN}></input>
+                                            <div style={{paddingRight:'0.5em'}}/>
+                                            <button id='randomize_seed' className='ui_button' style={{width:'35%'}} onClick={this.randomize_seed}>new seed</button>
+                                        </div>
+                                    </div>
+                                    <button id='reset_button' className='ui_button' onClick={this.reset_sim_automata} style={{padding:'0.5em', width:'100%'}}>reset automata</button>
+                                </div>
+
+                                <hr/>
+                                <div id='ctrl_module'>
+                                    <h2 className='ctrl_module_title'>options</h2>
+                                    <h4 className='ctrl_module_sub_title'>brush size</h4>
+                                    <div className='ui_row'>
+                                        <div className='slider_container'>
+                                            <input type='range' min='1' max='256' defaultValue='64' className='slider' id='brush_slider' onChange={this.set_sim_brush}/>
+                                        </div>
+                                        <h4 style={{width:'24px', paddingLeft:'12px', textAlign:'center', color:'rgba(0, 0, 0, 0.5)'}} id='brush_text'>64</h4>
+                                    </div>
+
+                                    <h4 className='ctrl_module_sub_title'>zoom level</h4>
+                                    <div className='ui_row' style={{paddingBottom:'0.5em'}}>
+                                        <div className='slider_container'>
+                                            <input type='range' min='0.6' max='16.0' defaultValue='2.0' step='0.2' className='slider' id='zoom_slider' onChange={this.update_zoom_text} onMouseUp={this.set_sim_zoom}/>
+                                        </div>
+                                        <h4 style={{width:'24px', paddingLeft:'12px', textAlign:'center', color:'rgba(0, 0, 0, 0.5)'}} id='zoom_text'>2.0</h4>
+                                    </div>
+                                </div>
+
+                                <hr/>
+                                <div id='ctrl_module'>
+                                    <h2 className='ctrl_module_title'>shader</h2>
+                                    <div>
+                                        <select className='dropdown_input' name='shader' id='load_shader' onChange={this.set_sim_shader}>
+                                            <option value='bnw'>black and white</option>
+                                            <option value='alpha'>alpha channel</option>
+                                            <option value='rgb'>red green blue channels</option>
+                                            <option value='acid'>acid</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <hr/>
+                                <div id='ctrl_module'>
+                                    <h2 className='ctrl_module_title'>kernel 3x3</h2>
+                                    <div className='ui_column' style={{justifyContent:'center'}}>
+                                        <div className='ui_row'>
+                                            <input id='k0' type='number'step='0.001' className='kernel_input' onChange={() => this.set_sim_kernel(0)} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
+                                            <input id='k1' type='number'step='0.001' className='kernel_input' onChange={() => this.set_sim_kernel(1)} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
+                                            <input id='k2' type='number'step='0.001' className='kernel_input' onChange={() => this.set_sim_kernel(2)} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
+                                        </div>
+                                        <div className='ui_row'>
+                                            <input id='k3' type='number'step='0.001' className='kernel_input' onChange={() => this.set_sim_kernel(3)} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
+                                            <input id='k4' type='number'step='0.001' className='kernel_input' onChange={() => this.set_sim_kernel(4)} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
+                                            <input id='k5' type='number'step='0.001' className='kernel_input' onChange={() => this.set_sim_kernel(5)} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
+                                        </div>
+                                        <div className='ui_row'>
+                                            <input id='k6' type='number'step='0.001' className='kernel_input' onChange={() => this.set_sim_kernel(6)} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
+                                            <input id='k7' type='number'step='0.001' className='kernel_input' onChange={() => this.set_sim_kernel(7)} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
+                                            <input id='k8' type='number'step='0.001' className='kernel_input' onChange={() => this.set_sim_kernel(8)} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
+                                        </div>
+                                    </div>
+
+                                    <div style={{padding:'0.5em'}}>
+                                        <div className='ui_column'>
+                                            <div className='ui_row'>
+                                                <input type='checkbox' id='x_sym' className='ui_button' onClick={this.update_kernel_symmetry}/>
+                                                <h4 className='ctrl_module_sub_title'>full symmetry</h4>
+                                            </div>
+                                            <div className='ui_row'>
+                                                <input type='checkbox' id='v_sym' className='ui_button' onClick={this.update_kernel_symmetry}/>
+                                                <h4 className='ctrl_module_sub_title'>vertical symmetry</h4>
+                                            </div>
+                                            <div className='ui_row'>
+                                                <input type='checkbox' id='h_sym' className='ui_button' onClick={this.update_kernel_symmetry}/>
+                                                <h4 className='ctrl_module_sub_title'>horizontal symmetry</h4>
+                                            </div>
+                                            <div className='ui_row'>
+                                                <input type='checkbox' id='f_sym' className='ui_button' onClick={this.update_kernel_symmetry}/>
+                                                <h4 className='ctrl_module_sub_title'>forward diagonal symmetry</h4>
+                                            </div>
+                                            <div className='ui_row' style={{paddingBottom:'0.5em'}}>
+                                                <input type='checkbox' id='b_sym' className='ui_button' onClick={this.update_kernel_symmetry}/>
+                                                <h4 className='ctrl_module_sub_title'>backward diagonal symmetry</h4>
+                                            </div>
+                                        </div>
+                                        <button className='ui_button' onClick={this.randomize_kernel} style={{padding:'0.5em', width:'100%'}}>randomize kernel</button>
+                                    </div>
+                                </div>
+                            </div>
+
                             <hr/>
                             <div id='ctrl_module'>
-                                <h2 className='ctrl_module_title'>shader</h2>
+                                <h2 className='ctrl_module_title'>activation function</h2>
                                 <div>
-                                    <select className='dropdown_input' name='shader' id='load_shader' onChange={this.set_sim_shader}>
-                                        <option value='bnw'>black and white</option>
-                                        <option value='alpha'>alpha channel</option>
-                                        <option value='rgb'>red green blue channels</option>
-                                        <option value='acid'>acid</option>
+                                    <textarea id='af' className='activation_input' onChange={this.update_sim_activation}/>
+                                </div>
+                                <h4 className='ctrl_module_sub_title'>load activation function</h4>
+                                <div>
+                                    <select className='dropdown_input' name='automata' id='load_activation' onChange={this.set_sim_activation}>
+                                        <option value='id'>identity</option>
+                                        <option value='sin'>sin</option>
+                                        <option value='cos'>cos</option>
+                                        <option value='pow'>power</option>
+                                        <option value='abs'>absolute value</option>
+                                        <option value='tanh'>tanh</option>
+                                        <option value='inv_gaus'>inverse gaussian</option>
+                                        <option value='custom' disabled>custom 🛠️</option>
                                     </select>
                                 </div>
                             </div>
-                            
+
                             <hr/>
                             <div id='ctrl_module'>
-                                <h2 className='ctrl_module_title'>kernel 3x3</h2>
-                                <div className='ui_column' style={{justifyContent:'center'}}>
-                                    <div className='ui_row'>
-                                        <input id='k0' type='number'step='0.001' className='kernel_input' onChange={() => this.set_sim_kernel(0)} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
-                                        <input id='k1' type='number'step='0.001' className='kernel_input' onChange={() => this.set_sim_kernel(1)} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
-                                        <input id='k2' type='number'step='0.001' className='kernel_input' onChange={() => this.set_sim_kernel(2)} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
-                                    </div>
-                                    <div className='ui_row'>
-                                        <input id='k3' type='number'step='0.001' className='kernel_input' onChange={() => this.set_sim_kernel(3)} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
-                                        <input id='k4' type='number'step='0.001' className='kernel_input' onChange={() => this.set_sim_kernel(4)} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
-                                        <input id='k5' type='number'step='0.001' className='kernel_input' onChange={() => this.set_sim_kernel(5)} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
-                                    </div>
-                                    <div className='ui_row'>
-                                        <input id='k6' type='number'step='0.001' className='kernel_input' onChange={() => this.set_sim_kernel(6)} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
-                                        <input id='k7' type='number'step='0.001' className='kernel_input' onChange={() => this.set_sim_kernel(7)} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
-                                        <input id='k8' type='number'step='0.001' className='kernel_input' onChange={() => this.set_sim_kernel(8)} style={{fontFamily:'Monaco, monospace', fontSize:'1em'}}/>
-                                    </div>
+                                <h2 className='ctrl_module_title'>save & load automata</h2>
+                                <h4 className='ctrl_module_sub_title'>automata name</h4>
+                                <div className='ui_row'>
+                                    <input id='name' className='ui_text_field' defaultValue={'my_automata'}/>
                                 </div>
-
-                                <div style={{padding:'0.5em'}}>
-                                    <div className='ui_column'>
-                                        <div className='ui_row'>
-                                            <input type='checkbox' id='x_sym' className='ui_button' onClick={this.update_kernel_symmetry}/>
-                                            <h4 className='ctrl_module_sub_title'>full symmetry</h4>
-                                        </div>
-                                        <div className='ui_row'>
-                                            <input type='checkbox' id='v_sym' className='ui_button' onClick={this.update_kernel_symmetry}/>
-                                            <h4 className='ctrl_module_sub_title'>vertical symmetry</h4>
-                                        </div>
-                                        <div className='ui_row'>
-                                            <input type='checkbox' id='h_sym' className='ui_button' onClick={this.update_kernel_symmetry}/>
-                                            <h4 className='ctrl_module_sub_title'>horizontal symmetry</h4>
-                                        </div>
-                                        <div className='ui_row'>
-                                            <input type='checkbox' id='f_sym' className='ui_button' onClick={this.update_kernel_symmetry}/>
-                                            <h4 className='ctrl_module_sub_title'>forward diagonal symmetry</h4>
-                                        </div>
-                                        <div className='ui_row' style={{paddingBottom:'0.5em'}}>
-                                            <input type='checkbox' id='b_sym' className='ui_button' onClick={this.update_kernel_symmetry}/>
-                                            <h4 className='ctrl_module_sub_title'>backward diagonal symmetry</h4>
-                                        </div>
-                                    </div>
-                                    <button className='ui_button' onClick={this.randomize_kernel} style={{padding:'0.5em', width:'100%'}}>randomize kernel</button>
+                                <div style={{height:'0.5em'}}/>
+                                <div className='ui_row'>
+                                    <button className='ui_button' onClick={this.export_automata} style={{padding:'0.5em', width:'100%'}}>export</button>
+                                    <div style={{width:'0.5em'}}/>
+                                    <button className='ui_button' onClick={this.import_automata} style={{padding:'0.5em', width:'100%'}}>import</button>
                                 </div>
                             </div>
 
-                        </div>
-
-                        <hr/>
-                        <div id='ctrl_module'>
-                            <h2 className='ctrl_module_title'>activation function</h2>
-                            <div>
-                                <textarea id='af' className='activation_input' onChange={this.update_sim_activation}/>
-                            </div>
-                            <h4 className='ctrl_module_sub_title'>load activation function</h4>
-                            <div>
-                                <select className='dropdown_input' name='automata' id='load_activation' onChange={this.set_sim_activation}>
-                                    <option value='id'>identity</option>
-                                    <option value='sin'>sin</option>
-                                    <option value='cos'>cos</option>
-                                    <option value='pow'>power</option>
-                                    <option value='abs'>absolute value</option>
-                                    <option value='tanh'>tanh</option>
-                                    <option value='inv_gaus'>inverse gaussian</option>
-                                    <option value='custom' disabled>custom 🛠️</option>
-                                </select>
+                            <hr/>
+                            <div id='ctrl_module'>
+                                <div className='ui_info'>
+                                    <h4 className='ctrl_module_sub_title' style={{fontSize:'1em'}}>res: <span id='res'/></h4>
+                                    <h4 className='ctrl_module_sub_title' style={{fontSize:'1em'}}>fps: <span id='fps'/></h4>
+                                </div>
                             </div>
                         </div>
-
-                        <hr/>
-                        <div id='ctrl_module'>
-                            <h2 className='ctrl_module_title'>save & load automata</h2>
-                            <h4 className='ctrl_module_sub_title'>automata name</h4>
-                            <div className='ui_row'>
-                                <input id='name' className='ui_text_field' defaultValue={'my_automata'}/>
-                            </div>
-                            <div style={{height:'0.5em'}}/>
-                            <div className='ui_row'>
-                                <button className='ui_button' onClick={this.export_automata} style={{padding:'0.5em', width:'100%'}}>export</button>
-                                <div style={{width:'0.5em'}}/>
-                                <button className='ui_button' onClick={this.import_automata} style={{padding:'0.5em', width:'100%'}}>import</button>
-                            </div>
-                        </div>
-                                                
+                                      
                         {/* extra padding at the bottom of the window */}
                         <div style={{height:'4em'}}/>
-
-                        <div id='ctrl_module'>
-                            <div className='ui_info'>
-                                <h4 className='ctrl_module_sub_title'>fps: <span id='fps'/></h4>
-                                <h4 className='ctrl_module_sub_title'>res: <span id='res'/></h4>
-                            </div>
-                        </div>
                     </div>
                 </div>
 
