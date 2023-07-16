@@ -13,6 +13,7 @@ interface ControlPanelInterface {
 class ControlWindow extends React.Component<ControlPanelInterface, {}> {
     ui_init: boolean;
     ui_open: boolean;
+    init_3D: boolean;
     customize_open: boolean;
     anti_alias: boolean;
     seed: string;
@@ -21,6 +22,7 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
         super(props);
         this.ui_init = false;
         this.ui_open = true;
+        this.init_3D = false;
         this.customize_open = false;
         this.anti_alias = false;
         this.seed = 'seed';
@@ -187,7 +189,10 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
             
         }
         else if (sim.mode === SimMode.Sim3D) {
-            // TODO find and load interesting 3d automata
+            let menu = document.getElementById('load_automata_3d') as HTMLSelectElement;
+            let res = this.fetch_json_file(`../automata/3D/${menu.value}_3D.json`);
+            let seed = sim.generate_seed(Sim.SEED_LEN);
+            res.then((data) => {this.load_automata_json(data, false, seed)});
         }
     }
 
@@ -526,6 +531,14 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
         }
         this.update_kernel(sim.get_kernel() as Float32Array);
         this.update_activation(sim.get_activation() as string, true);
+
+        // initialize 3D default automata
+        if (sim.mode === SimMode.Sim3D) {
+            if (!this.init_3D) {
+                this.init_3D = true;
+                this.load_automata();
+            }
+        }
     }
 
     toggle_window() {
@@ -1133,7 +1146,7 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
             // set kernel
             this.update_kernel(kernel);
             sim.set_kernel(kernel);
-            let menu = document.getElementById('load_automata_2d') as HTMLSelectElement;
+            let menu = document.getElementById('load_automata_3d') as HTMLSelectElement;
             menu.value = 'custom';
         }
     }
@@ -1295,7 +1308,10 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
                                     <h2 className='ctrl_module_title'>automata</h2>
                                     <div style={{paddingBottom:'0.5em'}}>
                                         <h4 className='ctrl_module_sub_title'>load preset</h4>
-                                        <select className='dropdown_input' name='automata' id='load_automata_3d' onChange={this.load_automata}>
+                                        <select className='dropdown_input' name='automata' id='load_automata_3d' defaultValue={'boil'} onChange={this.load_automata}>
+                                            <option value='boil'>boil 🍲</option>
+                                            <option value='neural'>neural 🧠</option>
+                                            <option value='power'>power 🔥</option>
                                             <option value='custom' disabled>custom 🛠️</option>
                                         </select>
                                     </div>

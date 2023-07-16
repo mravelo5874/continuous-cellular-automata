@@ -5,10 +5,6 @@ import { RandomizeVolume } from './Volumes/RandomizeVolume';
 import { ComputeVolume } from './Volumes/ComputeVolume';
 import { RenderVolume } from './Volumes/RenderVolume';
 
-import { kernels_3d } from './Kernels3D';
-import { activations_3d } from './Activations3D';
-
-
 export { Sim3D, Colormap3D }
 
 enum Colormap3D { cool_warm, plasma, virdis, rainbow, green, ygb, END }
@@ -45,8 +41,35 @@ class Sim3D {
 
     constructor(_sim: Sim) {
         this.sim = _sim;
-        this.kernel = kernels_3d.default_kernel();
-        this.activation = activations_3d.default_activation();
+        this.kernel = new Float32Array([
+            0.3772183954715729,
+            -0.19253762066364288,
+            0.09050115942955017,
+            -0.19253762066364288,
+            0.4714828431606293,
+            -0.19253762066364288,
+            0.09050115942955017,
+            -0.19253762066364288,
+            0.3772183954715729,
+            -0.19253762066364288,
+            0.4714828431606293,
+            -0.19253762066364288,
+            0.4714828431606293,
+            -0.9891831278800964,
+            0.4714828431606293,
+            -0.19253762066364288,
+            0.4714828431606293,
+            -0.19253762066364288,
+            0.09050115942955017,
+            -0.19253762066364288,
+            0.3772183954715729,
+            -0.19253762066364288,
+            0.4714828431606293,
+            -0.19253762066364288,
+            0.3772183954715729,
+            -0.19253762066364288,
+            0.09050115942955017]);
+        this.activation = 'return cos(x);';
         
         // create volume datas
         this.set_size(this.size, false);

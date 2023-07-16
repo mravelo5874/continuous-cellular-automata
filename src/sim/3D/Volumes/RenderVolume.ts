@@ -382,7 +382,8 @@ void main() {
     vec3 p = v_eye + t_hit.x * ray;
     for (float t = t_hit.x; t < t_hit.y; t += dt) {
         // sample volume
-        float val = texture(u_volume, p + vec3(0.5, 0.5, 0.5)).r;
+        vec3 pos = p + 0.5;
+        float val = texture(u_volume, pos).r;
 
         // get color from transfer function
         float alpha = pow(2.0, val) - 1.0;

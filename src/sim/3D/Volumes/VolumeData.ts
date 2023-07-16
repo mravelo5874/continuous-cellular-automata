@@ -27,12 +27,10 @@ class VolumeData {
         gl.texParameteri(gl.TEXTURE_3D, gl.TEXTURE_WRAP_S, gl.REPEAT);
         gl.texParameteri(gl.TEXTURE_3D, gl.TEXTURE_WRAP_T, gl.REPEAT);
         gl.texParameteri(gl.TEXTURE_3D, gl.TEXTURE_WRAP_R, gl.REPEAT);
-        // NOTE: We pass in data parameter as null since we don't want it on the CPU
-        // NOTE: We are using two channels: [state, total_neighbours]
-        gl.pixelStorei(gl.UNPACK_ALIGNMENT, 2);
-        gl.pixelStorei(gl.PACK_ALIGNMENT, 2);
+        // NOTE: We are using ONE channel: [value]
+        gl.pixelStorei(gl.UNPACK_ALIGNMENT, 1);
+        gl.pixelStorei(gl.PACK_ALIGNMENT, 1);
         gl.texImage3D(gl.TEXTURE_3D, 0, gl.RGBA, s, s, s, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
-
         // create framebuffers for layers of volume
         let frame_buffers = []
         const max_layers = gl.getParameter(gl.MAX_COLOR_ATTACHMENTS);

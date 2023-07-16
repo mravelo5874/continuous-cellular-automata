@@ -229,6 +229,7 @@ class RandomizeVolume {
         gl.disable(gl.DEPTH_TEST);
         gl.disable(gl.CULL_FACE);
         gl.disable(gl.BLEND);
+        gl.blendFunc(gl.ONE, gl.ONE);
 
         let rng = new Rand(_seed);
 
