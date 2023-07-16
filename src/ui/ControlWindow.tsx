@@ -1310,12 +1310,17 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
                                         <h4 className='ctrl_module_sub_title'>load preset</h4>
                                         <select className='dropdown_input' name='automata' id='load_automata_3d' defaultValue={'boil'} onChange={this.load_automata}>
                                             <option value='boil'>boil 🍲</option>
+                                            <option value='erosion'>erosion 🏔️</option>
+                                            <option value='fluids'>fluids 🥣</option>
+                                            <option value='molten'>molten 🌋</option>
                                             <option value='neural'>neural 🧠</option>
+                                            <option value='ocean'>ocean 🐟</option>
                                             <option value='power'>power 🔥</option>
+                                            <option value='pulsar'>pulsar 🌌</option>
                                             <option value='custom' disabled>custom 🛠️</option>
                                         </select>
                                     </div>
-                                    <div style={{paddingBottom:'1em'}}>
+                                    <div style={{paddingBottom:'0.5em'}}>
                                         <h4 className='ctrl_module_sub_title'>seed</h4>
                                         <div className='ui_row'>
                                             <input id='seed_field_3d' className='ui_text_field' maxLength={Sim.SEED_LEN}></input>
@@ -1323,24 +1328,24 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
                                             <button id='randomize_seed' className='ui_button' style={{width:'35%'}} onClick={this.randomize_seed}>new seed</button>
                                         </div>
                                     </div>
-                                    <div className='ui_row'>
+                                    <div className='ui_row' style={{paddingBottom:'0.5em'}}>
                                         <input type='checkbox' id='toggle_reset_cam' className='ui_button'/>
                                         <h4 className='ctrl_module_sub_title'>reset camera</h4>
                                     </div>
-                                    <h4 className='ctrl_module_sub_title'>fill region</h4>
+                                    {/* <h4 className='ctrl_module_sub_title'>fill region</h4>
                                     <div className='ui_row'>
                                         <div className='slider_container'>
-                                            <input type='range' min='0' max='1.0' defaultValue='0.2' step='0.01' className='slider' id='region_slider' onChange={this.set_sim_region}/>
+                                            <input type='range' min='0' max='1.0' defaultValue='1.0' step='0.01' className='slider' id='region_slider' onChange={this.set_sim_region}/>
                                         </div>
-                                        <h4 style={{width:'24px', paddingLeft:'12px', textAlign:'center', color:'rgba(0, 0, 0, 0.5)'}} id='region_text'>0.2</h4>
+                                        <h4 style={{width:'24px', paddingLeft:'12px', textAlign:'center', color:'rgba(0, 0, 0, 0.5)'}} id='region_text'>1.0</h4>
                                     </div>
                                     <h4 className='ctrl_module_sub_title'>fill density</h4>
                                     <div className='ui_row' style={{paddingBottom:'0.5em'}}>
                                         <div className='slider_container'>
-                                            <input type='range' min='0' max='1.0' defaultValue='0.2' step='0.01' className='slider' id='density_slider' onChange={this.set_sim_density}/>
+                                            <input type='range' min='0' max='1.0' defaultValue='1.0' step='0.01' className='slider' id='density_slider' onChange={this.set_sim_density}/>
                                         </div>
-                                        <h4 style={{width:'24px', paddingLeft:'12px', textAlign:'center', color:'rgba(0, 0, 0, 0.5)'}} id='density_text'>0.2</h4>
-                                    </div>
+                                        <h4 style={{width:'24px', paddingLeft:'12px', textAlign:'center', color:'rgba(0, 0, 0, 0.5)'}} id='density_text'>1.0</h4>
+                                    </div> */}
                                     <button id='reset_button' className='ui_button' onClick={this.reset_sim_automata} style={{padding:'0.5em', width:'100%'}}>reset automata</button>
                                 </div>
 

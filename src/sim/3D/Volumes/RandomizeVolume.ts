@@ -15,8 +15,8 @@ class RandomizeVolume {
     vbo: WebGLBuffer | null;
     vao: WebGLVertexArrayObject | null;
     programs: { [key: number]: PRGM_LOC } = {};
-    region: number = 0.2;
-    density: number = 0.2;
+    region: number = 1.0;
+    density: number = 1.0;
 
     constructor(_sim: Sim) {
         this.sim = _sim;
