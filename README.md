@@ -1,3 +1,5 @@
+![alt text](https://github.com/mravelo5874/continuous-cellular-automata/public/gifs/worms_3c.gif)
+
 # Continuous Cellular Automata
 
 Welcome to my continuous cellular automata simulations!
