@@ -17,7 +17,7 @@ A great inspiration for this project was https://neuralpatterns.io by [Max Robin
 
 If you wish to check out the code for this project, visit the [github repository](https://github.com/mravelo5874/continuous-cellular-automata).
 
-**You can interact with this project on [my website](https://marcoravelo.com/).**
+- You can interact with this project on my website [here](https://marcoravelo.com/).
 
 ![alt text](https://github.com/mravelo5874/continuous-cellular-automata/blob/main/public/gifs/worms_1c.gif)
 > 'worms' 2D automata preset using the 'black and white' shader.
