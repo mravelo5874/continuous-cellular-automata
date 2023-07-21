@@ -1,4 +1,4 @@
-![alt text](https://github.com/mravelo5874/continuous-cellular-automata/blob/main/public/gifs/worms_3c.gif)
+![alt text](https://github.com/mravelo5874/continuous-cellular-automata/blob/main/public/gifs/worms_1c.gif)
 
 # Continuous Cellular Automata
 
@@ -48,4 +48,9 @@ You can view your canvas's resolution at the bottom of the gui menu. Keep in min
 [TODO] write explanation here.
 
 ## Gallery
-[TODO] show examples here.
+
+![alt text](https://github.com/mravelo5874/continuous-cellular-automata/blob/main/public/gifs/worms_3c.gif)
+'worms' preset using the 'red green blue channels' shader.
+
+![alt text](https://github.com/mravelo5874/continuous-cellular-automata/blob/main/public/gifs/cells_1c.gif)
+'cells' preset using the 'alpha channel' shader.
