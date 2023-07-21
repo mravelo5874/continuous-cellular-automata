@@ -1,5 +1,5 @@
-![alt text](https://github.com/mravelo5874/continuous-cellular-automata/blob/main/public/gifs/fluids_3d.gif)
-> 'fluids' 3D automata preset using the 'plasma' colormap.
+![alt text](https://github.com/mravelo5874/continuous-cellular-automata/blob/main/public/gifs/fission_3d.gif)
+> 'fission' 3D automata preset using the 'yellow green blue' colormap.
 
 # Continuous Cellular Automata
 
@@ -24,8 +24,8 @@ If you wish to check out the code for this project, visit the [github repository
 
 [TODO] write an explanation here.
 
-![alt text](https://github.com/mravelo5874/continuous-cellular-automata/blob/main/public/gifs/fission_3d.gif)
-> 'fission' 3D automata preset using the 'yellow green blue' colormap.
+![alt text](https://github.com/mravelo5874/continuous-cellular-automata/blob/main/public/gifs/fluids_3d.gif)
+> 'fluids' 3D automata preset using the 'plasma' colormap.
 
 # Instructions
 
