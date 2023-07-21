@@ -1,9 +1,9 @@
 ![alt text](https://github.com/mravelo5874/continuous-cellular-automata/blob/main/public/gifs/fluids_3d.gif)
-'fluids' 3D automata preset using the 'plasma' colormap.
+> 'fluids' 3D automata preset using the 'plasma' colormap.
 
 # Continuous Cellular Automata
 
-> Welcome to my continuous cellular automata simulations!
+*Welcome to my continuous cellular automata simulations!*
 
 This application lets you explore both 2D and 3D continuous cellular automata by modifying their kernel values and activation function. There are a variety of presets to choose from for each simulation, each showcasing the incredible patterns that emerge from simple mathematical operations.
 
@@ -18,7 +18,7 @@ A great inspiration for this project was https://neuralpatterns.io by Max Robins
 If you wish to check out the code for this project, visit the (github repository)[https://github.com/mravelo5874/continuous-cellular-automata].
 
 ![alt text](https://github.com/mravelo5874/continuous-cellular-automata/blob/main/public/gifs/worms_1c.gif)
-'worms' 2D automata preset using the 'black and white' shader.
+> 'worms' 2D automata preset using the 'black and white' shader.
 
 # Instructions
 
@@ -49,7 +49,7 @@ If you wish to customize your automata or load some presets, pressing the 'custo
 [TODO] 3D automata options here.
 
 ![alt text](https://github.com/mravelo5874/continuous-cellular-automata/blob/main/public/gifs/fission_3d.gif)
-'fission' 3D automata preset using the 'yellow green blue' colormap.
+> 'fission' 3D automata preset using the 'yellow green blue' colormap.
 
 # What are Continuous Cellular Automata?
 
@@ -58,11 +58,11 @@ If you wish to customize your automata or load some presets, pressing the 'custo
 ## Gallery
 
 ![alt text](https://github.com/mravelo5874/continuous-cellular-automata/blob/main/public/gifs/worms_3c.gif)
-'worms' 2D automata using the 'red green blue channels' shader.
+> 'worms' 2D automata using the 'red green blue channels' shader.
 
 ![alt text](https://github.com/mravelo5874/continuous-cellular-automata/blob/main/public/gifs/cells_1c.gif)
-'cells' 2D automata using the 'alpha channel' shader.
+> 'cells' 2D automata using the 'alpha channel' shader.
 
 ![alt text](https://github.com/mravelo5874/continuous-cellular-automata/blob/main/public/gifs/power_3d.gif)
-'power' 3D automata preset using the 'green' colormap.
+> 'power' 3D automata preset using the 'green' colormap.
 
