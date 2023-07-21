@@ -13,12 +13,19 @@ Switching over to 3D, you will notice a very different looking simulation. The a
 
 This website started out as a final project for my graphics course at UT Austin. It has since evolved to incorporate a myriad of customizations, allowing users to explore a near infinite amount of possibilities that continuous cellular automata allow for.
 
-A great inspiration for this project was https://neuralpatterns.io by Max Robinson [GitHub](https://github.com/MaxRobinsonTheGreat) which lets users explore 2D continuous cellular automata (though they refer to it as neural cellular automata). Another great source of help was https://fiendchain.github.io/3D-Cellular-Automata/ by William Yang [GitHub](https://github.com/FiendChain) which lets users play with classical 3D cellular automata. Please check out their work as this project would have not been possible without them!
+A great inspiration for this project was https://neuralpatterns.io by [Max Robinson](https://github.com/MaxRobinsonTheGreat) which lets users explore 2D continuous cellular automata (though they refer to it as neural cellular automata). Another great source of help was https://fiendchain.github.io/3D-Cellular-Automata/ by [William Yang](https://github.com/FiendChain) which lets users play with classical 3D cellular automata. Please check out their work as this project would have not been possible without them!
 
-If you wish to check out the code for this project, visit the (github repository)[https://github.com/mravelo5874/continuous-cellular-automata].
+If you wish to check out the code for this project, visit the [github repository](https://github.com/mravelo5874/continuous-cellular-automata).
 
 ![alt text](https://github.com/mravelo5874/continuous-cellular-automata/blob/main/public/gifs/worms_1c.gif)
 > 'worms' 2D automata preset using the 'black and white' shader.
+
+# What are Continuous Cellular Automata?
+
+[TODO] write an explanation here.
+
+![alt text](https://github.com/mravelo5874/continuous-cellular-automata/blob/main/public/gifs/fission_3d.gif)
+> 'fission' 3D automata preset using the 'yellow green blue' colormap.
 
 # Instructions
 
@@ -47,13 +54,6 @@ If you wish to customize your automata or load some presets, pressing the 'custo
 ### 3D Automata Options:
 
 [TODO] 3D automata options here.
-
-![alt text](https://github.com/mravelo5874/continuous-cellular-automata/blob/main/public/gifs/fission_3d.gif)
-> 'fission' 3D automata preset using the 'yellow green blue' colormap.
-
-# What are Continuous Cellular Automata?
-
-[TODO] write an explanation here.
 
 ## Gallery
 
