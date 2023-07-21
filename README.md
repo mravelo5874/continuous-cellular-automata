@@ -24,7 +24,19 @@ If you wish to check out the code for this project, visit the [github repository
 
 # What are Continuous Cellular Automata?
 
-[TODO] write an explanation here.
+If you look up continuous cellular automata on wikipedia, this is the result you will get:
+
+> A continuous automaton can be described as a cellular automaton extended so the valid states a cell can take are not just discrete (for example, the states consist of integers between 0 and 3), but continuous, for example, the real number range [0,1]. The cells however remain discretely separated from each other.
+
+This definition, while correct, provides a limited and some what unapparent view on the subject. In truth, continuous cellular automata expand upon classical cellular automata, where instead of each cell being limited to a single state, they are free to be represented by any real number. In the case of this project, each cell's value can be any number between 0 and 1. This is the basis for the name *continuous* cellular automata.
+
+0. In the 2D simulation, the canvas contains a grid of cells each initialized with a randomly generated number. When the zoom level is set to 1, each cell can be rendered by a single pixel. In order to get to the next state, a computation update must be performed. This computation update can be split into two distinct operations: a convolution and an activation.
+
+1. First, the convolution. Using a 3x3 grid of values referred to as a *kernel*, a cell's value is modified using its neighboring cells' values. Let's do this one step at a time. The first neighbor, one down and one to the left of the cell (-1, -1), is found and its value is stored. This value is multiplied by the kernel's respective value, one down and one to the left of the center square (-1, -1). Then the next neighbor, one down from the cell (0, -1), is found and its value is multiplied by the kernel's respective value one down from the center square (0, -1). This is done for each of the cell's 8 adjacent neighbors as well as its own value found at (0, 0) from the center. The result is 9 numbers. Once we have these 9 numbers, we sum them up to a single number.
+
+2. Secondly, the activation. Once we have calculated the sum of values from the convolution step, we are left with a single number. This number is then *sent through* a function to get another number. That is all the activation function does; It maps one number to another. This final number is then clamped between 0 and 1 (in case it is out of bounds as a valid cell value). This number is the new value of the cell. 
+
+3. In order to complete a computation update, each cell must go through this process. The result is a new grid of cells which is then rendered to the canvas. You could most likely guess what happens next... the computation update happens again! And again and again, resulting in an infinite sequential set of states being rendered in real time, an animation. 
 
 ![alt text](https://github.com/mravelo5874/continuous-cellular-automata/blob/main/public/gifs/fluids_3d.gif)
 > 'fluids' 3D automata preset using the 'plasma' colormap.
@@ -97,3 +109,5 @@ If you wish to customize your automata or load some presets, pressing the 'custo
 
 ![alt text](https://github.com/mravelo5874/continuous-cellular-automata/blob/main/public/gifs/smoke_1c.gif)
 > 'smoke' 2D automata preset using the 'black and white' shader.
+
+
