@@ -1,4 +1,5 @@
-![alt text](https://github.com/mravelo5874/continuous-cellular-automata/blob/main/public/gifs/worms_1c.gif)
+![alt text](https://github.com/mravelo5874/continuous-cellular-automata/blob/main/public/gifs/fluids_3d.gif)
+'fluids' 3D automata preset using the 'plasma' colormap.
 
 # Continuous Cellular Automata
 
@@ -15,6 +16,9 @@ This website started out as a final project for my graphics course at UT Austin.
 A great inspiration for this project was https://neuralpatterns.io by Max Robinson [https://github.com/MaxRobinsonTheGreat] which lets users explore 2D continuous cellular automata (though they refer to it as neural cellular automata). Another great source of help was https://fiendchain.github.io/3D-Cellular-Automata/ by William Yang [https://github.com/FiendChain] which lets users play with classical 3D cellular automata. Please check out their work as this project would have not been possible without them!
 
 If you wish to check out the code for this project, visit the github repository at https://github.com/mravelo5874/continuous-cellular-automata.
+
+![alt text](https://github.com/mravelo5874/continuous-cellular-automata/blob/main/public/gifs/worms_1c.gif)
+'worms' 2D automata preset using the 'black and white' shader.
 
 # Instructions
 
@@ -44,6 +48,9 @@ You can view your canvas's resolution at the bottom of the gui menu. Keep in min
 
 [TODO] 3D automata options here.
 
+![alt text](https://github.com/mravelo5874/continuous-cellular-automata/blob/main/public/gifs/fission_3d.gif)
+'fission' 3D automata preset using the 'yellow green blue' colormap.
+
 # What are Continuous Cellular Automata?
 
 [TODO] write an explanation here.
@@ -55,4 +62,7 @@ You can view your canvas's resolution at the bottom of the gui menu. Keep in min
 
 ![alt text](https://github.com/mravelo5874/continuous-cellular-automata/blob/main/public/gifs/cells_1c.gif)
 'cells' preset using the 'alpha channel' shader.
+
+![alt text](https://github.com/mravelo5874/continuous-cellular-automata/blob/main/public/gifs/power_3d.gif)
+'power' 3D automata preset using the 'green' colormap.
 
