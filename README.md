@@ -72,28 +72,28 @@ If you wish to customize your automata or load some presets, pressing the 'custo
 ## Gallery
 
 ![alt text](https://github.com/mravelo5874/continuous-cellular-automata/blob/main/public/gifs/worms_3c.gif)
-> 'worms' 2D automata using the 'red green blue channels' shader.
+> 'worms' 2D automata preset using the 'red green blue channels' shader.
 
 ![alt text](https://github.com/mravelo5874/continuous-cellular-automata/blob/main/public/gifs/power_3d.gif)
 > 'power' 3D automata preset using the 'green' colormap.
 
 ![alt text](https://github.com/mravelo5874/continuous-cellular-automata/blob/main/public/gifs/cells_1c.gif)
-> 'cells' 2D automata using the 'alpha channel' shader.
+> 'cells' 2D automata preset using the 'alpha channel' shader.
 
 ![alt text](https://github.com/mravelo5874/continuous-cellular-automata/blob/main/public/gifs/gurgle_3d.gif)
 > 'gurgle' 3D automata preset using the 'cool warm' colormap.
 
 ![alt text](https://github.com/mravelo5874/continuous-cellular-automata/blob/main/public/gifs/comets_1c.gif)
-> 'comets' 2D automata using the 'black and white' shader.
+> 'comets' 2D automata preset using the 'black and white' shader.
 
 ![alt text](https://github.com/mravelo5874/continuous-cellular-automata/blob/main/public/gifs/computer_3d.gif)
 > 'computer' 3D automata preset using the 'rainbow' colormap.
 
 ![alt text](https://github.com/mravelo5874/continuous-cellular-automata/blob/main/public/gifs/paths_3c.gif)
-> 'paths' 2D automata using the 'red green blue channels' shader.
+> 'paths' 2D automata preset using the 'red green blue channels' shader.
 
 ![alt text](https://github.com/mravelo5874/continuous-cellular-automata/blob/main/public/gifs/anemone_3d.gif)
 > 'anemone' 3D automata preset using the 'cool warm' colormap.
 
 ![alt text](https://github.com/mravelo5874/continuous-cellular-automata/blob/main/public/gifs/smoke_1c.gif)
-> 'smoke' 2D automata using the 'black and white' shader.
+> 'smoke' 2D automata preset using the 'black and white' shader.
