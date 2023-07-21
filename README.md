@@ -14,7 +14,7 @@ A great inspiration for this project was https://neuralpatterns.io by Max Robins
 
 If you wish to check out the code for this project, visit the github repository at https://github.com/mravelo5874/continuous-cellular-automata.
 
-## Intructions
+# Intructions
 
 All interactions with the simulations are done using the gui menu and the mouse. The gui menu can be toggled on and off using the bottom left button. By default it is open.
 
@@ -22,7 +22,7 @@ You can toggle between the 2D and 3D simulations using the toggle at the top of 
 
 If you wish to customize your automata or load some presets, pressing the 'customize automata!' button will reveal many more options and tools to play with.
 
-# 2D Automata Options:
+### 2D Automata Options:
 
 The automata module allows you to load in some other preset which were hand-picked based on their interesting visuals. The seed field is the string used to generate the random state when the automata is reset. Pressing the 'new seed' button will generate a random number with 32 digits and the 'reset automata' button will reset the automata using the seed.
 
@@ -36,10 +36,14 @@ The activation function module let you change the activation function performed 
 
 The save & load automata lets you export and import your custom automata as a .json file. You can give your automata a name which will be used to name your file. Upon pressing export, your file will be downloaded to where your browser's default download folder is. 
 
-You can view your canvas's resolution at the bottom of the gui menu. Keep in mind that this resolution is dependent on the current zoom level. Setting the zoom level to 1.0 will provide a pixel-perfect canvas and the resolution will match your browser's window. You can also view the current fps of the simulation. Each frame, a new state is calculated and rendered to your canvas. 
+You can view your canvas's resolution at the bottom of the gui menu. Keep in mind that this resolution is dependent on the current zoom level. Setting the zoom level to 1.0 will provide a pixel-perfect canvas and the resolution will match your browser's window. You can also view the current fps of the simulation. Each frame, a new state is calculated and rendered to your canvas.
+
+### 3D Automata Options:
+
+[TODO] 3D automata options here.
 
 ## Explanation
-[TODO] write detailed explanation here
+[TODO] write explanation here.
 
 ## Gallery
-[TODO] show examples here
+[TODO] show examples here.
