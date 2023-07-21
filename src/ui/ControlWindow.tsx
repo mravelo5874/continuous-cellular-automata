@@ -1308,15 +1308,24 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
                                     <h2 className='ctrl_module_title'>automata</h2>
                                     <div style={{paddingBottom:'0.5em'}}>
                                         <h4 className='ctrl_module_sub_title'>load preset</h4>
-                                        <select className='dropdown_input' name='automata' id='load_automata_3d' defaultValue={'boil'} onChange={this.load_automata}>
+                                        <select className='dropdown_input' name='automata' id='load_automata_3d' defaultValue={'fission'} onChange={this.load_automata}>
+                                            <option value='anemone'>anemone 🏵️</option>
+                                            <option value='ants'>ants 🐜</option>
                                             <option value='boil'>boil 🍲</option>
+                                            <option value='computer'>computer 💻</option>
+                                            <option value='conglomerate'>conglomerate 🧫</option>
                                             <option value='erosion'>erosion 🏔️</option>
+                                            <option value='fission'>fission ⚗️</option>
                                             <option value='fluids'>fluids 🥣</option>
+                                            <option value='gurgle'>gurgle 🤿</option>
+                                            <option value='inflate'>inflate 🎈</option>
+                                            <option value='mitosis'>mitosis 🦠</option>
                                             <option value='molten'>molten 🌋</option>
                                             <option value='neural'>neural 🧠</option>
                                             <option value='ocean'>ocean 🐟</option>
                                             <option value='power'>power 🔥</option>
                                             <option value='pulsar'>pulsar 🌌</option>
+                                            <option value='pyramids'>pyramids 🏜️</option>
                                             <option value='custom' disabled>custom 🛠️</option>
                                         </select>
                                     </div>
