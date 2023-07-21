@@ -57,7 +57,7 @@ If you wish to customize your automata or load some presets, pressing the 'custo
 
 - The automata module allows you to load in some other presets which were hand-picked based on their interesting visuals. The seed field is the string used to generate the random state when the automata is reset. Pressing the 'new seed' button will generate a random number with 32 digits and the 'reset automata' button will reset the automata using the seed. The 'reset camera' toggle will reset the camera whenever you press the reset button.
 
-- The options module includes various toggles and sliders which affect the 3D automata simulation. The 'wrap' toggle lets the automata *wrap around* to the other side of the cube, meaning that automata on the very edge of the volume can affect and will be affected by the automata on the opposite side of the volume. By default, this is set as off. The 'skip frames' toggle lets the simulation calculate two states between renders. This is done to avoid certain visual artifacts which can be quite difficult to look at. By default this is set as on. Turn off at your own disgression. The 'orbit' toggle lets the camera orbit the volume slowly when no input is detected. This is set as on by default. The 'volume size' slider lets your change the size of the volume. It corresponds to each of the three sides of the cube. So a volume of size 64 will contain 64\*64\*64=262144 cells within it. The 'compute delay' slider lets you modify the computation speed relative to the renderer. A compute delay of 1 means that a state is computed each render frame. A compute delay of 8 means that a state is rendered every 8 render frames.
+- The options module includes various toggles and sliders which affect the 3D automata simulation. The 'wrap' toggle lets the automata *wrap around* to the other side of the cube, meaning that automata on the very edge of the volume can affect and will be affected by the automata on the opposite side of the volume. By default, this is set as off. The 'skip frames' toggle lets the simulation calculate two states between renders. This is done to avoid certain visual artifacts which can be quite difficult to look at. By default this is set as on. Turn off at your own discretion. The 'orbit' toggle lets the camera orbit the volume slowly when no input is detected. This is set as on by default. The 'volume size' slider lets your change the size of the volume. It corresponds to each of the three sides of the cube. So a volume of size 64 will contain 64\*64\*64=262144 cells within it. The 'compute delay' slider lets you modify the computation speed relative to the renderer. A compute delay of 1 means that a state is computed each render frame. A compute delay of 8 means that a state is rendered every 8 render frames.
 
 - The render module changes the visuals of the simulation. The 'blend' toggle blends the cells together (similar to anti-aliasing on the 2D simulation). The 'colormap' dropdown lets you choose between 6 different colormaps.
 
@@ -74,9 +74,26 @@ If you wish to customize your automata or load some presets, pressing the 'custo
 ![alt text](https://github.com/mravelo5874/continuous-cellular-automata/blob/main/public/gifs/worms_3c.gif)
 > 'worms' 2D automata using the 'red green blue channels' shader.
 
-![alt text](https://github.com/mravelo5874/continuous-cellular-automata/blob/main/public/gifs/cells_1c.gif)
-> 'cells' 2D automata using the 'alpha channel' shader.
-
 ![alt text](https://github.com/mravelo5874/continuous-cellular-automata/blob/main/public/gifs/power_3d.gif)
 > 'power' 3D automata preset using the 'green' colormap.
 
+![alt text](https://github.com/mravelo5874/continuous-cellular-automata/blob/main/public/gifs/cells_1c.gif)
+> 'cells' 2D automata using the 'alpha channel' shader.
+
+![alt text](https://github.com/mravelo5874/continuous-cellular-automata/blob/main/public/gifs/gurgle_3d.gif)
+> 'gurgle' 3D automata preset using the 'cool warm' colormap.
+
+![alt text](https://github.com/mravelo5874/continuous-cellular-automata/blob/main/public/gifs/comets_1c.gif)
+> 'comets' 2D automata using the 'black and white' shader.
+
+![alt text](https://github.com/mravelo5874/continuous-cellular-automata/blob/main/public/gifs/computer_3d.gif)
+> 'computer' 3D automata preset using the 'rainbow' colormap.
+
+![alt text](https://github.com/mravelo5874/continuous-cellular-automata/blob/main/public/gifs/paths_3c.gif)
+> 'paths' 2D automata using the 'red green blue channels' shader.
+
+![alt text](https://github.com/mravelo5874/continuous-cellular-automata/blob/main/public/gifs/anemone_3d.gif)
+> 'anemone' 3D automata preset using the 'cool warm' colormap.
+
+![alt text](https://github.com/mravelo5874/continuous-cellular-automata/blob/main/public/gifs/smoke_1c.gif)
+> 'smoke' 2D automata using the 'black and white' shader.
