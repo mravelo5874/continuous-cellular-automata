@@ -1,4 +1,4 @@
-![alt text](https://github.com/mravelo5874/continuous-cellular-automata/public/gifs/worms_3c.gif)
+![alt text](https://github.com/mravelo5874/continuous-cellular-automata/blob/main/public/gifs/worms_3c.gif)
 
 # Continuous Cellular Automata
 
