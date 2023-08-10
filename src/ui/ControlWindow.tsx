@@ -36,6 +36,7 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
         // this.on_key_down = this.on_key_down.bind(this);
         // this.on_key_down = this.on_key_up.bind(this);
         // set_sim
+        this.clear_sim_automata = this.clear_sim_automata.bind(this);
         this.reset_sim_automata = this.reset_sim_automata.bind(this);
         this.pause_sim = this.pause_sim.bind(this);
         this.set_sim_kernel = this.set_sim_kernel.bind(this);
@@ -677,6 +678,11 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
         let reset_cam = document.getElementById('toggle_reset_cam') as HTMLInputElement;
         let sim = this.props.sim;
         sim.reset(seed_field.value, reset_cam.checked);
+    }
+
+    clear_sim_automata() {
+        let sim = this.props.sim;
+        sim.clear();
     }
 
     pause_sim() {
@@ -1642,7 +1648,8 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
                                             <button id='randomize_seed' className='ui_button' style={{width:'35%'}} onClick={this.randomize_seed}>new seed</button>
                                         </div>
                                     </div>
-                                    <button id='reset_button' className='ui_button' onClick={this.reset_sim_automata} style={{padding:'0.5em', width:'100%'}}>reset automata</button>
+                                    <button id='reset_button' className='ui_button' onClick={this.reset_sim_automata} style={{padding:'0.5em', width:'100%', marginBottom:'1em'}}>reset automata</button>
+                                    <button id='clear_button' className='ui_button' onClick={this.clear_sim_automata} style={{padding:'0.5em', width:'100%'}}>clear automata</button>
                                 </div>
 
                                 <hr/>

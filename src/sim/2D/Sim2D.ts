@@ -68,6 +68,38 @@ class Sim2D {
         this.reset();
     }
 
+    clear() {
+        let gl = this.sim.context as WebGL2RenderingContext;
+        let pixels: Uint8Array = new Uint8Array(0);
+        let canvas = this.sim.canvas as HTMLCanvasElement;
+        const w = canvas.width
+        const h = canvas.height
+        pixels = generate_empty_state(w, h);
+        
+        this.textures = []
+        this.framebuffers = []
+        for (var ii = 0; ii < 2; ++ii) 
+        {
+            // create texture
+            var texture = this.create_setup_texture(gl)
+            this.textures.push(texture)
+            gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, w, h, 0, gl.RGBA, gl.UNSIGNED_BYTE, null)
+
+            // create a framebuffer
+            var fbo = gl.createFramebuffer() as WebGLFramebuffer
+            this.framebuffers.push(fbo)
+            gl.bindFramebuffer(gl.FRAMEBUFFER, fbo)
+        
+            // attach a texture to it.
+            var attachmentPoint = gl.COLOR_ATTACHMENT0;
+            gl.framebufferTexture2D(gl.FRAMEBUFFER, attachmentPoint, gl.TEXTURE_2D, texture, 0)
+        }
+
+        // set init pixels to texture 1
+        gl.bindTexture(gl.TEXTURE_2D, this.textures[1])
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, w, h, 0, gl.RGBA, gl.UNSIGNED_BYTE, pixels)
+    }
+
     reset(_seed?: string) {
         // prepare render context
         let gl = this.sim.context as WebGL2RenderingContext;

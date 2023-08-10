@@ -112,6 +112,17 @@ class Sim {
         }
     }
 
+    clear() {
+        switch (this.mode) {
+            default: break;
+            case SimMode.Sim2D:
+                this.sim2D?.clear();
+                break;
+            case SimMode.Sim3D:
+                break;
+            }
+    }
+
     render_loop() {
         // update canvas size
         if (CanvasResize.update_canvas) {
