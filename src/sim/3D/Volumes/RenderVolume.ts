@@ -4,6 +4,7 @@ import { VolumeData } from "./VolumeData";
 import { Colormap3D } from "../Sim3D";
 import { Cube } from '../Cube';
 import { Sim } from 'src/sim/Sim';
+import { Entity } from '../Entity';
 
 export { RenderVolume }
 
@@ -15,6 +16,7 @@ class RenderVolume {
     func: WebGLTexture | null;
 
     // camera
+    entity: Entity;
     camera: Camera;
     zoom: number = 3.0;
     cam_sense: number = 0.25;
@@ -45,6 +47,7 @@ class RenderVolume {
             0.1,
             1000.0
         )
+        this.entity = new Entity(this.camera.pos());
         
         this.func = null;
         this.init(gl);
@@ -96,10 +99,18 @@ class RenderVolume {
         let gl = this.sim.context as WebGL2RenderingContext;
         let bg = this.sim.bg_color;
 
+        // move camera
+        const move_dir: Vec3 = this.move_dir();
+        if (this.entity) {
+            this.entity.update(move_dir, this.sim.get_delta_time());
+            this.camera.setPos(this.entity.get_pos());
+        }
+        
+
         // rotate cube if there is no user input
         if (!this.sim.paused && this.orbit) {
             if (!this.sim.is_input) {
-                this.camera.orbitTarget(this.camera.up().normalize(), this.rot_speed * 0.05);
+                //this.camera.orbitTarget(this.camera.up().normalize(), this.rot_speed * 0.05);
             }
         }
 
@@ -304,6 +315,22 @@ class RenderVolume {
         this.camera.offsetDist(_delta*this.zoom_speed);
         this.zoom = this.camera.distance();
     }
+
+    move_dir() {
+        // move player in xz direction
+        let answer = new Vec3([0.0, 0.0, 0.0]);
+        if (this.sim.w_down) answer.add(this.camera.forward().negate()); 
+        if (this.sim.a_down) answer.add(this.camera.right().negate());
+        if (this.sim.s_down) answer.add(this.camera.forward());
+        if (this.sim.d_down) answer.add(this.camera.right());
+        // if in creative mode, can float up or down
+        if (this.sim.go_up) answer.add(Vec3.up.copy());
+        if (this.sim.go_down) answer.add(Vec3.up.copy().negate());
+        // return normalized direction
+        answer.normalize();
+        console.log("answer: " + answer.x + ", " + answer.y + ", " + answer.z);
+        return answer;
+    }
 }
 
 const _3D_VERT =
@@ -376,7 +403,7 @@ void main() {
     t_hit.x = max(t_hit.x, 0.0);
 
     // step 3: set step size to march through volume
-    float dt = 0.001;
+    float dt = 0.0005;
 
     // step 4: march ray through volume and sample
     vec3 p = v_eye + t_hit.x * ray;

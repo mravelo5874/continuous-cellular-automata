@@ -2,7 +2,7 @@ import { webgl_util } from "./WebGL-Util";
 import { CanvasResize } from "./CanvasResize";
 import { Sim2D, Shader2D } from "./2D/Sim2D";
 import { Colormap3D, Sim3D } from "./3D/Sim3D";
-import { Vec4 } from "../lib/TSM";
+import { Vec2, Vec3, Vec4 } from "../lib/TSM";
 import { delay } from "./Gen-Util"; 
 import Rand from "src/lib/rand-seed";
 
@@ -24,9 +24,18 @@ class Sim {
     paused: boolean;
     bg_color: Vec4;
 
+    // move controls
+    w_down: boolean = false;
+    a_down: boolean = false;
+    s_down: boolean = false;
+    d_down: boolean = false;
+    go_up: boolean = false;
+    go_down: boolean = false;
+
     // user input
     is_input: boolean = false;
     mouse_button: number = 0;
+    take_a_screenshot: boolean = false;
 
     // used to calculate time and fps
     fps: number = 0;
@@ -139,6 +148,14 @@ class Sim {
             break;
         }
 
+        // take a screenshot if prompted
+        if (this.take_a_screenshot) {
+            this.take_a_screenshot = false;
+            this.canvas?.toBlob((blob) => {
+                this.saveBlob(blob as Blob, `automata-screenshot-${this.canvas?.width}x${this.canvas?.height}.png`);
+            });
+        }
+
         // calculate current delta time
         this.frame_count++;
         const curr_time: number = Date.now();
@@ -155,6 +172,22 @@ class Sim {
 
         // request next frame to be drawn
         window.requestAnimationFrame(() => this.render_loop());
+    }
+
+    saveBlob = (function() {
+        const a = document.createElement('a');
+        document.body.appendChild(a);
+        a.style.display = 'none';
+        return function saveData(blob: Blob, fileName: string) {
+           const url = window.URL.createObjectURL(blob);
+           a.href = url;
+           a.download = fileName;
+           a.click();
+        };
+    }());
+
+    screenshot_canvas() {
+        this.take_a_screenshot = true;
     }
 
     /*****************************************************************

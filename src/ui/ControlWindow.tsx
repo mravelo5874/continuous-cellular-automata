@@ -27,7 +27,14 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
         this.anti_alias = false;
         this.seed = 'seed';
 
+        // event listeners for keyboard input
+        window.addEventListener("keydown", (key: KeyboardEvent) => this.on_key_down(key));
+        window.addEventListener("keyup", (key: KeyboardEvent) => this.on_key_up(key));
+
         // bind 'this' for class functions
+        // key functions
+        // this.on_key_down = this.on_key_down.bind(this);
+        // this.on_key_down = this.on_key_up.bind(this);
         // set_sim
         this.reset_sim_automata = this.reset_sim_automata.bind(this);
         this.pause_sim = this.pause_sim.bind(this);
@@ -65,6 +72,7 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
         this.randomize_kernel = this.randomize_kernel.bind(this);
         this.randomize_seed = this.randomize_seed.bind(this);
         // others
+        this.screenshot_canvas = this.screenshot_canvas.bind(this);
         this.export_automata = this.export_automata.bind(this);
         this.import_automata = this.import_automata.bind(this);
         this.get_symmetries_list = this.get_symmetries_list.bind(this);
@@ -89,6 +97,62 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
             blend.checked = true;
             // load in initial preset
             this.load_automata();
+        }
+    }
+
+    on_key_down(key: KeyboardEvent) {
+        let sim = this.props.sim;
+        switch (key.code) {
+        case "KeyW": 
+        case "ArrowUp":
+            sim.w_down = true;
+            break;
+        case "KeyA":
+        case "ArrowLeft":
+            sim.a_down = true;
+            break;
+        case "KeyS":
+        case "ArrowRight": 
+            sim.s_down = true;
+            break;
+        case "KeyD":
+        case "ArrowDown":
+            sim.d_down = true;
+            break;
+        case "Space":
+            sim.go_up = true;
+            break;
+        case "ShiftLeft":
+            sim.go_down = true;
+            break;
+        }
+    }
+
+    on_key_up(key: KeyboardEvent) {
+        let sim = this.props.sim;
+        switch (key.code) {
+        case "KeyW": 
+        case "ArrowUp":
+            sim.w_down = false;
+            break;
+        case "KeyA":
+        case "ArrowLeft":
+            sim.a_down = false;
+            break;
+        case "KeyS":
+        case "ArrowRight": 
+            sim.s_down = false;
+            break;
+        case "KeyD":
+        case "ArrowDown":
+            sim.d_down = false;
+            break;
+        case "Space":
+            sim.go_up = false;
+            break;
+        case "ShiftLeft":
+            sim.go_down = false;
+            break;
         }
     }
 
@@ -1155,6 +1219,11 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
         OTHER FUNCTIONS
     *****************************************************************/
 
+    screenshot_canvas() {
+        let sim = this.props.sim;
+        sim.screenshot_canvas();
+    }
+
     get_symmetries_list() {
         let sim = this.props.sim;
         if (sim.mode === SimMode.Sim2D) {
@@ -1276,6 +1345,14 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
                         <div style={{height:'0em'}}/>
 
                         <div id='ctrl_module'>
+                            <div className='ui_info'>
+                                <h4 className='ctrl_module_sub_title' style={{fontSize:'1em'}}>res: <span id='res'/></h4>
+                                <h4 className='ctrl_module_sub_title' style={{fontSize:'1em'}}>fps: <span id='fps'/></h4>
+                            </div>
+                        </div>
+                        <hr/>
+
+                        <div id='ctrl_module'>
                             <h4 className='ctrl_module_sub_title'>simulation mode</h4>
                             <div className='ui_row'>
                                 <h1 className='ctrl_module_title' style={{paddingRight:'0.5em'}}>2D</h1>
@@ -1295,6 +1372,10 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
                                 <input type='checkbox' id='toggle_aa' className='ui_button' onClick={this.toggle_sim_aa}/>
                                 <h4 className='ctrl_module_sub_title'>anti-aliasing</h4>
                             </div>
+                        </div>
+
+                        <div id='ctrl_module'>
+                            <button id='screenshot_button' className='ui_button' onClick={this.screenshot_canvas} style={{padding:'0.5em', width:'100%'}}>take a screenshot!</button>
                         </div>
 
                         <div id='ctrl_module'>

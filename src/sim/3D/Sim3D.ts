@@ -4,6 +4,7 @@ import { ClearVolume } from './Volumes/ClearVolume';
 import { RandomizeVolume } from './Volumes/RandomizeVolume';
 import { ComputeVolume } from './Volumes/ComputeVolume';
 import { RenderVolume } from './Volumes/RenderVolume';
+import { Vec3 } from 'src/lib/TSM';
 
 export { Sim3D, Colormap3D }
 
