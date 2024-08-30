@@ -216,22 +216,22 @@ class RenderVolume {
     set_colormap(_color: Colormap3D) {
         switch (_color) {
             case Colormap3D.cool_warm:
-                this.func = this.load_colormap('../colormaps/cool-warm-paraview.png')
+                this.func = this.load_colormap('../continuous-cellular-automata/colormaps/cool-warm-paraview.png')
                 break
             case Colormap3D.green:
-                this.func = this.load_colormap('../colormaps/samsel-linear-green.png')
+                this.func = this.load_colormap('../continuous-cellular-automata/colormaps/samsel-linear-green.png')
                 break
             case Colormap3D.plasma:
-                this.func = this.load_colormap('../colormaps/matplotlib-plasma.png')
+                this.func = this.load_colormap('../continuous-cellular-automata/colormaps/matplotlib-plasma.png')
                 break
             case Colormap3D.rainbow:
-                this.func = this.load_colormap('../colormaps/rainbow.png')
+                this.func = this.load_colormap('../continuous-cellular-automata/colormaps/rainbow.png')
                 break
             case Colormap3D.virdis:
-                this.func = this.load_colormap('../colormaps/matplotlib-virdis.png')
+                this.func = this.load_colormap('../continuous-cellular-automata/colormaps/matplotlib-virdis.png')
                 break
             case Colormap3D.ygb:
-                this.func = this.load_colormap('../colormaps/samsel-linear-ygb-1211g.png')
+                this.func = this.load_colormap('../continuous-cellular-automata/colormaps/samsel-linear-ygb-1211g.png')
                 break
         }
     }

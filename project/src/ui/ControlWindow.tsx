@@ -245,7 +245,7 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
         let sim = this.props.sim;
         if (sim.mode === SimMode.Sim2D) {
             let menu = document.getElementById('load_automata_2d') as HTMLSelectElement;
-            let res = this.fetch_json_file(`../automata/2D/${menu.value}_2D.json`);
+            let res = this.fetch_json_file(`../continuous-cellular-automata/automata/2D/${menu.value}_2D.json`);
             let seed = sim.generate_seed(Sim.SEED_LEN);
             res.then((data) => {this.load_automata_json(data, false, seed)});
 
@@ -255,7 +255,7 @@ class ControlWindow extends React.Component<ControlPanelInterface, {}> {
         }
         else if (sim.mode === SimMode.Sim3D) {
             let menu = document.getElementById('load_automata_3d') as HTMLSelectElement;
-            let res = this.fetch_json_file(`../automata/3D/${menu.value}_3D.json`);
+            let res = this.fetch_json_file(`../continuous-cellular-automata/automata/3D/${menu.value}_3D.json`);
             let seed = sim.generate_seed(Sim.SEED_LEN);
             res.then((data) => {this.load_automata_json(data, false, seed)});
         }
