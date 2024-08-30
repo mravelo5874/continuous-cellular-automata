@@ -328,7 +328,6 @@ class RenderVolume {
         if (this.sim.go_down) answer.add(Vec3.up.copy().negate());
         // return normalized direction
         answer.normalize();
-        console.log("answer: " + answer.x + ", " + answer.y + ", " + answer.z);
         return answer;
     }
 }
