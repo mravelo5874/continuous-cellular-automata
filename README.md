@@ -1,4 +1,4 @@
-![alt text](https://github.com/mravelo5874/continuous-cellular-automata/blob/main/public/gifs/fission_3d.gif)
+![alt text](https://github.com/mravelo5874/continuous-cellular-automata/project/public/gifs/fission_3d.gif)
 > 'fission' 3D automata preset using the 'yellow green blue' colormap.
 
 # Continuous Cellular Automata
@@ -19,7 +19,7 @@ If you wish to check out the code for this project, visit the [github repository
 
 - You can interact with this project on my website [here](https://marcoravelo.com/).
 
-![alt text](https://github.com/mravelo5874/continuous-cellular-automata/blob/main/public/gifs/worms_1c.gif)
+![alt text](https://github.com/mravelo5874/continuous-cellular-automata/blob/main/project/public/gifs/worms_1c.gif)
 > 'worms' 2D automata preset using the 'black and white' shader.
 
 # What are Continuous Cellular Automata?
