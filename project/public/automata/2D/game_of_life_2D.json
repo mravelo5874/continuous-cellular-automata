@@ -1,0 +1,24 @@
+{
+    "sim": 0,
+    "seed": "18852326957679951861488230274783",
+    "shader": 2,
+    "kernel": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        9.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+    ],
+    "symmetries": {
+        "v_sym": false,
+        "h_sym": false,
+        "f_sym": false,
+        "b_sym": false,
+        "full_sym": true
+    },
+    "activation": "if(x == 3.0||x == 11.0||x == 12.0){return 1.0;}return 0.0;"
+}

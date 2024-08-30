@@ -1,0 +1,24 @@
+{
+    "sim": 0,
+    "seed": "55134765126049308414026081373818",
+    "shader": 0,
+    "kernel": [
+        0.0,
+        1.0,
+        0.0,
+        1.0,
+        1.0,
+        1.0,
+        0.0,
+        1.0,
+        0.0
+    ],
+    "symmetries": {
+        "v_sym": true,
+        "h_sym": false,
+        "f_sym": false,
+        "b_sym": true,
+        "full_sym": false
+    },
+    "activation": "return 1.0/pow(2.0,(pow(x-3.5, 2.0)));"
+}
