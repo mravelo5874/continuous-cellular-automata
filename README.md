@@ -1,4 +1,4 @@
-![alt text](https://github.com/mravelo5874/continuous-cellular-automata/project/public/gifs/fission_3d.gif)
+![alt text](https://github.com/mravelo5874/continuous-cellular-automata/blob/main/project/public/gifs/fission_3d.gif)
 > 'fission' 3D automata preset using the 'yellow green blue' colormap.
 
 # Continuous Cellular Automata
@@ -17,7 +17,7 @@ A great inspiration for this project was https://neuralpatterns.io by [Max Robin
 
 If you wish to check out the code for this project, visit the [github repository](https://github.com/mravelo5874/continuous-cellular-automata).
 
-- You can interact with this project on my website [here](https://marcoravelo.com/).
+- You can interact with this project on my website [here](https://marcoravelo.com/continuous-cellular-automata).
 
 ![alt text](https://github.com/mravelo5874/continuous-cellular-automata/blob/main/project/public/gifs/worms_1c.gif)
 > 'worms' 2D automata preset using the 'black and white' shader.
@@ -32,7 +32,7 @@ This definition, while correct, provides a limited and some what unapparent view
 
 0. In the 2D simulation, the canvas contains a grid of cells each initialized with a randomly generated number. When the zoom level is set to 1, each cell can be rendered by a single pixel. In order to get to the next state, a computation update must be performed. This computation update can be split into two distinct operations: a convolution and an activation.
 
-![alt text](https://github.com/mravelo5874/continuous-cellular-automata/blob/main/public/gifs/conv_example.gif)
+![alt text](https://github.com/mravelo5874/continuous-cellular-automata/blob/main/project/public/gifs/conv_example.gif)
 > A visualization of 2D convolution using a 3x3 kernel (courtesy of towardsdatascience.com [link](https://towardsdatascience.com/computer-vision-convolution-basics-2d0ae3b79346)).
 
 1. First, the convolution. Using a 3x3 grid of values referred to as a *kernel*, a cell's value is modified using its neighboring cells' values. Let's do this one step at a time. The first neighbor, one down and one to the left of the cell (-1, -1), is found and its value is stored. This value is multiplied by the kernel's respective value, one down and one to the left of the center square (-1, -1). Then the next neighbor, one down from the cell (0, -1), is found and its value is multiplied by the kernel's respective value one down from the center square (0, -1). This is done for each of the cell's 8 adjacent neighbors as well as its own value found at (0, 0) from the center. The result is 9 numbers. Once we have these 9 numbers, we sum them up to a single number.
@@ -41,7 +41,7 @@ This definition, while correct, provides a limited and some what unapparent view
 
 3. In order to complete a computation update, each cell must go through this process. The result is a new grid of cells which is then rendered to the canvas. You could most likely guess what happens next... the computation update happens again! And again and again, resulting in an infinite sequential set of states being rendered in real time, an animation. 
 
-![alt text](https://github.com/mravelo5874/continuous-cellular-automata/blob/main/public/gifs/fluids_3d.gif)
+![alt text](https://github.com/mravelo5874/continuous-cellular-automata/blob/main/project/public/gifs/fluids_3d.gif)
 > 'fluids' 3D automata preset using the 'plasma' colormap.
 
 # Instructions
@@ -86,31 +86,31 @@ If you wish to customize your automata or load some presets, pressing the 'custo
 
 ## Gallery
 
-![alt text](https://github.com/mravelo5874/continuous-cellular-automata/blob/main/public/gifs/worms_3c.gif)
+![alt text](https://github.com/mravelo5874/continuous-cellular-automata/blob/main/project/public/gifs/worms_3c.gif)
 > 'worms' 2D automata preset using the 'red green blue channels' shader.
 
-![alt text](https://github.com/mravelo5874/continuous-cellular-automata/blob/main/public/gifs/power_3d.gif)
+![alt text](https://github.com/mravelo5874/continuous-cellular-automata/blob/main/project/public/gifs/power_3d.gif)
 > 'power' 3D automata preset using the 'green' colormap.
 
-![alt text](https://github.com/mravelo5874/continuous-cellular-automata/blob/main/public/gifs/cells_1c.gif)
+![alt text](https://github.com/mravelo5874/continuous-cellular-automata/blob/main/project/public/gifs/cells_1c.gif)
 > 'cells' 2D automata preset using the 'alpha channel' shader.
 
-![alt text](https://github.com/mravelo5874/continuous-cellular-automata/blob/main/public/gifs/gurgle_3d.gif)
+![alt text](https://github.com/mravelo5874/continuous-cellular-automata/blob/main/project/public/gifs/gurgle_3d.gif)
 > 'gurgle' 3D automata preset using the 'cool warm' colormap.
 
-![alt text](https://github.com/mravelo5874/continuous-cellular-automata/blob/main/public/gifs/comets_1c.gif)
+![alt text](https://github.com/mravelo5874/continuous-cellular-automata/blob/main/project/public/gifs/comets_1c.gif)
 > 'comets' 2D automata preset using the 'black and white' shader.
 
-![alt text](https://github.com/mravelo5874/continuous-cellular-automata/blob/main/public/gifs/computer_3d.gif)
+![alt text](https://github.com/mravelo5874/continuous-cellular-automata/blob/main/project/public/gifs/computer_3d.gif)
 > 'computer' 3D automata preset using the 'rainbow' colormap.
 
-![alt text](https://github.com/mravelo5874/continuous-cellular-automata/blob/main/public/gifs/paths_3c.gif)
+![alt text](https://github.com/mravelo5874/continuous-cellular-automata/blob/main/project/public/gifs/paths_3c.gif)
 > 'paths' 2D automata preset using the 'red green blue channels' shader.
 
-![alt text](https://github.com/mravelo5874/continuous-cellular-automata/blob/main/public/gifs/anemone_3d.gif)
+![alt text](https://github.com/mravelo5874/continuous-cellular-automata/blob/main/project/public/gifs/anemone_3d.gif)
 > 'anemone' 3D automata preset using the 'cool warm' colormap.
 
-![alt text](https://github.com/mravelo5874/continuous-cellular-automata/blob/main/public/gifs/smoke_1c.gif)
+![alt text](https://github.com/mravelo5874/continuous-cellular-automata/blob/main/project/public/gifs/smoke_1c.gif)
 > 'smoke' 2D automata preset using the 'black and white' shader.
 
 
